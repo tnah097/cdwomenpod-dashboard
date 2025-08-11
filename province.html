@@ -282,11 +282,11 @@
             <td>${formatDate(row["วันที่สิ้นสุดสัญญา"])}</td>
             <td>${formatDate(row["วันที่รับชำระล่าสุด"])}</td>
             <td>${row["งวดคงเหลือที่ต้องชำระ"] || "-"}</td>
-            <td>${formatNumber(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)"])}</td>
-            <td>${formatNumber(row["ลูกหนี้ปัจจุบัน"])}</td>
-            <td>${formatNumber(row["หนี้ยังไม่ถึงกำหนด"])}</td>
-            <td>${formatNumber(row["ไกล่เกลี่ย"])}</td>
-            <td>${formatNumber(row["อัยการ"])}</td>
+            <td>${(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)"])}</td>
+            <td>${(row["ลูกหนี้ปัจจุบัน"])}</td>
+            <td>${(row["หนี้ยังไม่ถึงกำหนด"])}</td>
+            <td>${(row["ไกล่เกลี่ย"])}</td>
+            <td>${(row["อัยการ"])}</td>
             <td>${formatNumber(row["ศาลรับฟ้อง"])}</td>
             <td>${formatNumber(row["พิพากษา"])}</td>
             <td>${formatNumber(row["พิพากษายอม"])}</td>
@@ -327,6 +327,7 @@
   </script>
 </body>
 </html>
+
 
 
 
