@@ -204,37 +204,33 @@
       document.getElementById("province-title").textContent = province;
 
       try {
-        // ดึงข้อมูล summary และ detail จาก API
-        const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
-        const json = await res.json();
+        // ดึงข้อมูล summary
+        const summaryRes = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
+        const summaryJson = await summaryRes.json();
 
-        if (json.error) {
-          alert(json.error);
-          return;
-        }
-
-        if (json.summary) {
-          const s = json.summary;
+        if (summaryJson.summary) {
+          const s = summaryJson.summary;
           // จำนวนโครงการ: คำนวณจากจำนวน row ใน data แทน (ถ้า API ไม่มีส่งมา)
-          document.getElementById("num-projects").textContent = json.data ? json.data.length : "-";
+          document.getElementById("num-projects").textContent = summaryJson.data ? summaryJson.data.length : "-";
 
           document.getElementById("approved-money").textContent = formatNumber(s.approvedMoney);
           document.getElementById("debt-start").textContent = formatNumber(s.debtStart);
           document.getElementById("debt-now").textContent = formatNumber(s.debtNow);
           document.getElementById("overdue").textContent = formatNumber(s.overdue);
-          document.getElementById("percent-overdue").textContent = s.percentOverdue !== undefined && s.percentOverdue !== null ? s.percentOverdue.toFixed(2) + "%" : "-";
+          document.getElementById("percent-overdue").textContent = s.percentOverdue !== undefined && s.percentOverdue !== null ? s.percentOverdue + "%" : "-";
           document.getElementById("legal").textContent = formatNumber(s.legal);
 
-          // อัปเดตวันที่ถ้ามี (ในตัวอย่างไม่มี updateDate)
+          // สมมติไม่มี updateDate ใน API ถ้ามีให้ใส่ตรงนี้
           // document.getElementById("update-date").textContent = "ข้อมูล ณ วันที่ " + s.updateDate;
         }
 
-        if (!json.data) {
+        // ดึงรายละเอียดโครงการ
+        if (!summaryJson.data) {
           alert("ไม่มีข้อมูลรายละเอียดโครงการ");
           return;
         }
 
-        const data = json.data;
+        const data = summaryJson.data;
         const tbody = document.querySelector("#districtDetails tbody");
         tbody.innerHTML = "";
 
@@ -274,6 +270,7 @@
           tbody.appendChild(tr);
         });
 
+        // เรียกใช้ DataTable
         if ($.fn.DataTable.isDataTable("#districtDetails")) {
           $("#districtDetails").DataTable().destroy();
         }
