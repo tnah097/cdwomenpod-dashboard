@@ -128,13 +128,11 @@
       <div class="header-text">
         <h1><span style="color: navy;">CD</span><span style="color: deeppink;">Women</span><span style="color: red;">POD</span></h1>
         <h2><span style="color: black;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ </span><span style="color: red;" id="province-title">รายจังหวัด</span></h2>
-        <!-- ใช้ CSS แทน <font> และ <br> -->
         <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">
           ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
         </div>
       </div>
       <div class="logo-container">
-        <!-- แนะนำใส่ alt -->
         <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
       </div>
@@ -158,11 +156,10 @@
     <div class="main-visuals">
       <div class="left">
         <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
-         <br />
+        <br />
         <canvas id="donutChart"></canvas>
       </div>
       <div class="center">
-        <!-- แนะนำถ้าจะเก็บรูปใน repo ให้เปลี่ยน src เป็น path ที่ถูก -->
         <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
       </div>
 
@@ -283,7 +280,8 @@
         tbody.innerHTML = "";
         provinces.forEach(p => {
           const provinceEncoded = encodeURIComponent(p.province);
-          const url = `https://codepen.io/kbsssser-the-decoder/pen/dPYWQPp?province=${provinceEncoded}`;
+          // ลิงก์ไปหน้ารายละเอียดจังหวัดบน GitHub Pages
+          const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
