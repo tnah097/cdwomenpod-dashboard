@@ -265,12 +265,19 @@ document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : p
                 }
               },
               tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw;
-                    return `${label}: ${value.toFixed(2)}%`;
-                  }
+  callbacks: {
+    label: function(context) {
+      const label = context.label || '';
+      const rawValue = context.raw;
+      const value = parseFloat(rawValue);
+      if (isNaN(value)) {
+        return `${label}: -`;
+      }
+      return `${label}: ${value.toFixed(2)}%`;
+    }
+  }
+}
+
                 }
               }
             }
@@ -365,5 +372,6 @@ document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : p
   </script>
 </body>
 </html>
+
 
 
