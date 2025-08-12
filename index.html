@@ -232,7 +232,9 @@
         document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
         document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
         document.getElementById('overdue').textContent = formatNumber(overview.overdue);
-        document.getElementById('percent-overdue').textContent = (overview.overduePercent || 0) + "%";
+        const percent = parseFloat(overview.overduePercent);
+document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
+
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
         document.getElementById('legal').textContent = formatNumber(overview.legalAction);
 
@@ -363,3 +365,4 @@
   </script>
 </body>
 </html>
+
