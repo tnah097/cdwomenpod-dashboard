@@ -301,7 +301,7 @@ document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : p
             <td>${formatNumber(p.debtNow)}</td>
             <td>${formatNumber(p.legalAction)}</td>
             <td>${formatNumber(p.overdue)}</td>
-            <td>${p.overduePercent}%</td>
+            <td>${Number(p.overduePercent).toFixed(2)}%</td>
           `;
           tbody.appendChild(tr);
         });
@@ -372,6 +372,7 @@ document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : p
   </script>
 </body>
 </html>
+
 
 
 
