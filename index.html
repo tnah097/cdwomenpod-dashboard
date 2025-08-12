@@ -232,9 +232,7 @@
         document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
         document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
         document.getElementById('overdue').textContent = formatNumber(overview.overdue);
-       const percent = parseFloat(overview.overduePercent);
-document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
-
+        document.getElementById('percent-overdue').textContent = (overview.overduePercent || 0) + "%";
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
         document.getElementById('legal').textContent = formatNumber(overview.legalAction);
 
@@ -267,15 +265,10 @@ document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : p
               tooltip: {
                 callbacks: {
                   label: function(context) {
-  const label = context.label || '';
-  const rawValue = context.raw;
-  const value = parseFloat(rawValue);
-  if (isNaN(value)) {
-    return ${label}: -;
-  }
-  return ${label}: ${value.toFixed(2)}%;
-}
-
+                    const label = context.label || '';
+                    const value = context.raw;
+                    return `${label}: ${value.toFixed(1)}%`;
+                  }
                 }
               }
             }
@@ -370,8 +363,3 @@ document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : p
   </script>
 </body>
 </html>
-
-
-
-
-
