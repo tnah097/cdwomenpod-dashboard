@@ -10,21 +10,120 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* ... (CSS เหมือนเดิม ไม่เปลี่ยน) ... */
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
+      /* ถ้าจะเก็บรูป background ใน repo ให้เปลี่ยนเป็น path แบบ relative เช่น
+         background: url('img/background.jpg') center/cover no-repeat; */
       background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
       background-attachment: fixed;
       color: #000;
     }
-    /* ... (ตัด CSS ซ้ำ) ... */
-    /* (ใช้ CSS จากโค้ดที่คุณให้มาเลย) */
+    .dashboard-container { padding: 40px; background-color: rgba(255, 255, 255, 0.9); }
+    .scale-control { font-size: 1rem; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .header-text h1 { margin: 0; font-size: 2.5rem; }
+    .header-text h2 { margin: 0; font-size: 1.5rem; }
+    .logo-container img { height: 60px; margin-left: 10px; }
+    .cards {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    .card {
+      flex: 1;
+      min-width: 250px;
+      padding: 20px;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+    }
+    .card .value {
+      font-size: 1.75rem;
+      color: black;
+      margin-top: 10px;
+      font-weight: normal;
+      white-space: nowrap;
+    }
+    .card.pink { background-color: #e91e63; flex: 0 0 auto; width: auto; }
+    .card.light-pink { background-color: #f8bbd0; }
+    .card.orange { background-color: #ff9800; }
+    .card.pastel-pink { background-color: #fce4ec; }
+    .card.deep-pastel-pink { background-color: #f06292; }
+    .main-visuals {
+      display: flex;
+      margin-top: 30px;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .left, .center, .right {
+      flex: 1;
+      min-width: 300px;
+    }
+    .center { text-align: center; }
+    canvas { max-width: 100%; }
+    #donutChart { height: 500px !important; }
+    .section-title {
+      text-align: center;
+      font-weight: bold;
+      margin: 10px 0;
+      font-size: 1.2rem;
+    }
+    .center img {
+      width: 250px;
+      display: block;
+      margin: 0 auto 10px;
+    }
+    .province-table-wrapper {
+      margin-top: 30px;
+      margin-left: 3cm;
+      text-align: left !important;
+    }
+    .summary-table {
+      width: 95%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      color: black;
+    }
+    .summary-table th {
+      background-color: #f06292;
+      color: black;
+      padding: 8px;
+      border: 1px solid #f8bbd0;
+      font-weight: bold;
+      text-align: center;
+    }
+    .summary-table td {
+      padding: 6px;
+      border: 1px solid #f8bbd0;
+      text-align: center;
+      color: black;
+    }
+    .summary-table tr:nth-child(even) { background-color: #fce4ec; }
+    .summary-table tr:nth-child(odd) { background-color: white; }
+    /* จัดข้อความคอลัมน์แรกชิดซ้าย */
+    .summary-table td:first-child {
+      text-align: left;
+    }
+    /* ลิงก์จังหวัด */
+    .province-link {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .province-link:hover {
+      color: darkblue;
+    }
   </style>
 </head>
 <body>
   <div class="dashboard-container scale-control">
-    <!-- ... ส่วน HTML เหมือนเดิม ... -->
     <div class="header">
       <div class="header-text">
         <h1><span style="color: navy;">CD</span><span style="color: deeppink;">Women</span><span style="color: red;">POD</span></h1>
@@ -133,11 +232,7 @@
         document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
         document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
         document.getElementById('overdue').textContent = formatNumber(overview.overdue);
-
-        // แก้ไขตรงนี้ ให้แสดง 2 ตำแหน่งทศนิยม
-        const percent = parseFloat(overview.overduePercent);
-        document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
-
+        document.getElementById('percent-overdue').textContent = (overview.overduePercent || 0) + "%";
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
         document.getElementById('legal').textContent = formatNumber(overview.legalAction);
 
@@ -153,11 +248,7 @@
           data: {
             labels: pieChartData.map(p => p.province),
             datasets: [{
-              // แปลงเป็น float และ fix 2 ตำแหน่งก่อนแสดงผลใน chart
-              data: pieChartData.map(p => {
-                const val = parseFloat(p.percent);
-                return isNaN(val) ? 0 : +val.toFixed(2);
-              }),
+              data: pieChartData.map(p => parseFloat(p.percent)),
               backgroundColor: pastelColors.slice(0, pieChartData.length)
             }]
           },
@@ -176,8 +267,7 @@
                   label: function(context) {
                     const label = context.label || '';
                     const value = context.raw;
-                    // แสดงทศนิยม 2 ตำแหน่งใน tooltip
-                    return ${label}: ${value.toFixed(2)}%;
+                    return `${label}: ${value.toFixed(1)}%`;
                   }
                 }
               }
@@ -191,10 +281,10 @@
         provinces.forEach(p => {
           const provinceEncoded = encodeURIComponent(p.province);
           // ลิงก์ไปหน้ารายละเอียดจังหวัดบน GitHub Pages
-          const url = https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded};
+          const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
 
           const tr = document.createElement("tr");
-          tr.innerHTML = 
+          tr.innerHTML = `
             <td><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
             <td>${formatNumber(p.totalProjects)}</td>
             <td>${formatNumber(p.approvedAmount)}</td>
@@ -202,8 +292,8 @@
             <td>${formatNumber(p.debtNow)}</td>
             <td>${formatNumber(p.legalAction)}</td>
             <td>${formatNumber(p.overdue)}</td>
-            <td>${(isNaN(parseFloat(p.overduePercent)) ? 0 : parseFloat(p.overduePercent).toFixed(2))}%</td>
-          ;
+            <td>${p.overduePercent}%</td>
+          `;
           tbody.appendChild(tr);
         });
 
@@ -230,7 +320,7 @@
 
     async function fetchStudyCenterData() {
       try {
-        const res = await fetch(${API_URL}?action=studyCenter);
+        const res = await fetch(`${API_URL}?action=studyCenter`);
         const data = await res.json();
         const centers = data.studyCenter || [];
         const tbody = document.querySelector("#studyCenterTable tbody");
@@ -238,11 +328,11 @@
 
         centers.forEach(row => {
           const tr = document.createElement("tr");
-          tr.innerHTML = 
+          tr.innerHTML = `
             <td style="text-align: left;">${row.name}</td>
             <td>${row.index}</td>
             <td>${row.province}</td>
-          ;
+          `;
           tbody.appendChild(tr);
         });
 
