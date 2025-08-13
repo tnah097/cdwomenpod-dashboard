@@ -269,7 +269,8 @@
                   label: function(context) {
                     const label = context.label || '';
                     const value = context.raw;
-                    return `${label}: ${value.toFixed(1)}%`;
+                   // แสดงทศนิยม 2 ตำแหน่งใน tooltip
+                    return ${label}: ${value.toFixed(2)}%;
                   }
                 }
               }
@@ -365,4 +366,5 @@
   </script>
 </body>
 </html>
+
 
