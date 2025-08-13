@@ -295,7 +295,7 @@
             <td>${formatNumber(p.debtNow)}</td>
             <td>${formatNumber(p.legalAction)}</td>
             <td>${formatNumber(p.overdue)}</td>
-            <td>${p.overduePercent}%</td>
+             <td>${(isNaN(parseFloat(p.overduePercent)) ? 0 : parseFloat(p.overduePercent).toFixed(2))}%</td>
           `;
           tbody.appendChild(tr);
         });
@@ -366,5 +366,6 @@
   </script>
 </body>
 </html>
+
 
 
