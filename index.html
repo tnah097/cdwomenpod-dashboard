@@ -120,6 +120,66 @@
     .province-link:hover {
       color: darkblue;
     }
+
+/* Media Queries ใหม่ responsive ครอบคลุมทุกหน้าจอ */
+@media (max-width: 1400px) {
+  .dashboard-container { padding: 30px; }
+  .header-text h1 { font-size: 2.2rem; }
+  .header-text h2 { font-size: 1.3rem; }
+  .logo-container img { height: 50px; margin-left: 5px; }
+  .cards { gap: 15px; }
+  .card .value { font-size: 1.5rem; }
+  .main-visuals { flex-direction: column; }
+  .left, .center, .right { min-width: 100%; }
+  #donutChart { height: 400px !important; }
+  .center img { width: 200px; }
+  .province-table-wrapper { margin-left: 0; }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  .dashboard-container { padding: 25px; }
+  .cards { flex-direction: column; gap: 10px; }
+  .main-visuals { flex-direction: column; gap: 15px; }
+  #donutChart { height: 350px !important; }
+  .center img { width: 180px; }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container { padding: 20px; }
+  .header { flex-direction: column; align-items: flex-start; }
+  .header-text h1 { font-size: 1.8rem; }
+  .header-text h2 { font-size: 1.1rem; }
+  .cards { flex-direction: column; }
+  .card { padding: 15px; }
+  .card .value { font-size: 1.3rem; }
+  .main-visuals { flex-direction: column; gap: 15px; }
+  #donutChart { height: 300px !important; }
+  .center img { width: 150px; }
+  .province-table-wrapper { overflow-x: auto; margin-left: 0; }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+  .header-text h1 { font-size: 1.5rem; }
+  .header-text h2 { font-size: 1rem; }
+  .cards { flex-direction: column; }
+  .card { padding: 10px; }
+  .card .value { font-size: 1.1rem; }
+  #donutChart { height: 250px !important; }
+  .center img { width: 120px; }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+  .header-text h1 { font-size: 1.3rem; }
+  .header-text h2 { font-size: 0.9rem; }
+  .cards { flex-direction: column; }
+  .card { padding: 8px; }
+  .card .value { font-size: 1rem; }
+  #donutChart { height: 200px !important; }
+  .center img { width: 100px; }
+  .province-table-wrapper { overflow-x: scroll; }
+}
+
+
   </style>
 </head>
 <body>
