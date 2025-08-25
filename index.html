@@ -120,66 +120,66 @@
     .province-link:hover {
       color: darkblue;
     }
+    .center-pointer { cursor: pointer; color: blue; text-decoration: underline; }
+    .center-pointer:hover { color: darkblue; }
 
-/* Media Queries ใหม่ responsive ครอบคลุมทุกหน้าจอ */
-@media (max-width: 1400px) {
-  .dashboard-container { padding: 30px; }
-  .header-text h1 { font-size: 2.2rem; }
-  .header-text h2 { font-size: 1.3rem; }
-  .logo-container img { height: 50px; margin-left: 5px; }
-  .cards { gap: 15px; }
-  .card .value { font-size: 1.5rem; }
-  .main-visuals { flex-direction: column; }
-  .left, .center, .right { min-width: 100%; }
-  #donutChart { height: 400px !important; }
-  .center img { width: 200px; }
-  .province-table-wrapper { margin-left: 0; }
-}
+    /* Media Queries ใหม่ responsive ครอบคลุมทุกหน้าจอ */
+    @media (max-width: 1400px) {
+      .dashboard-container { padding: 30px; }
+      .header-text h1 { font-size: 2.2rem; }
+      .header-text h2 { font-size: 1.3rem; }
+      .logo-container img { height: 50px; margin-left: 5px; }
+      .cards { gap: 15px; }
+      .card .value { font-size: 1.5rem; }
+      .main-visuals { flex-direction: column; }
+      .left, .center, .right { min-width: 100%; }
+      #donutChart { height: 400px !important; }
+      .center img { width: 200px; }
+      .province-table-wrapper { margin-left: 0; }
+    }
 
-@media (max-width: 1024px) and (orientation: landscape) {
-  .dashboard-container { padding: 25px; }
-  .cards { flex-direction: column; gap: 10px; }
-  .main-visuals { flex-direction: column; gap: 15px; }
-  #donutChart { height: 350px !important; }
-  .center img { width: 180px; }
-}
+    @media (max-width: 1024px) and (orientation: landscape) {
+      .dashboard-container { padding: 25px; }
+      .cards { flex-direction: column; gap: 10px; }
+      .main-visuals { flex-direction: column; gap: 15px; }
+      #donutChart { height: 350px !important; }
+      .center img { width: 180px; }
+    }
 
-@media (max-width: 768px) {
-  .dashboard-container { padding: 20px; }
-  .header { flex-direction: column; align-items: flex-start; }
-  .header-text h1 { font-size: 1.8rem; }
-  .header-text h2 { font-size: 1.1rem; }
-  .cards { flex-direction: column; }
-  .card { padding: 15px; }
-  .card .value { font-size: 1.3rem; }
-  .main-visuals { flex-direction: column; gap: 15px; }
-  #donutChart { height: 300px !important; }
-  .center img { width: 150px; }
-  .province-table-wrapper { overflow-x: auto; margin-left: 0; }
-}
+    @media (max-width: 768px) {
+      .dashboard-container { padding: 20px; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .header-text h1 { font-size: 1.8rem; }
+      .header-text h2 { font-size: 1.1rem; }
+      .cards { flex-direction: column; }
+      .card { padding: 15px; }
+      .card .value { font-size: 1.3rem; }
+      .main-visuals { flex-direction: column; gap: 15px; }
+      #donutChart { height: 300px !important; }
+      .center img { width: 150px; }
+      .province-table-wrapper { overflow-x: auto; margin-left: 0; }
+    }
 
-@media (max-width: 480px) and (orientation: portrait) {
-  .header-text h1 { font-size: 1.5rem; }
-  .header-text h2 { font-size: 1rem; }
-  .cards { flex-direction: column; }
-  .card { padding: 10px; }
-  .card .value { font-size: 1.1rem; }
-  #donutChart { height: 250px !important; }
-  .center img { width: 120px; }
-}
+    @media (max-width: 480px) and (orientation: portrait) {
+      .header-text h1 { font-size: 1.5rem; }
+      .header-text h2 { font-size: 1rem; }
+      .cards { flex-direction: column; }
+      .card { padding: 10px; }
+      .card .value { font-size: 1.1rem; }
+      #donutChart { height: 250px !important; }
+      .center img { width: 120px; }
+    }
 
-@media (max-width: 480px) and (orientation: landscape) {
-  .header-text h1 { font-size: 1.3rem; }
-  .header-text h2 { font-size: 0.9rem; }
-  .cards { flex-direction: column; }
-  .card { padding: 8px; }
-  .card .value { font-size: 1rem; }
-  #donutChart { height: 200px !important; }
-  .center img { width: 100px; }
-  .province-table-wrapper { overflow-x: scroll; }
-}
-
-
+    @media (max-width: 480px) and (orientation: landscape) {
+      .header-text h1 { font-size: 1.3rem; }
+      .header-text h2 { font-size: 0.9rem; }
+      .cards { flex-direction: column; }
+      .card { padding: 8px; }
+      .card .value { font-size: 1rem; }
+      #donutChart { height: 200px !important; }
+      .center img { width: 100px; }
+      .province-table-wrapper { overflow-x: scroll; }
+    }
   </style>
 </head>
 <body>
@@ -231,6 +231,7 @@
           <div class="card deep-pastel-pink">
             <div style="font-weight: bold; color: white;">ศูนย์ศึกษารายและพัฒนาชุมชน</div>
             <br />
+            <button id="showAllProvinces" style="margin-bottom:5px;">เลือกจังหวัดทั้งหมด</button>
             <table class="summary-table" id="studyCenterTable" style="color: black;">
               <thead>
                 <tr>
@@ -272,11 +273,10 @@
       '#DAB9E6', '#A0E8E8', '#ADFF2F', '#FFFF00', '#FFA500'
     ];
 
-    function formatNumber(num) {
-      return Number(num || 0).toLocaleString("th-TH");
-    }
+    function formatNumber(num) { return Number(num || 0).toLocaleString("th-TH"); }
 
-    let donutChartInstance = null; // เก็บ instance Chart
+    let donutChartInstance = null;
+    let allProvinces = [];
 
     async function fetchData() {
       try {
@@ -284,99 +284,65 @@
         const data = await res.json();
 
         const overview = data.overview || {};
-        const provinces = data.provinces || [];
+        allProvinces = data.provinces || [];
         const pieChartData = data.pieChartData || [];
 
-        // เติมข้อมูลใน dashboard
         document.getElementById('num-projects').textContent = formatNumber(overview.totalProjects);
         document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
         document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
         document.getElementById('overdue').textContent = formatNumber(overview.overdue);
-       const percent = parseFloat(overview.overduePercent);
+        const percent = parseFloat(overview.overduePercent);
         document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
         document.getElementById('legal').textContent = formatNumber(overview.legalAction);
 
-        // ล้าง Chart เดิมก่อนสร้างใหม่
-        if (donutChartInstance) {
-          donutChartInstance.destroy();
-        }
+        if (donutChartInstance) { donutChartInstance.destroy(); }
 
-        // สร้าง donut chart
         const donutCtx = document.getElementById('donutChart').getContext('2d');
         donutChartInstance = new Chart(donutCtx, {
           type: 'doughnut',
           data: {
             labels: pieChartData.map(p => p.province),
-            datasets: [{
-              data: pieChartData.map(p => parseFloat(p.percent)),
-              backgroundColor: pastelColors.slice(0, pieChartData.length)
-            }]
+            datasets: [{ data: pieChartData.map(p => parseFloat(p.percent)), backgroundColor: pastelColors.slice(0, pieChartData.length) }]
           },
           options: {
             responsive: true,
             plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  usePointStyle: true,
-                  font: { size: 14 }
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw;
-                    return `${label}: ${value.toFixed(1)}%`;
-                  }
-                }
-              }
+              legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
+              tooltip: { callbacks: { label: function(context) { return `${context.label}: ${context.raw.toFixed(1)}%`; } } }
             }
           }
         });
 
-        // เติมตารางจังหวัด
-        const tbody = document.querySelector("#provinceTable tbody");
-        tbody.innerHTML = "";
-        provinces.forEach(p => {
-          const provinceEncoded = encodeURIComponent(p.province);
-          // ลิงก์ไปหน้ารายละเอียดจังหวัดบน GitHub Pages
-          const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
-            <td>${formatNumber(p.totalProjects)}</td>
-            <td>${formatNumber(p.approvedAmount)}</td>
-            <td>${formatNumber(p.debtStart)}</td>
-            <td>${formatNumber(p.debtNow)}</td>
-            <td>${formatNumber(p.legalAction)}</td>
-            <td>${formatNumber(p.overdue)}</td>
-            <td>${parseFloat(p.overduePercent).toFixed(2)}%</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        // กำหนด DataTable (ถ้ามี table เดิมให้ทำลายก่อน)
-        if ($.fn.DataTable.isDataTable('#provinceTable')) {
-          $('#provinceTable').DataTable().clear().destroy();
-        }
-        $('#provinceTable').DataTable({
-          paging: false,
-          scrollY: '400px',
-          scrollCollapse: true,
-          language: {
-            search: "ค้นหา:",
-            info: "แสดง _TOTAL_ รายการ",
-            infoEmpty: "ไม่มีข้อมูล",
-            zeroRecords: "ไม่พบข้อมูล",
-          }
-        });
+        populateProvinceTable(allProvinces);
 
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
       }
+    }
+
+    function populateProvinceTable(provinces) {
+      const tbody = document.querySelector("#provinceTable tbody");
+      tbody.innerHTML = "";
+      provinces.forEach(p => {
+        const provinceEncoded = encodeURIComponent(p.province);
+        const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
+          <td>${formatNumber(p.totalProjects)}</td>
+          <td>${formatNumber(p.approvedAmount)}</td>
+          <td>${formatNumber(p.debtStart)}</td>
+          <td>${formatNumber(p.debtNow)}</td>
+          <td>${formatNumber(p.legalAction)}</td>
+          <td>${formatNumber(p.overdue)}</td>
+          <td>${parseFloat(p.overduePercent).toFixed(2)}%</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if ($.fn.DataTable.isDataTable('#provinceTable')) { $('#provinceTable').DataTable().clear().destroy(); }
+      $('#provinceTable').DataTable({ paging: false, scrollY: '400px', scrollCollapse: true, language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" } });
     }
 
     async function fetchStudyCenterData() {
@@ -390,27 +356,29 @@
         centers.forEach(row => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td style="text-align: left;">${row.name}</td>
+            <td style="text-align: left;" class="center-pointer">${row.name}</td>
             <td>${row.index}</td>
             <td>${row.province}</td>
           `;
           tbody.appendChild(tr);
         });
 
-        if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
-          $('#studyCenterTable').DataTable().clear().destroy();
-        }
-        $('#studyCenterTable').DataTable({
-          paging: false,
-          scrollY: '300px',
-          scrollCollapse: true,
-          searching: true,
-          language: {
-            search: "ค้นหา:",
-            info: "แสดง _TOTAL_ รายการ",
-            infoEmpty: "ไม่มีข้อมูล",
-            zeroRecords: "ไม่พบข้อมูล",
-          }
+        if ($.fn.DataTable.isDataTable('#studyCenterTable')) { $('#studyCenterTable').DataTable().clear().destroy(); }
+        $('#studyCenterTable').DataTable({ paging: false, scrollY: '300px', scrollCollapse: true, searching: true, language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" } });
+
+        // คลิกที่ชื่อศูนย์เพื่อกรองจังหวัด
+        document.querySelectorAll("#studyCenterTable .center-pointer").forEach(cell => {
+          cell.addEventListener("click", () => {
+            const provincesText = cell.nextElementSibling.nextElementSibling.textContent;
+            const selectedProvinces = provincesText.split(',').map(s => s.trim());
+            const filtered = allProvinces.filter(p => selectedProvinces.includes(p.province));
+            populateProvinceTable(filtered);
+          });
+        });
+
+        // ปุ่มเลือกจังหวัดทั้งหมด
+        document.getElementById("showAllProvinces").addEventListener("click", () => {
+          populateProvinceTable(allProvinces);
         });
 
       } catch (error) {
@@ -418,7 +386,6 @@
       }
     }
 
-    // เรียกฟังก์ชันโหลดข้อมูลเมื่อเปิดหน้าเว็บ
     fetchData();
     fetchStudyCenterData();
   </script>
