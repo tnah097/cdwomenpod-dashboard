@@ -120,6 +120,12 @@
     .province-link:hover {
       color: darkblue;
     }
+    /* Dropdown filter */
+    #provinceFilter {
+      margin: 10px 0;
+      padding: 6px 10px;
+      font-size: 1rem;
+    }
     /* Responsive Table */
     @media (max-width: 768px) {
       .summary-table thead {
@@ -217,6 +223,10 @@
     </div>
 
     <div class="province-table-wrapper">
+      <!-- Dropdown filter -->
+      <select id="provinceFilter">
+        <option value="all">แสดงจังหวัดทั้งหมด</option>
+      </select>
       <table class="summary-table" id="provinceTable" style="margin-left: 0;">
         <thead>
           <tr>
@@ -304,7 +314,9 @@
           }
         });
 
+        // render ทั้งหมดครั้งแรก
         renderProvinceTable(allProvinces);
+        populateProvinceFilter();
 
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
@@ -347,6 +359,27 @@
       });
     }
 
+    function populateProvinceFilter() {
+      const select = document.getElementById("provinceFilter");
+      select.innerHTML = '<option value="all">แสดงจังหวัดทั้งหมด</option>';
+      allProvinces.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.province;
+        option.textContent = p.province;
+        select.appendChild(option);
+      });
+
+      select.addEventListener("change", () => {
+        const val = select.value;
+        if (val === "all") {
+          renderProvinceTable(allProvinces);
+        } else {
+          const filtered = allProvinces.filter(p => p.province === val);
+          renderProvinceTable(filtered);
+        }
+      });
+    }
+
     async function fetchStudyCenterData() {
       try {
         const res = await fetch(`${API_URL}?action=studyCenter`);
@@ -369,6 +402,7 @@
             const provincesInCenter = row.province.split(",").map(p => p.trim());
             const filtered = allProvinces.filter(p => provincesInCenter.includes(p.province));
             renderProvinceTable(filtered);
+            document.getElementById("provinceFilter").value = "all"; // reset dropdown
           });
         });
 
