@@ -314,7 +314,6 @@
           }
         });
 
-        // render ทั้งหมดครั้งแรก
         renderProvinceTable(allProvinces);
         populateProvinceFilter();
 
@@ -397,9 +396,9 @@
           `;
           tbody.appendChild(tr);
 
-          // คลิกกรองจังหวัด
+          // คลิกกรองจังหวัดโดยใช้ชื่อจังหวัดตรงๆ
           tr.querySelector(".center-link").addEventListener("click", () => {
-            const provincesInCenter = row.province.split(",").map(p => p.trim());
+            const provincesInCenter = row.province.split(",").map(p => p.trim()); // ชื่อจังหวัดตรงๆ
             const filtered = allProvinces.filter(p => provincesInCenter.includes(p.province));
             renderProvinceTable(filtered);
             document.getElementById("provinceFilter").value = "all"; // reset dropdown
