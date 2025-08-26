@@ -56,7 +56,7 @@
     .orange { background-color: #ff9800; }
     .deep-pastel-pink { background-color: #f06292; }
     .red { background-color: #F26665; }       
-    .yellow { background-color: #FF9967; color: #fff; } /* ✅ สีพิเศษ + ตัวหนังสือขาว */
+    .yellow { background-color: #FF9967; color: #fff; }
 
     .dropdown {
       margin-top: 10px;
@@ -69,7 +69,6 @@
       width: 100%;
     }
 
-    /* 📱 Responsive Design */
     @media (max-width: 1024px) {
       .header-text h1 { font-size: 2rem; }
       .header-text h2 { font-size: 1.3rem; }
@@ -107,7 +106,6 @@
       </div>
     </div>
 
-    <!-- Cards -->
     <div class="cards">
       <div class="card pink" onclick="window.open('https://tnah097.github.io/cdwomenpod-dashboard/', '_blank')">
         ตัวชี้วัด พจ. KPI68
@@ -133,14 +131,13 @@
         <select class="dropdown" onchange="openERPLink(this.value)">
           <option value="">-- เลือกรายการ --</option>
           <option value="deposit">ทะเบียนคุมเงินฝากคลัง</option>
-           <option value="deposit">รายงานการรับ-จ่ายเงิน</option>
+          <option value="report">รายงานการรับ-จ่ายเงิน</option>
           <optgroup label="ทะเบียนคุมเงินฝากธนาคาร">
             <option value="ktb">ธนาคารกรุงไทย</option>
             <option value="gsb">ธนาคารออมสิน</option>
             <option value="baac">ธนาคารธกส.</option>
           </optgroup>
           <option value="allbanks">ทะเบียนรวม 3 ธนาคาร</option>
-          
         </select>
       </div>
     </div>
