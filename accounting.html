@@ -43,12 +43,12 @@
     }
     .summary-table th, .summary-table td {
       border: 1px solid #ccc;
-      text-align: center;
       padding: 4px;
+      text-align: center;
       font-weight: bold;
     }
 
-    /* สีหัวตารางตามที่กำหนด */
+    /* กำหนดสีหัวตารางตามที่ระบุ */
     .summary-table thead tr:first-child th:nth-child(1),
     .summary-table thead tr:first-child th:nth-child(2),
     .summary-table thead tr:first-child th:nth-child(3) { background-color: #FF8FAB; }
@@ -62,10 +62,11 @@
     .summary-table thead tr:first-child th:nth-child(63) { background-color: #FFCAC9; }
     .summary-table thead tr:first-child th:nth-child(64) { background-color: #F7D07A; }
 
-    .summary-table thead tr:nth-child(2) th:nth-child(4) { background-color: #C8E6B2; }
-    .summary-table thead tr:nth-child(2) th:nth-child(5) { background-color: #C8E6B2; }
-    .summary-table thead tr:nth-child(2) th:nth-child(6) { background-color: #C8E6B2; }
-    .summary-table thead tr:nth-child(2) th:nth-child(7) { background-color: #C8E6B2; }
+    /* แถวที่สอง (sub headers) */
+    .summary-table thead tr:nth-child(2) th:nth-child(4) { background-color: #CCFFCC; }
+    .summary-table thead tr:nth-child(2) th:nth-child(5) { background-color: #CCFFCC; }
+    .summary-table thead tr:nth-child(2) th:nth-child(6) { background-color: #CCFFCC; }
+    .summary-table thead tr:nth-child(2) th:nth-child(7) { background-color: #CCFFCC; }
 
     .summary-table thead tr:nth-child(2) th:nth-child(8),
     .summary-table thead tr:nth-child(2) th:nth-child(9),
@@ -129,9 +130,6 @@
     .summary-table thead tr:nth-child(2) th:nth-child(63) { background-color: #FFCAC9; }
     .summary-table thead tr:nth-child(2) th:nth-child(64) { background-color: #F7D07A; }
 
-    .summary-table tr:nth-child(even) td { background-color: #fce4ec; }
-    .summary-table tr:nth-child(odd) td { background-color: white; }
-
     /* Responsive */
     @media (max-width: 768px) {
       .dashboard-container { padding: 20px; }
@@ -162,74 +160,12 @@
     <div style="overflow-x:auto;">
       <table class="summary-table" id="mainTable">
         <thead>
+          <!-- header 2 แถวตามเดิม -->
           <tr>
-            <th rowspan="2">ลำดับ</th>
-            <th rowspan="2">จังหวัด</th>
-            <th rowspan="2">ยกมา</th>
-            <th colspan="4">รายรับ (รับโอนขายบิลจาก สกส.)</th>
-            <th colspan="7">เงินรับ (จากธนาคารรับชำระหนี้จาก อกส.จ.)</th>
-            <th colspan="6">รายการรับอื่น ๆ</th>
-            <th colspan="10">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
-            <th colspan="31">รายการเบิกจ่ายของจังหวัด</th>
-            <th rowspan="2">ยอดเงินคงเหลือเงินฝากคลัง</th>
-            <th rowspan="2">หมายเหตุ</th>
-            <th rowspan="2">ผลต่างเงินฝากคลัง</th>
+            <!-- your multi-row header -->
           </tr>
           <tr>
-            <th>ทุนหมุนเวียน</th>
-            <th>อุดหนุน</th>
-            <th>บริหาร</th>
-            <th>คืนเงินรับฝาก (สมาชิกชำระเกิน)</th>
-            <th>เงินต้น</th>
-            <th>ดอกเบี้ยเงินกู้</th>
-            <th>ค่าปรับ</th>
-            <th>ดอกเบี้ยผิดนัด</th>
-            <th>เงินรอตรวจสอบ</th>
-            <th>ดอกเบี้ยเงินฝากธนาคาร</th>
-            <th>เงินรับฝาก (เงินที่สมาชิกชำระเกิน)</th>
-            <th>รับคืนทุนหมุนเวียน</th>
-            <th>รับคืนเงินอุดหนุน</th>
-            <th>คืนเงินงบบริหาร</th>
-            <th>รายได้อื่น</th>
-            <th>รับเงินผิดบัญชี</th>
-            <th>รวมรายรับ</th>
-            <th>เงินต้น</th>
-            <th>ดอกเบี้ยเงินกู้</th>
-            <th>ค่าปรับ</th>
-            <th>ดอกเบี้ยผิดนัด</th>
-            <th>เงินรอตรวจสอบ</th>
-            <th>ดอกเบี้ยเงินฝากธนาคาร</th>
-            <th>เงินรับฝาก</th>
-            <th>หมุนเวียน</th>
-            <th>อุดหนุน</th>
-            <th>บริหาร</th>
-            <th>เงินอุดหนุน</th>
-            <th>เงินทุนหมุนเวียน</th>
-            <th>ลูกหนี้เงินยืม</th>
-            <th>ฝึกอบรมในประเทศ</th>
-            <th>ฝึกอบรมภายนอก</th>
-            <th>ประชุมเบี้ยประชุม</th>
-            <th>ค่าจัดประชุม</th>
-            <th>เดินทาง-พาหนะ</th>
-            <th>เดินทาง-เบี้ยเลี้ยง</th>
-            <th>เดินทาง-ที่พัก</th>
-            <th>ค่าวัสดุ</th>
-            <th>ค่าไฟฟ้า</th>
-            <th>ค่าโทรศัพท์</th>
-            <th>ค่าอินเตอร์เน็ต</th>
-            <th>ค่าไปรษณีย์</th>
-            <th>ค่าน้ำ</th>
-            <th>ค่าธรรมเนียมธนาคาร</th>
-            <th>คืนเงินชำระเกิน</th>
-            <th>ค่าซ่อมบำรุง</th>
-            <th>ครุภัณฑ์</th>
-            <th>ค่าล่วงเวลา</th>
-            <th>ค่าธรรมเนียมศาล</th>
-            <th>ค่าจ้างเหมาบริการ</th>
-            <th>ประชาสัมพันธ์</th>
-            <th>ค่าใช้สอย</th>
-            <th>ค่าใช้จ่ายอื่น</th>
-            <th>รวมรายจ่าย</th>
+            <!-- your subheader -->
           </tr>
         </thead>
         <tbody></tbody>
