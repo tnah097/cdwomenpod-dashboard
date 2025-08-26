@@ -28,6 +28,16 @@
     }
     .header-text h1 { margin: 0; font-size: 2rem; color: navy; }
     .header-text h2 { margin: 0; font-size: 1.3rem; color: deeppink; }
+    .report-info {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .report-info .month { color: red; }
+    .report-info .year { color: red; }
     .logo-container img { height: 60px; margin-left: 10px; }
     .section-title {
       text-align: center;
@@ -50,7 +60,6 @@
     .summary-table td { font-weight: normal; }
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
-    /* Responsive */
     @media (max-width: 768px) {
       .dashboard-container { padding: 20px; }
       .header { flex-direction: column; align-items: flex-start; }
@@ -65,8 +74,9 @@
       <div class="header-text">
         <h1>ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง (รหัส 10962)</h1>
         <h2>กองทุนพัฒนาบทบาทสตรี</h2>
-        <div style="color: black; font-weight: bold; font-size: 1rem; margin-top: 1rem;">
-          ประจำเดือน ณ 30 สิงหาคม 2567
+        <div class="report-info">
+          <span>รายงานประจำ <span class="month">สิงหาคม</span> พ.ศ. <span class="year">2567</span></span>
+          <span>สกส.02/2568</span>
         </div>
       </div>
       <div class="logo-container">
@@ -80,6 +90,7 @@
     <div style="overflow-x:auto;">
       <table class="summary-table" id="mainTable">
         <thead>
+          <!-- ส่วนหัวตารางเหมือนเดิมทั้งหมด -->
           <tr>
             <th rowspan="2" style="background-color:#FF8FAB;">ลำดับ</th>
             <th rowspan="2" style="background-color:#FF8FAB;">จังหวัด</th>
@@ -94,13 +105,11 @@
             <th rowspan="2" style="background-color:#F7D07A;">ผลต่างเงินฝากคลัง</th>
           </tr>
           <tr>
-            <!-- รายรับ ย่อย -->
+            <!-- รายละเอียดย่อยเหมือนเดิม -->
             <th style="background-color:#CCFFCC;">ทุนหมุนเวียน</th>
             <th style="background-color:#CCFFCC;">อุดหนุน</th>
             <th style="background-color:#CCFFCC;">บริหาร</th>
             <th style="background-color:#CCFFCC;">คืนเงินรับฝาก (สมาชิกชำระเกิน)</th>
-
-            <!-- เงินรับ ย่อย -->
             <th style="background-color:#ADD88D;">เงินต้น</th>
             <th style="background-color:#ADD88D;">ดอกเบี้ยเงินกู้</th>
             <th style="background-color:#ADD88D;">ค่าปรับ</th>
@@ -108,16 +117,12 @@
             <th style="background-color:#ADD88D;">เงินรอตรวจสอบ</th>
             <th style="background-color:#ADD88D;">ดอกเบี้ยเงินฝากธนาคาร</th>
             <th style="background-color:#ADD88D;">เงินรับฝาก (เงินที่สมาชิกชำระเกิน)</th>
-
-            <!-- รายการรับอื่น ๆ ย่อย -->
             <th style="background-color:#92CA68;">รับคืนทุนหมุนเวียน (ยกเลิกโครงการ)</th>
             <th style="background-color:#92CA68;">รับคืนเงินอุดหนุน (ยกเลิกโครงการ)</th>
             <th style="background-color:#92CA68;">คืนเงินงบบริหาร(เหลือจ่าย) ในปีปัจจุบัน</th>
             <th style="background-color:#92CA68;">รายได้อื่น</th>
             <th style="background-color:#92CA68;">รับเงินผิดบัญชี</th>
             <th style="background-color:#92CA68;">รวมรายรับ</th>
-
-            <!-- รายจ่าย ย่อย -->
             <th style="background-color:#FDDF8E;">เงินต้น</th>
             <th style="background-color:#FDDF8E;">ดอกเบี้ยเงินกู้</th>
             <th style="background-color:#FDDF8E;">ค่าปรับ</th>
@@ -128,7 +133,6 @@
             <th style="background-color:#FDDF8E;">หมุนเวียน</th>
             <th style="background-color:#FDDF8E;">อุดหนุน</th>
             <th style="background-color:#FDDF8E;">บริหาร</th>
-
             <!-- รายการเบิกจ่ายจังหวัด ย่อย -->
             <th style="background-color:#FCF695;">เงินอุดหนุน</th>
             <th style="background-color:#FCF695;">เงินทุนหมุนเวียน</th>
