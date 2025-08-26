@@ -50,11 +50,14 @@
       transform: translateY(-5px);
       box-shadow: 0 6px 12px rgba(0,0,0,0.3);
     }
+
+    /* 🔹 สีพื้นหลังของแต่ละ card */
     .pink { background-color: #e91e63; }
     .orange { background-color: #ff9800; }
     .deep-pastel-pink { background-color: #f06292; }
-    .red { background-color: #F26665; }
-    .yellow { background-color: #F7D07A; }
+    .red { background-color: #F26665; }       /* ✅ ใช้กับหัวข้อที่ 4 */
+    .yellow { background-color: #F7D07A; }    /* ✅ ใช้กับหัวข้อที่ 5 */
+    .yellow { color: #000; } /* ปรับสีข้อความเป็นดำเพื่ออ่านง่าย */
 
     .dropdown {
       margin-top: 10px;
@@ -64,6 +67,28 @@
       font-family: 'Sarabun', sans-serif;
       font-size: 1rem;
       cursor: pointer;
+      width: 100%;
+    }
+
+    /* 📱 Responsive Design */
+    @media (max-width: 1024px) {
+      .header-text h1 { font-size: 2rem; }
+      .header-text h2 { font-size: 1.3rem; }
+    }
+    @media (max-width: 768px) {
+      .dashboard-container { padding: 20px; }
+      .header-text h1 { font-size: 1.8rem; }
+      .header-text h2 { font-size: 1.1rem; }
+      .logo-container img { height: 50px; }
+      .card { font-size: 1rem; padding: 16px; }
+    }
+    @media (max-width: 480px) {
+      .header { flex-direction: column; align-items: center; }
+      .header-text { text-align: center; }
+      .logo-container { display: flex; justify-content: center; flex-wrap: wrap; }
+      .logo-container img { margin: 5px; }
+      .card { font-size: 0.95rem; padding: 14px; }
+      .dropdown { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -94,7 +119,7 @@
       <div class="card deep-pastel-pink" onclick="window.open('#', '_blank')">
         การประเมินของกองทุนพัฒนาบทบาทสตรี ประจำปีบัญชี 2568
       </div>
-      <div class="card purple">
+      <div class="card red">
         จำนวนสมาชิกกองทุน 2 ประเภท
         <br/>
         <select class="dropdown" onchange="openMemberLink(this.value)">
@@ -103,7 +128,7 @@
           <option value="organization">องค์กรสตรี</option>
         </select>
       </div>
-      <div class="card light-pink" onclick="window.open('https://tnah097.github.io/cdwomenpod-dashboard/ERP.html', '_blank')">
+      <div class="card yellow" onclick="window.open('https://tnah097.github.io/cdwomenpod-dashboard/ERP.html', '_blank')">
         ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง
       </div>
     </div>
