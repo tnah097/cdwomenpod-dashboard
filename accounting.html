@@ -36,16 +36,25 @@
       justify-content: space-between;
       align-items: center;
     }
-   .report-info .month { 
-  color: red; 
+  .report-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ซ้าย-ขวา */
+  font-weight: bold;
+  margin-top: 0.5rem;
+  font-size: 1rem;
 }
-.report-info .year { 
-  color: red; 
+
+.report-info .month,
+.report-info .year {
+  color: red;
 }
+
 .logo-container img { 
   height: 60px; 
   margin-left: 10px; 
 }
+
 .section-title {
   text-align: center;
   font-weight: bold;
@@ -81,11 +90,11 @@
     <div class="header">
       <div class="header-text">
         <h1>ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง (รหัส 10962)</h1>
-        <h2>กองทุนพัฒนาบทบาทสตรี</h2>
-        <div class="report-info">
+       <div class="report-info">
   <span>รายงานประจำ <span class="month">สิงหาคม</span> พ.ศ. <span class="year">2567</span></span>
   <span>สกส.02/2568</span>
 </div>
+
       </div>
       <div class="logo-container">
         <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
