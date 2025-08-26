@@ -55,9 +55,8 @@
     .pink { background-color: #e91e63; }
     .orange { background-color: #ff9800; }
     .deep-pastel-pink { background-color: #f06292; }
-    .red { background-color: #F26665; }       /* ✅ ใช้กับหัวข้อที่ 4 */
-    .yellow { background-color: #F7D07A; }    /* ✅ ใช้กับหัวข้อที่ 5 */
-    .yellow { color: #000; } /* ปรับสีข้อความเป็นดำเพื่ออ่านง่าย */
+    .red { background-color: #F26665; }       
+    .yellow { background-color: #FF9967; color: #fff; } /* ✅ สีพิเศษ + ตัวหนังสือขาว */
 
     .dropdown {
       margin-top: 10px;
@@ -128,8 +127,19 @@
           <option value="organization">องค์กรสตรี</option>
         </select>
       </div>
-      <div class="card yellow" onclick="window.open('https://tnah097.github.io/cdwomenpod-dashboard/ERP.html', '_blank')">
+      <div class="card yellow">
         ทะเบียนคุมการรับ-จ่ายเงินกองทุนพัฒนาบทบาทสตรี
+        <br/>
+        <select class="dropdown" onchange="openERPLink(this.value)">
+          <option value="">-- เลือกรายการ --</option>
+          <option value="deposit">ทะเบียนคุมเงินฝากคลัง</option>
+          <optgroup label="ทะเบียนคุมเงินฝากธนาคาร">
+            <option value="ktb">กรุงไทย</option>
+            <option value="gsb">ออมสิน</option>
+            <option value="baac">ธกส.</option>
+          </optgroup>
+          <option value="allbanks">ทะเบียนรวม 3 ธนาคาร</option>
+        </select>
       </div>
     </div>
   </div>
@@ -140,6 +150,13 @@
         window.open("#บุคคล", "_blank");
       } else if (type === "organization") {
         window.open("#องค์กรสตรี", "_blank");
+      }
+    }
+
+    function openERPLink(option) {
+      const baseUrl = "https://tnah097.github.io/cdwomenpod-dashboard/ERP.html";
+      if(option){
+        window.open(baseUrl + "#" + option, "_blank");
       }
     }
   </script>
