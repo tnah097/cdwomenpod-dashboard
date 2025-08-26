@@ -43,35 +43,94 @@
     }
     .summary-table th, .summary-table td {
       border: 1px solid #ccc;
-      padding: 4px;
       text-align: center;
+      padding: 4px;
+      font-weight: bold;
     }
 
-    /* กำหนดสีพื้นหลังตามที่คุณระบุ */
-    /* แถว 3 */
-    th:nth-child(1), th:nth-child(2), th:nth-child(3) { background-color: #FF8FAB; }
-    th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7) { background-color: #76BC43; }
-    th:nth-child(8), th:nth-child(9), th:nth-child(10), th:nth-child(11), th:nth-child(12), th:nth-child(13), th:nth-child(14) { background-color: #76BC43; }
-    th:nth-child(15), th:nth-child(16), th:nth-child(17), th:nth-child(18), th:nth-child(19), th:nth-child(20) { background-color: #76BC43; }
-    th:nth-child(21), th:nth-child(22), th:nth-child(23), th:nth-child(24), th:nth-child(25), th:nth-child(26), th:nth-child(27), th:nth-child(28), th:nth-child(29), th:nth-child(30) { background-color: #FF9967; }
-    th:nth-child(31), th:nth-child(32), th:nth-child(33), th:nth-child(34), th:nth-child(35), th:nth-child(36), th:nth-child(37), th:nth-child(38), th:nth-child(39), th:nth-child(40), th:nth-child(41), th:nth-child(42), th:nth-child(43), th:nth-child(44), th:nth-child(45), th:nth-child(46), th:nth-child(47), th:nth-child(48), th:nth-child(49), th:nth-child(50), th:nth-child(51), th:nth-child(52), th:nth-child(53), th:nth-child(54), th:nth-child(55), th:nth-child(56), th:nth-child(57), th:nth-child(58), th:nth-child(59), th:nth-child(60), th:nth-child(61) { background-color: #FF9967; }
-    th:nth-child(62) { background-color: #C0E4F6; }
-    th:nth-child(63) { background-color: #FFCAC9; }
-    th:nth-child(64) { background-color: #F7D07A; }
+    /* สีหัวตารางตามที่กำหนด */
+    .summary-table thead tr:first-child th:nth-child(1),
+    .summary-table thead tr:first-child th:nth-child(2),
+    .summary-table thead tr:first-child th:nth-child(3) { background-color: #FF8FAB; }
 
-    /* แถว 4 - รายละเอียดหัวข้อย่อย */
-    tr:nth-child(2) th:nth-child(4) { background-color: #C8E6B2; } /* ทุนหมุนเวียน */
-    tr:nth-child(2) th:nth-child(5) { background-color: #C8E6B2; } /* อุดหนุน */
-    tr:nth-child(2) th:nth-child(6) { background-color: #C8E6B2; } /* บริหาร */
-    tr:nth-child(2) th:nth-child(7) { background-color: #C8E6B2; } /* คืนเงินรับฝาก */
-    tr:nth-child(2) th:nth-child(8), tr:nth-child(2) th:nth-child(9), tr:nth-child(2) th:nth-child(10), tr:nth-child(2) th:nth-child(11), tr:nth-child(2) th:nth-child(12), tr:nth-child(2) th:nth-child(13), tr:nth-child(2) th:nth-child(14) { background-color: #ADD88D; }
-    tr:nth-child(2) th:nth-child(15), tr:nth-child(2) th:nth-child(16), tr:nth-child(2) th:nth-child(17), tr:nth-child(2) th:nth-child(18), tr:nth-child(2) th:nth-child(19), tr:nth-child(2) th:nth-child(20) { background-color: #92CA68; }
-    tr:nth-child(2) th:nth-child(21), tr:nth-child(2) th:nth-child(22), tr:nth-child(2) th:nth-child(23), tr:nth-child(2) th:nth-child(24), tr:nth-child(2) th:nth-child(25), tr:nth-child(2) th:nth-child(26), tr:nth-child(2) th:nth-child(27), tr:nth-child(2) th:nth-child(28), tr:nth-child(2) th:nth-child(29), tr:nth-child(2) th:nth-child(30) { background-color: #FDDF8E; }
-    tr:nth-child(2) th:nth-child(31), tr:nth-child(2) th:nth-child(32), tr:nth-child(2) th:nth-child(33), tr:nth-child(2) th:nth-child(34), tr:nth-child(2) th:nth-child(35), tr:nth-child(2) th:nth-child(36), tr:nth-child(2) th:nth-child(37), tr:nth-child(2) th:nth-child(38), tr:nth-child(2) th:nth-child(39), tr:nth-child(2) th:nth-child(40), tr:nth-child(2) th:nth-child(41), tr:nth-child(2) th:nth-child(42), tr:nth-child(2) th:nth-child(43), tr:nth-child(2) th:nth-child(44), tr:nth-child(2) th:nth-child(45), tr:nth-child(2) th:nth-child(46), tr:nth-child(2) th:nth-child(47), tr:nth-child(2) th:nth-child(48), tr:nth-child(2) th:nth-child(49), tr:nth-child(2) th:nth-child(50), tr:nth-child(2) th:nth-child(51), tr:nth-child(2) th:nth-child(52), tr:nth-child(2) th:nth-child(53), tr:nth-child(2) th:nth-child(54), tr:nth-child(2) th:nth-child(55), tr:nth-child(2) th:nth-child(56), tr:nth-child(2) th:nth-child(57), tr:nth-child(2) th:nth-child(58), tr:nth-child(2) th:nth-child(59), tr:nth-child(2) th:nth-child(60), tr:nth-child(2) th:nth-child(61) { background-color: #FCF695; }
+    .summary-table thead tr:first-child th:nth-child(n+4):nth-child(-n+7) { background-color: #76BC43; }
+    .summary-table thead tr:first-child th:nth-child(n+8):nth-child(-n+14) { background-color: #76BC43; }
+    .summary-table thead tr:first-child th:nth-child(n+15):nth-child(-n+20) { background-color: #76BC43; }
+    .summary-table thead tr:first-child th:nth-child(n+21):nth-child(-n+30) { background-color: #FF9967; }
+    .summary-table thead tr:first-child th:nth-child(n+31):nth-child(-n+61) { background-color: #FF9967; }
+    .summary-table thead tr:first-child th:nth-child(62) { background-color: #C0E4F6; }
+    .summary-table thead tr:first-child th:nth-child(63) { background-color: #FFCAC9; }
+    .summary-table thead tr:first-child th:nth-child(64) { background-color: #F7D07A; }
 
-    .summary-table td { text-align: center; }
-    .summary-table tr:nth-child(even) { background-color: #fce4ec; }
-    .summary-table tr:nth-child(odd) { background-color: white; }
+    .summary-table thead tr:nth-child(2) th:nth-child(4) { background-color: #C8E6B2; }
+    .summary-table thead tr:nth-child(2) th:nth-child(5) { background-color: #C8E6B2; }
+    .summary-table thead tr:nth-child(2) th:nth-child(6) { background-color: #C8E6B2; }
+    .summary-table thead tr:nth-child(2) th:nth-child(7) { background-color: #C8E6B2; }
+
+    .summary-table thead tr:nth-child(2) th:nth-child(8),
+    .summary-table thead tr:nth-child(2) th:nth-child(9),
+    .summary-table thead tr:nth-child(2) th:nth-child(10),
+    .summary-table thead tr:nth-child(2) th:nth-child(11),
+    .summary-table thead tr:nth-child(2) th:nth-child(12),
+    .summary-table thead tr:nth-child(2) th:nth-child(13),
+    .summary-table thead tr:nth-child(2) th:nth-child(14) { background-color: #ADD88D; }
+
+    .summary-table thead tr:nth-child(2) th:nth-child(15),
+    .summary-table thead tr:nth-child(2) th:nth-child(16),
+    .summary-table thead tr:nth-child(2) th:nth-child(17),
+    .summary-table thead tr:nth-child(2) th:nth-child(18),
+    .summary-table thead tr:nth-child(2) th:nth-child(19),
+    .summary-table thead tr:nth-child(2) th:nth-child(20) { background-color: #92CA68; }
+
+    .summary-table thead tr:nth-child(2) th:nth-child(21),
+    .summary-table thead tr:nth-child(2) th:nth-child(22),
+    .summary-table thead tr:nth-child(2) th:nth-child(23),
+    .summary-table thead tr:nth-child(2) th:nth-child(24),
+    .summary-table thead tr:nth-child(2) th:nth-child(25),
+    .summary-table thead tr:nth-child(2) th:nth-child(26),
+    .summary-table thead tr:nth-child(2) th:nth-child(27),
+    .summary-table thead tr:nth-child(2) th:nth-child(28),
+    .summary-table thead tr:nth-child(2) th:nth-child(29),
+    .summary-table thead tr:nth-child(2) th:nth-child(30) { background-color: #FDDF8E; }
+
+    .summary-table thead tr:nth-child(2) th:nth-child(31),
+    .summary-table thead tr:nth-child(2) th:nth-child(32),
+    .summary-table thead tr:nth-child(2) th:nth-child(33),
+    .summary-table thead tr:nth-child(2) th:nth-child(34),
+    .summary-table thead tr:nth-child(2) th:nth-child(35),
+    .summary-table thead tr:nth-child(2) th:nth-child(36),
+    .summary-table thead tr:nth-child(2) th:nth-child(37),
+    .summary-table thead tr:nth-child(2) th:nth-child(38),
+    .summary-table thead tr:nth-child(2) th:nth-child(39),
+    .summary-table thead tr:nth-child(2) th:nth-child(40),
+    .summary-table thead tr:nth-child(2) th:nth-child(41),
+    .summary-table thead tr:nth-child(2) th:nth-child(42),
+    .summary-table thead tr:nth-child(2) th:nth-child(43),
+    .summary-table thead tr:nth-child(2) th:nth-child(44),
+    .summary-table thead tr:nth-child(2) th:nth-child(45),
+    .summary-table thead tr:nth-child(2) th:nth-child(46),
+    .summary-table thead tr:nth-child(2) th:nth-child(47),
+    .summary-table thead tr:nth-child(2) th:nth-child(48),
+    .summary-table thead tr:nth-child(2) th:nth-child(49),
+    .summary-table thead tr:nth-child(2) th:nth-child(50),
+    .summary-table thead tr:nth-child(2) th:nth-child(51),
+    .summary-table thead tr:nth-child(2) th:nth-child(52),
+    .summary-table thead tr:nth-child(2) th:nth-child(53),
+    .summary-table thead tr:nth-child(2) th:nth-child(54),
+    .summary-table thead tr:nth-child(2) th:nth-child(55),
+    .summary-table thead tr:nth-child(2) th:nth-child(56),
+    .summary-table thead tr:nth-child(2) th:nth-child(57),
+    .summary-table thead tr:nth-child(2) th:nth-child(58),
+    .summary-table thead tr:nth-child(2) th:nth-child(59),
+    .summary-table thead tr:nth-child(2) th:nth-child(60),
+    .summary-table thead tr:nth-child(2) th:nth-child(61) { background-color: #FCF695; }
+
+    .summary-table thead tr:nth-child(2) th:nth-child(62) { background-color: #C0E4F6; }
+    .summary-table thead tr:nth-child(2) th:nth-child(63) { background-color: #FFCAC9; }
+    .summary-table thead tr:nth-child(2) th:nth-child(64) { background-color: #F7D07A; }
+
+    .summary-table tr:nth-child(even) td { background-color: #fce4ec; }
+    .summary-table tr:nth-child(odd) td { background-color: white; }
 
     /* Responsive */
     @media (max-width: 768px) {
