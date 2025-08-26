@@ -42,8 +42,6 @@
       color: black;
     }
     .summary-table th {
-      background-color: #f06292;
-      color: black;
       padding: 4px;
       border: 1px solid #ccc;
       font-weight: bold;
@@ -56,6 +54,32 @@
     }
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
+
+    /* ====== เฉพาะสีหัวข้อ ====== */
+    /* D3-G3 */
+    .summary-table th.group-receive { background-color: #76BC43; color: #fff; }
+    /* H3-N3 */
+    .summary-table th.group-bank { background-color: #76BC43; color: #fff; }
+    /* O3-T3 */
+    .summary-table th.group-other { background-color: #76BC43; color: #fff; }
+    /* U3-AD3 */
+    .summary-table th.group-expense { background-color: #FF9967; color: #fff; }
+    /* AE3-BE3 */
+    .summary-table th.group-province { background-color: #FF9967; color: #fff; }
+    /* BF3 */
+    .summary-table th.group-balance { background-color: #C0E4F6; }
+    /* BG3 */
+    .summary-table th.group-note { background-color: #FFCAC9; }
+    /* BH3 */
+    .summary-table th.group-diff { background-color: #F7D07A; }
+
+    /* ====== เฉพาะสีหัวข้อย่อย ====== */
+    .summary-table th.sub-returnDeposit { background-color: #C8E6B2; }
+    .summary-table th.sub-extraDeposit { background-color: #ADD88D; }
+    .summary-table th.sub-totalIncome { background-color: #92CA68; }
+    .summary-table th.sub-expAdminRemain { background-color: #FDDF8E; }
+    .summary-table th.sub-provinceTotal { background-color: #FCF695; }
+
     /* Responsive */
     @media (max-width: 768px) {
       .dashboard-container { padding: 20px; }
@@ -90,20 +114,33 @@
             <th rowspan="2">ลำดับ</th>
             <th rowspan="2">จังหวัด</th>
             <th rowspan="2">ยกมา</th>
-            <th colspan="4">รายรับ (รับโอนขายบิลจาก สกส.)</th>
-            <th colspan="7">เงินรับ (จากธนาคารรับชำระหนี้จาก อกส.จ.)</th>
-            <th colspan="6">รายการรับอื่น ๆ</th>
-            <th colspan="10">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
-            <th colspan="31">รายการเบิกจ่ายของจังหวัด</th>
-            <th rowspan="2">ยอดเงินคงเหลือเงินฝากคลัง</th>
-            <th rowspan="2">หมายเหตุ</th>
-            <th rowspan="2">ผลต่างเงินฝากคลัง</th>
+            <th class="group-receive" colspan="4">รายรับ รับโอนขายบิลจาก สกส.</th>
+            <th class="group-bank" colspan="7">เงินรับ (จากธนาคารรับชำระหนี้จาก อกส.จ.)</th>
+            <th class="group-other" colspan="6">รายการรับอื่น ๆ</th>
+            <th class="group-expense" colspan="10">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
+            <th class="group-province" colspan="31">รายการเบิกจ่ายของจังหวัด</th>
+            <th class="group-balance" rowspan="2">ยอดเงินคงเหลือเงินฝากคลัง</th>
+            <th class="group-note" rowspan="2">หมายเหตุ (คีย์จำนวนเงินคงเหลือในGF)</th>
+            <th class="group-diff" rowspan="2">ผลต่างเงินฝากคลัง</th>
           </tr>
           <tr>
             <th>ทุนหมุนเวียน</th>
             <th>อุดหนุน</th>
             <th>บริหาร</th>
-            <th>คืนเงินรับฝาก (สมาชิกชำระเกิน)</th>
+            <th class="sub-returnDeposit">คืนเงินรับฝาก (สมาชิกชำระเกิน)</th>
+            <th>เงินต้น</th>
+            <th>ดอกเบี้ยเงินกู้</th>
+            <th>ค่าปรับ</th>
+            <th>ดอกเบี้ยผิดนัด</th>
+            <th>เงินรอตรวจสอบ</th>
+            <th>ดอกเบี้ยเงินฝากธนาคาร</th>
+            <th class="sub-extraDeposit">เงินรับฝาก (เงินที่สมาชิกชำระเกิน)</th>
+            <th>รับคืนทุนหมุนเวียน (ยกเลิกโครงการ)</th>
+            <th>รับคืนเงินอุดหนุน (ยกเลิกโครงการ)</th>
+            <th>คืนเงินงบบริหาร (เหลือจ่าย)</th>
+            <th>รายได้อื่น</th>
+            <th>รับเงินผิดบัญชี</th>
+            <th class="sub-totalIncome">รวมรายรับ</th>
             <th>เงินต้น</th>
             <th>ดอกเบี้ยเงินกู้</th>
             <th>ค่าปรับ</th>
@@ -111,33 +148,19 @@
             <th>เงินรอตรวจสอบ</th>
             <th>ดอกเบี้ยเงินฝากธนาคาร</th>
             <th>เงินรับฝาก (เงินที่สมาชิกชำระเกิน)</th>
-            <th>รับคืนทุนหมุนเวียน</th>
-            <th>รับคืนเงินอุดหนุน</th>
-            <th>คืนเงินงบบริหาร</th>
-            <th>รายได้อื่น</th>
-            <th>รับเงินผิดบัญชี</th>
-            <th>รวมรายรับ</th>
-            <th>เงินต้น</th>
-            <th>ดอกเบี้ยเงินกู้</th>
-            <th>ค่าปรับ</th>
-            <th>ดอกเบี้ยผิดนัด</th>
-            <th>เงินรอตรวจสอบ</th>
-            <th>ดอกเบี้ยเงินฝากธนาคาร</th>
-            <th>เงินรับฝาก</th>
-            <th>หมุนเวียน</th>
-            <th>อุดหนุน</th>
-            <th>บริหาร</th>
-            <!-- หัวข้อย่อยอีก 31 คอลัมน์ -->
+            <th>หมุนเวียน (เหลือจ่าย)</th>
+            <th>อุดหนุน (เหลือจ่าย)</th>
+            <th class="sub-expAdminRemain">บริหาร (เหลือจ่าย)</th>
             <th>เงินอุดหนุน</th>
-            <th>เงินทุนหมุนเวียน</th>
-            <th>ลูกหนี้เงินยืม</th>
-            <th>ฝึกอบรมในประเทศ</th>
-            <th>ฝึกอบรมภายนอก</th>
-            <th>ประชุมเบี้ยประชุม</th>
-            <th>ค่าจัดประชุม</th>
-            <th>เดินทาง-พาหนะ</th>
-            <th>เดินทาง-เบี้ยเลี้ยง</th>
-            <th>เดินทาง-ที่พัก</th>
+            <th>เงินทุนหมุนเวียน (เงินให้กู้ยืม)</th>
+            <th>ลูกหนี้เงินยืม (งบบริหาร)</th>
+            <th>ค่าใช้จ่ายในการฝึกอบรมในประเทศ</th>
+            <th>ค่าใช้จ่ายในการฝึกอบรมบุคคล ภายนอก</th>
+            <th>ค่าใช้จ่ายในการประชุมเบี้ยประชุม (ค่าตอบแทนปฏิบัติงาน)</th>
+            <th>ค่าใช้จ่ายในการประชุม (ค่าจัดประชุม)</th>
+            <th>ค่าใช้จ่ายในการเดินทางไปราชการ (ค่าพาหนะ)</th>
+            <th>ค่าใช้จ่ายในการเดินทางไปราชการ (ค่าเบี้ยเลี้ยง)</th>
+            <th>ค่าใช้จ่ายในการเดินทางไปราชการ (ค่าที่พัก)</th>
             <th>ค่าวัสดุ</th>
             <th>ค่าไฟฟ้า</th>
             <th>ค่าโทรศัพท์</th>
@@ -145,16 +168,16 @@
             <th>ค่าไปรษณีย์</th>
             <th>ค่าน้ำ</th>
             <th>ค่าธรรมเนียมธนาคาร</th>
-            <th>คืนเงินชำระเกิน</th>
-            <th>ค่าซ่อมบำรุง</th>
-            <th>ครุภัณฑ์</th>
+            <th>คืนเงินรับชำระเกินให้สมาชิก</th>
+            <th>ค่าซ่อมแซมและบำรุงรักษา</th>
+            <th>ครุภัณฑ์/สินทรัพย์</th>
             <th>ค่าล่วงเวลา</th>
             <th>ค่าธรรมเนียมศาล</th>
             <th>ค่าจ้างเหมาบริการ</th>
-            <th>ประชาสัมพันธ์</th>
-            <th>ค่าใช้สอย</th>
+            <th>ค่าใช้จ่ายประชาสัมพันธ์</th>
+            <th>ค่าใช้สอย (กิจกรรมเชิดชูเกียรติ)</th>
             <th>ค่าใช้จ่ายอื่น</th>
-            <th>รวมรายจ่าย</th>
+            <th class="sub-provinceTotal">รวมรายจ่าย</th>
           </tr>
         </thead>
         <tbody></tbody>
