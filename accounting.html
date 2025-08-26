@@ -41,44 +41,37 @@
       font-size: 0.75rem;
       color: black;
     }
-    .summary-table th {
-      padding: 4px;
+    .summary-table th, .summary-table td {
       border: 1px solid #ccc;
-      font-weight: bold;
+      padding: 4px;
       text-align: center;
     }
-    .summary-table td {
-      padding: 4px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
+
+    /* กำหนดสีพื้นหลังตามที่คุณระบุ */
+    /* แถว 3 */
+    th:nth-child(1), th:nth-child(2), th:nth-child(3) { background-color: #FF8FAB; }
+    th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7) { background-color: #76BC43; }
+    th:nth-child(8), th:nth-child(9), th:nth-child(10), th:nth-child(11), th:nth-child(12), th:nth-child(13), th:nth-child(14) { background-color: #76BC43; }
+    th:nth-child(15), th:nth-child(16), th:nth-child(17), th:nth-child(18), th:nth-child(19), th:nth-child(20) { background-color: #76BC43; }
+    th:nth-child(21), th:nth-child(22), th:nth-child(23), th:nth-child(24), th:nth-child(25), th:nth-child(26), th:nth-child(27), th:nth-child(28), th:nth-child(29), th:nth-child(30) { background-color: #FF9967; }
+    th:nth-child(31), th:nth-child(32), th:nth-child(33), th:nth-child(34), th:nth-child(35), th:nth-child(36), th:nth-child(37), th:nth-child(38), th:nth-child(39), th:nth-child(40), th:nth-child(41), th:nth-child(42), th:nth-child(43), th:nth-child(44), th:nth-child(45), th:nth-child(46), th:nth-child(47), th:nth-child(48), th:nth-child(49), th:nth-child(50), th:nth-child(51), th:nth-child(52), th:nth-child(53), th:nth-child(54), th:nth-child(55), th:nth-child(56), th:nth-child(57), th:nth-child(58), th:nth-child(59), th:nth-child(60), th:nth-child(61) { background-color: #FF9967; }
+    th:nth-child(62) { background-color: #C0E4F6; }
+    th:nth-child(63) { background-color: #FFCAC9; }
+    th:nth-child(64) { background-color: #F7D07A; }
+
+    /* แถว 4 - รายละเอียดหัวข้อย่อย */
+    tr:nth-child(2) th:nth-child(4) { background-color: #C8E6B2; } /* ทุนหมุนเวียน */
+    tr:nth-child(2) th:nth-child(5) { background-color: #C8E6B2; } /* อุดหนุน */
+    tr:nth-child(2) th:nth-child(6) { background-color: #C8E6B2; } /* บริหาร */
+    tr:nth-child(2) th:nth-child(7) { background-color: #C8E6B2; } /* คืนเงินรับฝาก */
+    tr:nth-child(2) th:nth-child(8), tr:nth-child(2) th:nth-child(9), tr:nth-child(2) th:nth-child(10), tr:nth-child(2) th:nth-child(11), tr:nth-child(2) th:nth-child(12), tr:nth-child(2) th:nth-child(13), tr:nth-child(2) th:nth-child(14) { background-color: #ADD88D; }
+    tr:nth-child(2) th:nth-child(15), tr:nth-child(2) th:nth-child(16), tr:nth-child(2) th:nth-child(17), tr:nth-child(2) th:nth-child(18), tr:nth-child(2) th:nth-child(19), tr:nth-child(2) th:nth-child(20) { background-color: #92CA68; }
+    tr:nth-child(2) th:nth-child(21), tr:nth-child(2) th:nth-child(22), tr:nth-child(2) th:nth-child(23), tr:nth-child(2) th:nth-child(24), tr:nth-child(2) th:nth-child(25), tr:nth-child(2) th:nth-child(26), tr:nth-child(2) th:nth-child(27), tr:nth-child(2) th:nth-child(28), tr:nth-child(2) th:nth-child(29), tr:nth-child(2) th:nth-child(30) { background-color: #FDDF8E; }
+    tr:nth-child(2) th:nth-child(31), tr:nth-child(2) th:nth-child(32), tr:nth-child(2) th:nth-child(33), tr:nth-child(2) th:nth-child(34), tr:nth-child(2) th:nth-child(35), tr:nth-child(2) th:nth-child(36), tr:nth-child(2) th:nth-child(37), tr:nth-child(2) th:nth-child(38), tr:nth-child(2) th:nth-child(39), tr:nth-child(2) th:nth-child(40), tr:nth-child(2) th:nth-child(41), tr:nth-child(2) th:nth-child(42), tr:nth-child(2) th:nth-child(43), tr:nth-child(2) th:nth-child(44), tr:nth-child(2) th:nth-child(45), tr:nth-child(2) th:nth-child(46), tr:nth-child(2) th:nth-child(47), tr:nth-child(2) th:nth-child(48), tr:nth-child(2) th:nth-child(49), tr:nth-child(2) th:nth-child(50), tr:nth-child(2) th:nth-child(51), tr:nth-child(2) th:nth-child(52), tr:nth-child(2) th:nth-child(53), tr:nth-child(2) th:nth-child(54), tr:nth-child(2) th:nth-child(55), tr:nth-child(2) th:nth-child(56), tr:nth-child(2) th:nth-child(57), tr:nth-child(2) th:nth-child(58), tr:nth-child(2) th:nth-child(59), tr:nth-child(2) th:nth-child(60), tr:nth-child(2) th:nth-child(61) { background-color: #FCF695; }
+
+    .summary-table td { text-align: center; }
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
-
-    /* ====== เฉพาะสีหัวข้อ ====== */
-    /* D3-G3 */
-    .summary-table th.group-receive { background-color: #76BC43; color: #fff; }
-    /* H3-N3 */
-    .summary-table th.group-bank { background-color: #76BC43; color: #fff; }
-    /* O3-T3 */
-    .summary-table th.group-other { background-color: #76BC43; color: #fff; }
-    /* U3-AD3 */
-    .summary-table th.group-expense { background-color: #FF9967; color: #fff; }
-    /* AE3-BE3 */
-    .summary-table th.group-province { background-color: #FF9967; color: #fff; }
-    /* BF3 */
-    .summary-table th.group-balance { background-color: #C0E4F6; }
-    /* BG3 */
-    .summary-table th.group-note { background-color: #FFCAC9; }
-    /* BH3 */
-    .summary-table th.group-diff { background-color: #F7D07A; }
-
-    /* ====== เฉพาะสีหัวข้อย่อย ====== */
-    .summary-table th.sub-returnDeposit { background-color: #C8E6B2; }
-    .summary-table th.sub-extraDeposit { background-color: #ADD88D; }
-    .summary-table th.sub-totalIncome { background-color: #92CA68; }
-    .summary-table th.sub-expAdminRemain { background-color: #FDDF8E; }
-    .summary-table th.sub-provinceTotal { background-color: #FCF695; }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -114,33 +107,20 @@
             <th rowspan="2">ลำดับ</th>
             <th rowspan="2">จังหวัด</th>
             <th rowspan="2">ยกมา</th>
-            <th class="group-receive" colspan="4">รายรับ รับโอนขายบิลจาก สกส.</th>
-            <th class="group-bank" colspan="7">เงินรับ (จากธนาคารรับชำระหนี้จาก อกส.จ.)</th>
-            <th class="group-other" colspan="6">รายการรับอื่น ๆ</th>
-            <th class="group-expense" colspan="10">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
-            <th class="group-province" colspan="31">รายการเบิกจ่ายของจังหวัด</th>
-            <th class="group-balance" rowspan="2">ยอดเงินคงเหลือเงินฝากคลัง</th>
-            <th class="group-note" rowspan="2">หมายเหตุ (คีย์จำนวนเงินคงเหลือในGF)</th>
-            <th class="group-diff" rowspan="2">ผลต่างเงินฝากคลัง</th>
+            <th colspan="4">รายรับ (รับโอนขายบิลจาก สกส.)</th>
+            <th colspan="7">เงินรับ (จากธนาคารรับชำระหนี้จาก อกส.จ.)</th>
+            <th colspan="6">รายการรับอื่น ๆ</th>
+            <th colspan="10">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
+            <th colspan="31">รายการเบิกจ่ายของจังหวัด</th>
+            <th rowspan="2">ยอดเงินคงเหลือเงินฝากคลัง</th>
+            <th rowspan="2">หมายเหตุ</th>
+            <th rowspan="2">ผลต่างเงินฝากคลัง</th>
           </tr>
           <tr>
             <th>ทุนหมุนเวียน</th>
             <th>อุดหนุน</th>
             <th>บริหาร</th>
-            <th class="sub-returnDeposit">คืนเงินรับฝาก (สมาชิกชำระเกิน)</th>
-            <th>เงินต้น</th>
-            <th>ดอกเบี้ยเงินกู้</th>
-            <th>ค่าปรับ</th>
-            <th>ดอกเบี้ยผิดนัด</th>
-            <th>เงินรอตรวจสอบ</th>
-            <th>ดอกเบี้ยเงินฝากธนาคาร</th>
-            <th class="sub-extraDeposit">เงินรับฝาก (เงินที่สมาชิกชำระเกิน)</th>
-            <th>รับคืนทุนหมุนเวียน (ยกเลิกโครงการ)</th>
-            <th>รับคืนเงินอุดหนุน (ยกเลิกโครงการ)</th>
-            <th>คืนเงินงบบริหาร (เหลือจ่าย)</th>
-            <th>รายได้อื่น</th>
-            <th>รับเงินผิดบัญชี</th>
-            <th class="sub-totalIncome">รวมรายรับ</th>
+            <th>คืนเงินรับฝาก (สมาชิกชำระเกิน)</th>
             <th>เงินต้น</th>
             <th>ดอกเบี้ยเงินกู้</th>
             <th>ค่าปรับ</th>
@@ -148,19 +128,32 @@
             <th>เงินรอตรวจสอบ</th>
             <th>ดอกเบี้ยเงินฝากธนาคาร</th>
             <th>เงินรับฝาก (เงินที่สมาชิกชำระเกิน)</th>
-            <th>หมุนเวียน (เหลือจ่าย)</th>
-            <th>อุดหนุน (เหลือจ่าย)</th>
-            <th class="sub-expAdminRemain">บริหาร (เหลือจ่าย)</th>
+            <th>รับคืนทุนหมุนเวียน</th>
+            <th>รับคืนเงินอุดหนุน</th>
+            <th>คืนเงินงบบริหาร</th>
+            <th>รายได้อื่น</th>
+            <th>รับเงินผิดบัญชี</th>
+            <th>รวมรายรับ</th>
+            <th>เงินต้น</th>
+            <th>ดอกเบี้ยเงินกู้</th>
+            <th>ค่าปรับ</th>
+            <th>ดอกเบี้ยผิดนัด</th>
+            <th>เงินรอตรวจสอบ</th>
+            <th>ดอกเบี้ยเงินฝากธนาคาร</th>
+            <th>เงินรับฝาก</th>
+            <th>หมุนเวียน</th>
+            <th>อุดหนุน</th>
+            <th>บริหาร</th>
             <th>เงินอุดหนุน</th>
-            <th>เงินทุนหมุนเวียน (เงินให้กู้ยืม)</th>
-            <th>ลูกหนี้เงินยืม (งบบริหาร)</th>
-            <th>ค่าใช้จ่ายในการฝึกอบรมในประเทศ</th>
-            <th>ค่าใช้จ่ายในการฝึกอบรมบุคคล ภายนอก</th>
-            <th>ค่าใช้จ่ายในการประชุมเบี้ยประชุม (ค่าตอบแทนปฏิบัติงาน)</th>
-            <th>ค่าใช้จ่ายในการประชุม (ค่าจัดประชุม)</th>
-            <th>ค่าใช้จ่ายในการเดินทางไปราชการ (ค่าพาหนะ)</th>
-            <th>ค่าใช้จ่ายในการเดินทางไปราชการ (ค่าเบี้ยเลี้ยง)</th>
-            <th>ค่าใช้จ่ายในการเดินทางไปราชการ (ค่าที่พัก)</th>
+            <th>เงินทุนหมุนเวียน</th>
+            <th>ลูกหนี้เงินยืม</th>
+            <th>ฝึกอบรมในประเทศ</th>
+            <th>ฝึกอบรมภายนอก</th>
+            <th>ประชุมเบี้ยประชุม</th>
+            <th>ค่าจัดประชุม</th>
+            <th>เดินทาง-พาหนะ</th>
+            <th>เดินทาง-เบี้ยเลี้ยง</th>
+            <th>เดินทาง-ที่พัก</th>
             <th>ค่าวัสดุ</th>
             <th>ค่าไฟฟ้า</th>
             <th>ค่าโทรศัพท์</th>
@@ -168,16 +161,16 @@
             <th>ค่าไปรษณีย์</th>
             <th>ค่าน้ำ</th>
             <th>ค่าธรรมเนียมธนาคาร</th>
-            <th>คืนเงินรับชำระเกินให้สมาชิก</th>
-            <th>ค่าซ่อมแซมและบำรุงรักษา</th>
-            <th>ครุภัณฑ์/สินทรัพย์</th>
+            <th>คืนเงินชำระเกิน</th>
+            <th>ค่าซ่อมบำรุง</th>
+            <th>ครุภัณฑ์</th>
             <th>ค่าล่วงเวลา</th>
             <th>ค่าธรรมเนียมศาล</th>
             <th>ค่าจ้างเหมาบริการ</th>
-            <th>ค่าใช้จ่ายประชาสัมพันธ์</th>
-            <th>ค่าใช้สอย (กิจกรรมเชิดชูเกียรติ)</th>
+            <th>ประชาสัมพันธ์</th>
+            <th>ค่าใช้สอย</th>
             <th>ค่าใช้จ่ายอื่น</th>
-            <th class="sub-provinceTotal">รวมรายจ่าย</th>
+            <th>รวมรายจ่าย</th>
           </tr>
         </thead>
         <tbody></tbody>
