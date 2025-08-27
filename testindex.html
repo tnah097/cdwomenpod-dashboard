@@ -121,16 +121,19 @@
         background-color: #e0e0e0 !important;
     }
     #studyCenterTable tbody tr.selected-row {
-        background-color: #d1e7fd !important; /* ✅ สีแถบเมื่อถูกเลือก */
+        background-color: #d1e7fd !important;
         font-weight: bold;
     }
     .clickable-header {
         cursor: pointer;
-        text-decoration: underline;
+        /* ✅ เอาขีดเส้นใต้ออก */
+    }
+    .clickable-header:hover {
+        color: #555;
     }
     .center-name-link {
-        color: blue; /* ✅ สีน้ำเงิน */
-        text-decoration: underline; /* ✅ ขีดเส้นใต้ */
+        color: blue;
+        text-decoration: underline;
     }
     .align-left { text-align: left !important; }
     .align-center { text-align: center !important; }
@@ -323,16 +326,11 @@
           options: {
             responsive: true,
             plugins: {
-              legend: {
-                position: 'bottom',
-                labels: { usePointStyle: true, font: { size: 14 } }
-              },
+              legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
               tooltip: {
                 callbacks: {
                   label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw;
-                    return `${label}: ${value.toFixed(1)}%`;
+                    return `${context.label || ''}: ${context.raw.toFixed(1)}%`;
                   }
                 }
               }
@@ -346,16 +344,18 @@
           const provinceEncoded = encodeURIComponent(p.province);
           const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
           const tr = document.createElement("tr");
-          // ✅ อัปเดตการจัดรูปแบบข้อมูลในตารางจังหวัด
+          
+          // ✅ ส่วนนี้จะใช้ alignment จาก API ถ้ามี, หรือใช้ค่า default
+          const alignments = p.alignments || {}; // ป้องกัน error ถ้าไม่มี alignments
           tr.innerHTML = `
-            <td class="align-left"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
-            <td class="align-right">${formatNumber(p.totalProjects)}</td>
-            <td class="align-right">${formatNumber(p.approvedAmount)}</td>
-            <td class="align-right">${formatNumber(p.debtStart)}</td>
-            <td class="align-right">${formatNumber(p.debtNow)}</td>
-            <td class="align-right">${formatNumber(p.legalAction)}</td>
-            <td class="align-right">${formatNumber(p.overdue)}</td>
-            <td class="align-right">${parseFloat(p.overduePercent).toFixed(2)}%</td>
+            <td class="align-${alignments.province || 'left'}"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
+            <td class="align-${alignments.totalProjects || 'right'}">${formatNumber(p.totalProjects)}</td>
+            <td class="align-${alignments.approvedAmount || 'right'}">${formatNumber(p.approvedAmount)}</td>
+            <td class="align-${alignments.debtStart || 'right'}">${formatNumber(p.debtStart)}</td>
+            <td class="align-${alignments.debtNow || 'right'}">${formatNumber(p.debtNow)}</td>
+            <td class="align-${alignments.legalAction || 'right'}">${formatNumber(p.legalAction)}</td>
+            <td class="align-${alignments.overdue || 'right'}">${formatNumber(p.overdue)}</td>
+            <td class="align-${alignments.overduePercent || 'right'}">${parseFloat(p.overduePercent).toFixed(2)}%</td>
           `;
           tbody.appendChild(tr);
         });
@@ -369,10 +369,7 @@
           scrollY: '400px',
           scrollCollapse: true,
           language: {
-            search: "ค้นหา:",
-            info: "แสดง _TOTAL_ รายการ",
-            infoEmpty: "ไม่มีข้อมูล",
-            zeroRecords: "ไม่พบข้อมูล",
+            search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล",
           }
         });
 
@@ -392,11 +389,13 @@
         centers.forEach(row => {
           const tr = document.createElement("tr");
           tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
-          // ✅ อัปเดตการจัดรูปแบบข้อมูลในตารางศูนย์ศึกษาฯ
+          
+          // ✅ ส่วนนี้จะใช้ alignment จาก API ถ้ามี, หรือใช้ค่า default
+          const alignments = row.alignments || {};
           tr.innerHTML = `
-            <td class="align-left"><span class="center-name-link">${row.name}</span></td>
-            <td class="align-right">${row.index}</td>
-            <td class="align-left">${row.province}</td>
+            <td class="align-${alignments.name || 'left'}"><span class="center-name-link">${row.name}</span></td>
+            <td class="align-${alignments.index || 'center'}">${row.index}</td>
+            <td class="align-${alignments.province || 'left'}">${row.province}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -410,22 +409,16 @@
           scrollCollapse: true,
           searching: true,
           language: {
-            search: "ค้นหา:",
-            info: "แสดง _TOTAL_ รายการ",
-            infoEmpty: "ไม่มีข้อมูล",
-            zeroRecords: "ไม่พบข้อมูล",
+            search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล",
           }
         });
         
-        // === START: ✅ อัปเดต Logic การคลิกเพื่อเพิ่ม/ลบ แถบ Active ===
         const studyCenterTableBody = $('#studyCenterTable tbody');
         
         studyCenterTableBody.on('click', 'tr', function() {
             if (!provinceDataTable) return;
             
-            // ลบแถบ Active จากแถวอื่นก่อน
             studyCenterTableBody.find('tr').removeClass('selected-row');
-            // เพิ่มแถบ Active ให้แถวที่คลิก
             $(this).addClass('selected-row');
 
             const provincesToFilter = $(this).data('provinces');
@@ -435,12 +428,9 @@
         $('.clickable-header').on('click', function() {
             if (!provinceDataTable) return;
             
-            // ลบแถบ Active ทั้งหมดเมื่อเคลียร์ Filter
             studyCenterTableBody.find('tr').removeClass('selected-row');
-
             provinceDataTable.column(0).search('').draw();
         });
-        // === END: ✅ อัปเดต Logic ===
 
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลศูนย์ศึกษา:", error);
