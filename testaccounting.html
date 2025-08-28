@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง (รหัส 10962)</title>
+  
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* --- Base and Layout --- */
+    :root {
+      --header-height: 120px;
+      --filter-height: 80px;
+      --title-height: 60px;
+      --footer-padding: 20px;
+    }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      margin: 0;
+      background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
+      background-attachment: fixed;
+      color: #000;
+    }
+    .dashboard-container {
+      padding: 20px 40px;
+      background-color: rgba(255, 255, 255, 0.97);
+    }
+    
+    /* --- Header --- */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 20px;
+    }
+    .header-text h1 { margin: 0; font-size: 2rem; color: navy; }
+    .header-text h2 { margin: 0; font-size: 1.3rem; color: deeppink; }
+    .report-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+    .report-info .month, .report-info .year { color: red; }
+    .logo-container img { height: 60px; margin-left: 10px; }
+    .section-title {
+      text-align: center;
+      font-weight: bold;
+      margin: 20px 0;
+      font-size: 1.2rem;
+    }
+
+    /* --- Filter Controls --- */
+    .filter-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f0f8ff;
+      border-radius: 8px;
+      flex-wrap: wrap; /* For responsiveness */
+    }
+    .filter-container label {
+      font-weight: bold;
+      align-self: center;
+    }
+    .filter-container select, .filter-container button {
+      padding: 8px 12px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .filter-container button {
+      background-color: #d9534f;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+    .filter-container button:hover { background-color: #c9302c; }
+
+    /* --- Data Table --- */
+    .table-wrapper {
+      width: 100%;
+      height: calc(100vh - var(--header-height) - var(--filter-height) - var(--title-height) - var(--footer-padding));
+      overflow: auto; /* Required for sticky header */
+    }
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      color: black;
+    }
+    .summary-table th, .summary-table td {
+      padding: 5px;
+      border: 1px solid #ccc;
+      text-align: center;
+      font-weight: bold;
+      white-space: nowrap; /* Prevent text wrapping */
+    }
+    .summary-table thead th {
+      position: sticky; /* Make header sticky */
+      top: -1px; /* Stick to the top */
+      z-index: 10;
+    }
+    .summary-table td { font-weight: normal; }
+    .summary-table tbody tr:nth-child(even) { background-color: #fce4ec; }
+    .summary-table tbody tr:nth-child(odd) { background-color: white; }
+    .total-row {
+        font-weight: bold;
+        background-color: #fffacd !important; /* Lemon Chiffon for visibility */
+    }
+    
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+      .dashboard-container { padding: 15px; }
+      .header { flex-direction: column; align-items: center; text-align: center; }
+      .report-info { flex-direction: column; gap: 5px;}
+      .logo-container { padding-top: 15px; }
+      .logo-container img { height: 45px; }
+      .header-text h1 { font-size: 1.5rem; }
+      .header-text h2 { font-size: 1.1rem; }
+      .filter-container { flex-direction: column; }
+      .summary-table { font-size: 0.7rem; }
+      :root {
+          --header-height: 220px; /* Adjust variables for mobile */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="header">
+      <div class="header-text">
+        <h1>ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง (รหัส 10962)</h1>
+        <div class="report-info">
+          <h2>รายงานประจำ <span class="month">ตุลาคม</span> พ.ศ. <span class="year">2567</span></h2>
+          <h2 class="report-code">สกส.02/2568</h2>
+        </div>
+      </div>
+      <div class="logo-container">
+        <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+      </div>
+    </div>
+
+    <div class="filter-container">
+        <label for="mainFilter">เลือกหมวดหมู่:</label>
+        <select id="mainFilter">
+            <option value="">-- ทั้งหมด --</option>
+        </select>
+        <label for="subFilter">เลือกรายการย่อย:</label>
+        <select id="subFilter" disabled>
+            <option value="">-- กรุณาเลือกหมวดหมู่หลักก่อน --</option>
+        </select>
+        <button id="resetFilter">ล้างการค้นหา</button>
+    </div>
+
+    <div class="section-title">ตารางทะเบียนคุมการรับ-จ่ายเงินฝากคลัง</div>
+    
+    <div class="table-wrapper">
+      <table class="summary-table" id="mainTable">
+        <thead>
+          <tr>
+            <th rowspan="2" style="background-color:#FF8FAB;">ลำดับ</th>
+            <th rowspan="2" style="background-color:#FF8FAB;">จังหวัด</th>
+            <th rowspan="2" style="background-color:#FF8FAB;">ยกมา</th>
+            <th colspan="4" style="background-color:#76BC43;">รายรับ (รับโอนขายบิลจาก สกส.)</th>
+            <th colspan="7" style="background-color:#76BC43;">เงินรับ (จากธนาคารรับชำระหนี้จาก อกส.จ.)</th>
+            <th colspan="6" style="background-color:#76BC43;">รายการรับอื่น ๆ</th>
+            <th colspan="10" style="background-color:#FF9967;">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
+            <th colspan="27" style="background-color:#FF9967;">รายการเบิกจ่ายของจังหวัด</th>
+            <th rowspan="2" style="background-color:#C0E4F6;">ยอดเงินคงเหลือเงินฝากคลัง</th>
+            <th rowspan="2" style="background-color:#FFCAC9;">หมายเหตุ (คีย์จำนวนเงินคงเหลือในGF)</th>
+            <th rowspan="2" style="background-color:#F7D07A;">ผลต่างเงินฝากคลัง</th>
+          </tr>
+          <tr>
+            <th style="background-color:#CCFFCC;">ทุนหมุนเวียน</th>
+            <th style="background-color:#CCFFCC;">อุดหนุน</th>
+            <th style="background-color:#CCFFCC;">บริหาร</th>
+            <th style="background-color:#CCFFCC;">คืนเงินรับฝาก</th>
+            <th style="background-color:#ADD88D;">เงินต้น</th>
+            <th style="background-color:#ADD88D;">ดอกเบี้ยเงินกู้</th>
+            <th style="background-color:#ADD88D;">ค่าปรับ</th>
+            <th style="background-color:#ADD88D;">ดอกเบี้ยผิดนัด</th>
+            <th style="background-color:#ADD88D;">เงินรอตรวจสอบ</th>
+            <th style="background-color:#ADD88D;">ดอกเบี้ยเงินฝากธ.</th>
+            <th style="background-color:#ADD88D;">เงินรับฝาก</th>
+            <th style="background-color:#92CA68;">รับคืนทุนหมุนเวียน</th>
+            <th style="background-color:#92CA68;">รับคืนเงินอุดหนุน</th>
+            <th style="background-color:#92CA68;">คืนเงินงบบริหาร</th>
+            <th style="background-color:#92CA68;">รายได้อื่น</th>
+            <th style="background-color:#92CA68;">รับเงินผิดบัญชี</th>
+            <th style="background-color:#92CA68;">รวมรายรับ</th>
+            <th style="background-color:#FDDF8E;">เงินต้น</th>
+            <th style="background-color:#FDDF8E;">ดอกเบี้ยเงินกู้</th>
+            <th style="background-color:#FDDF8E;">ค่าปรับ</th>
+            <th style="background-color:#FDDF8E;">ดอกเบี้ยผิดนัด</th>
+            <th style="background-color:#FDDF8E;">เงินรอตรวจสอบ</th>
+            <th style="background-color:#FDDF8E;">ดอกเบี้ยเงินฝากธ.</th>
+            <th style="background-color:#FDDF8E;">เงินรับฝาก</th>
+            <th style="background-color:#FDDF8E;">หมุนเวียน</th>
+            <th style="background-color:#FDDF8E;">อุดหนุน</th>
+            <th style="background-color:#FDDF8E;">บริหาร</th>
+            <th style="background-color:#FCF695;">เงินอุดหนุน</th>
+            <th style="background-color:#FCF695;">เงินทุนหมุนเวียน</th>
+            <th style="background-color:#FCF695;">ลูกหนี้เงินยืม</th>
+            <th style="background-color:#FCF695;">ฝึกอบรมในประเทศ</th>
+            <th style="background-color:#FCF695;">ฝึกอบรมภายนอก</th>
+            <th style="background-color:#FCF695;">ประชุมเบี้ยประชุม</th>
+            <th style="background-color:#FCF695;">ค่าจัดประชุม</th>
+            <th style="background-color:#FCF695;">เดินทาง-พาหนะ</th>
+            <th style="background-color:#FCF695;">เดินทาง-เบี้ยเลี้ยง</th>
+            <th style="background-color:#FCF695;">เดินทาง-ที่พัก</th>
+            <th style="background-color:#FCF695;">ค่าวัสดุ</th>
+            <th style="background-color:#FCF695;">ค่าไฟฟ้า</th>
+            <th style="background-color:#FCF695;">ค่าโทรศัพท์</th>
+            <th style="background-color:#FCF695;">ค่าอินเตอร์เน็ต</th>
+            <th style="background-color:#FCF695;">ค่าไปรษณีย์</th>
+            <th style="background-color:#FCF695;">ค่าน้ำ</th>
+            <th style="background-color:#FCF695;">ค่าธรรมเนียมธ.</th>
+            <th style="background-color:#FCF695;">คืนเงินชำระเกิน</th>
+            <th style="background-color:#FCF695;">ค่าซ่อมบำรุง</th>
+            <th style="background-color:#FCF695;">ครุภัณฑ์</th>
+            <th style="background-color:#FCF695;">ค่าล่วงเวลา</th>
+            <th style="background-color:#FCF695;">ค่าธรรมเนียมศาล</th>
+            <th style="background-color:#FCF695;">ค่าจ้างเหมาบริการ</th>
+            <th style="background-color:#FCF695;">ประชาสัมพันธ์</th>
+            <th style="background-color:#FCF695;">ค่าใช้สอย</th>
+            <th style="background-color:#FCF695;">ค่าใช้จ่ายอื่น</th>
+            <th style="background-color:#FCF695;">รวมรายจ่าย</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Use the Apps Script URL that returns JSON with alignment data
+  const API_URL = "https://script.google.com/macros/s/AKfycbxKba4uG2nhNlWzQh7I-OL1uT16UHboBS6wapcppxyWrnR7a1a29aQ2IPoJ1Gqeh8TA/exec";
+
+  // Data structure for dependent dropdowns
+  const filterOptions = {
+    "รายรับ": [
+      { text: "ทุนหมุนเวียน", key: "fund" }, { text: "อุดหนุน", key: "subsidy" },
+      { text: "บริหาร", key: "admin" }, { text: "คืนเงินรับฝาก", key: "returnDeposit" },
+      { text: "เงินต้น", key: "principal" }, { text: "ดอกเบี้ยเงินกู้", key: "interest" },
+      { text: "ค่าปรับ", key: "penalty" }, { text: "ดอกเบี้ยผิดนัด", key: "overdueInterest" },
+      { text: "เงินรอตรวจสอบ", key: "pending" }, { text: "ดอกเบี้ยเงินฝากธ.", key: "bankInterest" },
+      { text: "เงินรับฝาก", key: "extraDeposit" }, { text: "รับคืนทุนหมุนเวียน", key: "returnFund" },
+      { text: "รับคืนเงินอุดหนุน", key: "returnSubsidy" }, { text: "คืนเงินงบบริหาร", key: "returnAdmin" },
+      { text: "รายได้อื่น", key: "otherIncome" }, { text: "รับเงินผิดบัญชี", key: "mistakeIncome" },
+      { text: "รวมรายรับ", key: "totalIncome" }
+    ],
+    "รายจ่าย": [
+      { text: "เงินต้น (โอนส่วนกลาง)", key: "expPrincipal" }, { text: "ดอกเบี้ย (โอนส่วนกลาง)", key: "expInterest" },
+      { text: "ค่าปรับ (โอนส่วนกลาง)", key: "expPenalty" }, { text: "ด/บ ผิดนัด (โอนส่วนกลาง)", key: "expOverdueInterest" },
+      { text: "รอตรวจสอบ (โอนส่วนกลาง)", key: "expPending" }, { text: "ด/บ ธนาคาร (โอนส่วนกลาง)", key: "expBankInterest" },
+      { text: "รับฝาก (โอนส่วนกลาง)", key: "expExtraDeposit" }, { text: "หมุนเวียน (โอนส่วนกลาง)", key: "expFundRemain" },
+      { text: "อุดหนุน (โอนส่วนกลาง)", key: "expSubsidyRemain" }, { text: "บริหาร (โอนส่วนกลาง)", key: "expAdminRemain" },
+      { text: "เงินอุดหนุน (เบิกจ่าย)", key: "provSubsidy" }, { text: "เงินทุนหมุนเวียน (เบิกจ่าย)", key: "provFund" },
+      { text: "ลูกหนี้เงินยืม", key: "provLoan" }, { text: "ฝึกอบรมในประเทศ", key: "provTrainIn" },
+      { text: "ฝึกอบรมภายนอก", key: "provTrainOut" }, { text: "ประชุมเบี้ยประชุม", key: "provMeetingFee" },
+      { text: "ค่าจัดประชุม", key: "provMeeting" }, { text: "เดินทาง-พาหนะ", key: "provTravel" },
+      { text: "เดินทาง-เบี้ยเลี้ยง", key: "provPerdiem" }, { text: "เดินทาง-ที่พัก", key: "provHotel" },
+      { text: "ค่าวัสดุ", key: "provMaterial" }, { text: "ค่าไฟฟ้า", key: "provElectric" },
+      { text: "ค่าโทรศัพท์", key: "provPhone" }, { text: "ค่าอินเตอร์เน็ต", key: "provInternet" },
+      { text: "ค่าไปรษณีย์", key: "provPost" }, { text: "ค่าน้ำ", key: "provWater" },
+      { text: "ค่าธรรมเนียมธ.", key: "provBankFee" }, { text: "คืนเงินชำระเกิน", key: "provRefund" },
+      { text: "ค่าซ่อมบำรุง", key: "provRepair" }, { text: "ครุภัณฑ์", key: "provAsset" },
+      { text: "ค่าล่วงเวลา", key: "provOvertime" }, { text: "ค่าธรรมเนียมศาล", key: "provCourt" },
+      { text: "ค่าจ้างเหมาบริการ", key: "provHire" }, { text: "ประชาสัมพันธ์", key: "provPR" },
+      { text: "ค่าใช้สอย", key: "provActivity" }, { text: "ค่าใช้จ่ายอื่น", key: "provOther" },
+      { text: "รวมรายจ่าย", key: "provTotalExp" }
+    ]
+  };
+  
+  const mainFilter = document.getElementById('mainFilter');
+  const subFilter = document.getElementById('subFilter');
+  const resetBtn = document.getElementById('resetFilter');
+  let dataTable;
+  let originalData;
+
+  function buildTable(data) {
+    originalData = data.rows;
+    const tbody = document.querySelector("#mainTable tbody");
+    tbody.innerHTML = "";
+
+    const dataKeys = Object.keys(originalData[0]);
+
+    originalData.forEach((rowData, index) => {
+      const tr = document.createElement("tr");
+
+      // Handle the special "Total" row
+      if (rowData.province.value === "รวมระหว่างเดือน") {
+        tr.classList.add('total-row');
+        const tdTotal = document.createElement("td");
+        tdTotal.textContent = "รวมระหว่างเดือน";
+        tdTotal.setAttribute("colspan", "2");
+        tdTotal.style.textAlign = 'center';
+        tr.appendChild(tdTotal);
+        // Skip index 0 and 1 (no, province)
+        for (let i = 2; i < dataKeys.length; i++) {
+           const cellData = rowData[dataKeys[i]];
+           const td = document.createElement("td");
+           td.textContent = cellData.value;
+           td.style.textAlign = cellData.align;
+           tr.appendChild(td);
+        }
+      } else {
+        // Handle regular data rows
+        const tdIndex = document.createElement("td");
+        tdIndex.textContent = index + 1;
+        tdIndex.style.textAlign = 'center';
+        tr.appendChild(tdIndex);
+
+        dataKeys.forEach(key => {
+          const cellData = rowData[key];
+          const td = document.createElement("td");
+          td.textContent = cellData.value;
+          td.style.textAlign = cellData.align;
+          tr.appendChild(td);
+        });
+      }
+      tbody.appendChild(tr);
+    });
+
+    // Initialize DataTables
+    if ($.fn.DataTable.isDataTable('#mainTable')) {
+        $('#mainTable').DataTable().destroy();
+    }
+    
+    dataTable = $('#mainTable').DataTable({
+      paging: false,
+      info: false,
+      searching: true, // Enable search box
+      scrollX: true,
+      scrollY: `calc(100vh - ${document.querySelector('.table-wrapper').offsetTop + 40}px)`,
+      scrollCollapse: true,
+      fixedHeader: true,
+      language: {
+        search: "ค้นหาในตาราง:",
+        zeroRecords: "ไม่พบข้อมูลที่ตรงกัน"
+      }
+    });
+  }
+
+  function setupFilters() {
+    // Populate main filter
+    Object.keys(filterOptions).forEach(key => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = key;
+      mainFilter.appendChild(option);
+    });
+    
+    // Main filter event
+    mainFilter.addEventListener('change', function() {
+        const selectedGroup = this.value;
+        subFilter.innerHTML = '<option value="">-- กรุณาเลือกรายการย่อย --</option>';
+        if (selectedGroup && filterOptions[selectedGroup]) {
+            filterOptions[selectedGroup].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.key;
+                option.textContent = item.text;
+                subFilter.appendChild(option);
+            });
+            subFilter.disabled = false;
+        } else {
+            subFilter.disabled = true;
+            resetTableColumns();
+        }
+    });
+
+    // Sub filter event
+    subFilter.addEventListener('change', function() {
+        if (!dataTable) return;
+        const selectedKey = this.value;
+        const allColumns = dataTable.columns().header().toArray().map(h => $(h).text());
+        const dataKeys = Object.keys(originalData[0]);
+        const columnIndex = dataKeys.indexOf(selectedKey) + 1; // +1 to account for 'no' column
+
+        dataTable.columns().visible(false); // Hide all
+        dataTable.columns([1, columnIndex]).visible(true); // Show Province and selected column
+    });
+
+    // Reset button event
+    resetBtn.addEventListener('click', function() {
+        mainFilter.value = "";
+        subFilter.innerHTML = '<option value="">-- กรุณาเลือกหมวดหมู่หลักก่อน --</option>';
+        subFilter.disabled = true;
+        resetTableColumns();
+    });
+  }
+  
+  function resetTableColumns() {
+      if(dataTable) {
+          dataTable.columns().visible(true);
+      }
+  }
+
+  // Initial Fetch Data
+  async function fetchData() {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      
+      buildTable(data);
+      setupFilters();
+      
+    } catch (error) {
+      console.error("Failed to load data:", error);
+      alert("ไม่สามารถโหลดข้อมูลได้: " + error.message);
+    }
+  }
+
+  fetchData();
+});
+</script>
+</body>
+</html>
