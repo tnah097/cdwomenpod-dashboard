@@ -4,24 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง (รหัส 10962)</title>
-  
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-  <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
-  
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
-  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* --- Base and Layout --- */
-    :root {
-      --header-height: 120px;
-      --filter-height: 80px;
-      --title-height: 60px;
-      --footer-padding: 20px;
-    }
-    
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
@@ -30,16 +18,16 @@
       color: #000;
     }
     .dashboard-container {
-      padding: 20px 40px;
-      background-color: rgba(255, 255, 255, 0.97);
+      padding: 40px;
+      background-color: rgba(255, 255, 255, 0.95);
+      margin: 20px;
+      border-radius: 10px;
     }
-    
-    /* --- Header --- */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding-bottom: 20px;
+      flex-wrap: wrap;
     }
     .header-text h1 { margin: 0; font-size: 2rem; color: navy; }
     .header-text h2 { margin: 0; font-size: 1.3rem; color: deeppink; }
@@ -50,50 +38,20 @@
       font-weight: bold;
       margin-top: 0.5rem;
       font-size: 1rem;
+      flex-wrap: wrap;
+      gap: 20px;
     }
-    .report-info .month, .report-info .year { color: red; }
-    .logo-container img { height: 60px; margin-left: 10px; }
+    .report-info .month,
+    .report-info .year { color: red; }
+    .logo-container img {
+      height: 60px;
+      margin-left: 10px;
+    }
     .section-title {
       text-align: center;
       font-weight: bold;
       margin: 20px 0;
       font-size: 1.2rem;
-    }
-
-    /* --- Filter Controls --- */
-    .filter-container {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-      padding: 15px;
-      background-color: #f0f8ff;
-      border-radius: 8px;
-      flex-wrap: wrap; /* For responsiveness */
-    }
-    .filter-container label {
-      font-weight: bold;
-      align-self: center;
-    }
-    .filter-container select, .filter-container button {
-      padding: 8px 12px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .filter-container button {
-      background-color: #d9534f;
-      color: white;
-      cursor: pointer;
-      border: none;
-    }
-    .filter-container button:hover { background-color: #c9302c; }
-
-    /* --- Data Table --- */
-    .table-wrapper {
-      width: 100%;
-      height: calc(100vh - var(--header-height) - var(--filter-height) - var(--title-height) - var(--footer-padding));
-      overflow: auto; /* Required for sticky header */
     }
     .summary-table {
       width: 100%;
@@ -102,39 +60,28 @@
       color: black;
     }
     .summary-table th, .summary-table td {
-      padding: 5px;
+      padding: 4px 8px;
       border: 1px solid #ccc;
       text-align: center;
       font-weight: bold;
-      white-space: nowrap; /* Prevent text wrapping */
-    }
-    .summary-table thead th {
-      position: sticky; /* Make header sticky */
-      top: -1px; /* Stick to the top */
-      z-index: 10;
+      white-space: nowrap;
     }
     .summary-table td { font-weight: normal; }
     .summary-table tbody tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tbody tr:nth-child(odd) { background-color: white; }
-    .total-row {
-        font-weight: bold;
-        background-color: #fffacd !important; /* Lemon Chiffon for visibility */
-    }
     
-    /* --- Responsive Adjustments --- */
+    /* Highlight the total row */
+    .total-row {
+      font-weight: bold;
+      background-color: #fffacd !important; /* Lemon Chiffon color */
+    }
+
     @media (max-width: 768px) {
-      .dashboard-container { padding: 15px; }
-      .header { flex-direction: column; align-items: center; text-align: center; }
-      .report-info { flex-direction: column; gap: 5px;}
-      .logo-container { padding-top: 15px; }
+      .dashboard-container { padding: 15px; margin: 10px; }
+      .header { flex-direction: column; align-items: center; text-align: center; gap: 15px;}
       .logo-container img { height: 45px; }
       .header-text h1 { font-size: 1.5rem; }
-      .header-text h2 { font-size: 1.1rem; }
-      .filter-container { flex-direction: column; }
       .summary-table { font-size: 0.7rem; }
-      :root {
-          --header-height: 220px; /* Adjust variables for mobile */
-      }
     }
   </style>
 </head>
@@ -154,21 +101,9 @@
       </div>
     </div>
 
-    <div class="filter-container">
-        <label for="mainFilter">เลือกหมวดหมู่:</label>
-        <select id="mainFilter">
-            <option value="">-- ทั้งหมด --</option>
-        </select>
-        <label for="subFilter">เลือกรายการย่อย:</label>
-        <select id="subFilter" disabled>
-            <option value="">-- กรุณาเลือกหมวดหมู่หลักก่อน --</option>
-        </select>
-        <button id="resetFilter">ล้างการค้นหา</button>
-    </div>
-
     <div class="section-title">ตารางทะเบียนคุมการรับ-จ่ายเงินฝากคลัง</div>
-    
-    <div class="table-wrapper">
+
+    <div style="overflow-x:auto;">
       <table class="summary-table" id="mainTable">
         <thead>
           <tr>
@@ -247,189 +182,155 @@
   </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  // Use the Apps Script URL that returns JSON with alignment data
+  // **ใช้ Apps Script URL เดิมที่ส่งข้อมูลกลับมาเป็น JSON**
   const API_URL = "https://script.google.com/macros/s/AKfycbxKba4uG2nhNlWzQh7I-OL1uT16UHboBS6wapcppxyWrnR7a1a29aQ2IPoJ1Gqeh8TA/exec";
 
-  // Data structure for dependent dropdowns
-  const filterOptions = {
-    "รายรับ": [
-      { text: "ทุนหมุนเวียน", key: "fund" }, { text: "อุดหนุน", key: "subsidy" },
-      { text: "บริหาร", key: "admin" }, { text: "คืนเงินรับฝาก", key: "returnDeposit" },
-      { text: "เงินต้น", key: "principal" }, { text: "ดอกเบี้ยเงินกู้", key: "interest" },
-      { text: "ค่าปรับ", key: "penalty" }, { text: "ดอกเบี้ยผิดนัด", key: "overdueInterest" },
-      { text: "เงินรอตรวจสอบ", key: "pending" }, { text: "ดอกเบี้ยเงินฝากธ.", key: "bankInterest" },
-      { text: "เงินรับฝาก", key: "extraDeposit" }, { text: "รับคืนทุนหมุนเวียน", key: "returnFund" },
-      { text: "รับคืนเงินอุดหนุน", key: "returnSubsidy" }, { text: "คืนเงินงบบริหาร", key: "returnAdmin" },
-      { text: "รายได้อื่น", key: "otherIncome" }, { text: "รับเงินผิดบัญชี", key: "mistakeIncome" },
-      { text: "รวมรายรับ", key: "totalIncome" }
-    ],
-    "รายจ่าย": [
-      { text: "เงินต้น (โอนส่วนกลาง)", key: "expPrincipal" }, { text: "ดอกเบี้ย (โอนส่วนกลาง)", key: "expInterest" },
-      { text: "ค่าปรับ (โอนส่วนกลาง)", key: "expPenalty" }, { text: "ด/บ ผิดนัด (โอนส่วนกลาง)", key: "expOverdueInterest" },
-      { text: "รอตรวจสอบ (โอนส่วนกลาง)", key: "expPending" }, { text: "ด/บ ธนาคาร (โอนส่วนกลาง)", key: "expBankInterest" },
-      { text: "รับฝาก (โอนส่วนกลาง)", key: "expExtraDeposit" }, { text: "หมุนเวียน (โอนส่วนกลาง)", key: "expFundRemain" },
-      { text: "อุดหนุน (โอนส่วนกลาง)", key: "expSubsidyRemain" }, { text: "บริหาร (โอนส่วนกลาง)", key: "expAdminRemain" },
-      { text: "เงินอุดหนุน (เบิกจ่าย)", key: "provSubsidy" }, { text: "เงินทุนหมุนเวียน (เบิกจ่าย)", key: "provFund" },
-      { text: "ลูกหนี้เงินยืม", key: "provLoan" }, { text: "ฝึกอบรมในประเทศ", key: "provTrainIn" },
-      { text: "ฝึกอบรมภายนอก", key: "provTrainOut" }, { text: "ประชุมเบี้ยประชุม", key: "provMeetingFee" },
-      { text: "ค่าจัดประชุม", key: "provMeeting" }, { text: "เดินทาง-พาหนะ", key: "provTravel" },
-      { text: "เดินทาง-เบี้ยเลี้ยง", key: "provPerdiem" }, { text: "เดินทาง-ที่พัก", key: "provHotel" },
-      { text: "ค่าวัสดุ", key: "provMaterial" }, { text: "ค่าไฟฟ้า", key: "provElectric" },
-      { text: "ค่าโทรศัพท์", key: "provPhone" }, { text: "ค่าอินเตอร์เน็ต", key: "provInternet" },
-      { text: "ค่าไปรษณีย์", key: "provPost" }, { text: "ค่าน้ำ", key: "provWater" },
-      { text: "ค่าธรรมเนียมธ.", key: "provBankFee" }, { text: "คืนเงินชำระเกิน", key: "provRefund" },
-      { text: "ค่าซ่อมบำรุง", key: "provRepair" }, { text: "ครุภัณฑ์", key: "provAsset" },
-      { text: "ค่าล่วงเวลา", key: "provOvertime" }, { text: "ค่าธรรมเนียมศาล", key: "provCourt" },
-      { text: "ค่าจ้างเหมาบริการ", key: "provHire" }, { text: "ประชาสัมพันธ์", key: "provPR" },
-      { text: "ค่าใช้สอย", key: "provActivity" }, { text: "ค่าใช้จ่ายอื่น", key: "provOther" },
-      { text: "รวมรายจ่าย", key: "provTotalExp" }
-    ]
-  };
-  
-  const mainFilter = document.getElementById('mainFilter');
-  const subFilter = document.getElementById('subFilter');
-  const resetBtn = document.getElementById('resetFilter');
-  let dataTable;
-  let originalData;
-
-  function buildTable(data) {
-    originalData = data.rows;
-    const tbody = document.querySelector("#mainTable tbody");
-    tbody.innerHTML = "";
-
-    const dataKeys = Object.keys(originalData[0]);
-
-    originalData.forEach((rowData, index) => {
-      const tr = document.createElement("tr");
-
-      // Handle the special "Total" row
-      if (rowData.province.value === "รวมระหว่างเดือน") {
-        tr.classList.add('total-row');
-        const tdTotal = document.createElement("td");
-        tdTotal.textContent = "รวมระหว่างเดือน";
-        tdTotal.setAttribute("colspan", "2");
-        tdTotal.style.textAlign = 'center';
-        tr.appendChild(tdTotal);
-        // Skip index 0 and 1 (no, province)
-        for (let i = 2; i < dataKeys.length; i++) {
-           const cellData = rowData[dataKeys[i]];
-           const td = document.createElement("td");
-           td.textContent = cellData.value;
-           td.style.textAlign = cellData.align;
-           tr.appendChild(td);
-        }
-      } else {
-        // Handle regular data rows
-        const tdIndex = document.createElement("td");
-        tdIndex.textContent = index + 1;
-        tdIndex.style.textAlign = 'center';
-        tr.appendChild(tdIndex);
-
-        dataKeys.forEach(key => {
-          const cellData = rowData[key];
-          const td = document.createElement("td");
-          td.textContent = cellData.value;
-          td.style.textAlign = cellData.align;
-          tr.appendChild(td);
-        });
-      }
-      tbody.appendChild(tr);
-    });
-
-    // Initialize DataTables
-    if ($.fn.DataTable.isDataTable('#mainTable')) {
-        $('#mainTable').DataTable().destroy();
-    }
-    
-    dataTable = $('#mainTable').DataTable({
-      paging: false,
-      info: false,
-      searching: true, // Enable search box
-      scrollX: true,
-      scrollY: `calc(100vh - ${document.querySelector('.table-wrapper').offsetTop + 40}px)`,
-      scrollCollapse: true,
-      fixedHeader: true,
-      language: {
-        search: "ค้นหาในตาราง:",
-        zeroRecords: "ไม่พบข้อมูลที่ตรงกัน"
-      }
-    });
-  }
-
-  function setupFilters() {
-    // Populate main filter
-    Object.keys(filterOptions).forEach(key => {
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = key;
-      mainFilter.appendChild(option);
-    });
-    
-    // Main filter event
-    mainFilter.addEventListener('change', function() {
-        const selectedGroup = this.value;
-        subFilter.innerHTML = '<option value="">-- กรุณาเลือกรายการย่อย --</option>';
-        if (selectedGroup && filterOptions[selectedGroup]) {
-            filterOptions[selectedGroup].forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.key;
-                option.textContent = item.text;
-                subFilter.appendChild(option);
-            });
-            subFilter.disabled = false;
-        } else {
-            subFilter.disabled = true;
-            resetTableColumns();
-        }
-    });
-
-    // Sub filter event
-    subFilter.addEventListener('change', function() {
-        if (!dataTable) return;
-        const selectedKey = this.value;
-        const allColumns = dataTable.columns().header().toArray().map(h => $(h).text());
-        const dataKeys = Object.keys(originalData[0]);
-        const columnIndex = dataKeys.indexOf(selectedKey) + 1; // +1 to account for 'no' column
-
-        dataTable.columns().visible(false); // Hide all
-        dataTable.columns([1, columnIndex]).visible(true); // Show Province and selected column
-    });
-
-    // Reset button event
-    resetBtn.addEventListener('click', function() {
-        mainFilter.value = "";
-        subFilter.innerHTML = '<option value="">-- กรุณาเลือกหมวดหมู่หลักก่อน --</option>';
-        subFilter.disabled = true;
-        resetTableColumns();
+  // Function to format numbers with commas for Thai locale
+  function formatNumber(value) {
+    const num = Number(value);
+    if (isNaN(num)) return value; // Return original value if it's not a number
+    return num.toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     });
   }
   
-  function resetTableColumns() {
-      if(dataTable) {
-          dataTable.columns().visible(true);
+  // Function to create a table cell (<td>)
+  function createCell(content, align = 'left', isNumber = false) {
+      const cell = document.createElement("td");
+      cell.textContent = isNumber ? formatNumber(content) : content;
+      cell.style.textAlign = align;
+      if (isNumber) {
+          cell.style.textAlign = 'right'; // Force numbers to be right-aligned
       }
+      return cell;
   }
 
-  // Initial Fetch Data
   async function fetchData() {
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-      
-      buildTable(data);
-      setupFilters();
-      
-    } catch (error) {
-      console.error("Failed to load data:", error);
-      alert("ไม่สามารถโหลดข้อมูลได้: " + error.message);
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(`Network response was not ok: ${res.statusText}`);
+      const data = await res.json();
+      if (data.error) throw new Error(`API Error: ${data.error}`);
+
+      const tbody = document.querySelector("#mainTable tbody");
+      tbody.innerHTML = ""; // Clear existing content
+
+      // Loop through all rows from the data
+      data.rows.forEach((row, index) => {
+        const tr = document.createElement("tr");
+
+        // *** นี่คือส่วนที่แก้ไขตามที่คุณต้องการ ***
+        // Check if it's the last row ("รวมระหว่างเดือน")
+        if (index === data.rows.length - 1) {
+            tr.className = "total-row"; // Add class for special styling
+            const mergedCell = document.createElement("td");
+            mergedCell.textContent = row.province.value; // Get text from data
+            mergedCell.colSpan = 2; // Merge columns A and B
+            mergedCell.style.textAlign = 'center'; // Center the text
+            tr.appendChild(mergedCell);
+            
+            // Add remaining cells from C onwards
+            tr.appendChild(createCell(row.start.value, row.start.align, true));
+            tr.appendChild(createCell(row.fund.value, row.fund.align, true));
+            //... add all other cells
+        } else {
+            // This is a normal province row
+            tr.appendChild(createCell(index + 1, 'center')); // Column A: No.
+            tr.appendChild(createCell(row.province.value, row.province.align)); // Column B: Province
+            tr.appendChild(createCell(row.start.value, row.start.align, true));
+            tr.appendChild(createCell(row.fund.value, row.fund.align, true));
+            //... add all other cells
+        }
+        
+        // This part is intentionally shortened for clarity
+        // The pattern is the same for both if/else blocks from 'subsidy' onwards
+        tr.appendChild(createCell(row.subsidy.value, row.subsidy.align, true));
+        tr.appendChild(createCell(row.admin.value, row.admin.align, true));
+        tr.appendChild(createCell(row.returnDeposit.value, row.returnDeposit.align, true));
+        tr.appendChild(createCell(row.principal.value, row.principal.align, true));
+        tr.appendChild(createCell(row.interest.value, row.interest.align, true));
+        tr.appendChild(createCell(row.penalty.value, row.penalty.align, true));
+        tr.appendChild(createCell(row.overdueInterest.value, row.overdueInterest.align, true));
+        tr.appendChild(createCell(row.pending.value, row.pending.align, true));
+        tr.appendChild(createCell(row.bankInterest.value, row.bankInterest.align, true));
+        tr.appendChild(createCell(row.extraDeposit.value, row.extraDeposit.align, true));
+        tr.appendChild(createCell(row.returnFund.value, row.returnFund.align, true));
+        tr.appendChild(createCell(row.returnSubsidy.value, row.returnSubsidy.align, true));
+        tr.appendChild(createCell(row.returnAdmin.value, row.returnAdmin.align, true));
+        tr.appendChild(createCell(row.otherIncome.value, row.otherIncome.align, true));
+        tr.appendChild(createCell(row.mistakeIncome.value, row.mistakeIncome.align, true));
+        tr.appendChild(createCell(row.totalIncome.value, row.totalIncome.align, true));
+        tr.appendChild(createCell(row.expPrincipal.value, row.expPrincipal.align, true));
+        tr.appendChild(createCell(row.expInterest.value, row.expInterest.align, true));
+        tr.appendChild(createCell(row.expPenalty.value, row.expPenalty.align, true));
+        tr.appendChild(createCell(row.expOverdueInterest.value, row.expOverdueInterest.align, true));
+        tr.appendChild(createCell(row.expPending.value, row.expPending.align, true));
+        tr.appendChild(createCell(row.expBankInterest.value, row.expBankInterest.align, true));
+        tr.appendChild(createCell(row.expExtraDeposit.value, row.expExtraDeposit.align, true));
+        tr.appendChild(createCell(row.expFundRemain.value, row.expFundRemain.align, true));
+        tr.appendChild(createCell(row.expSubsidyRemain.value, row.expSubsidyRemain.align, true));
+        tr.appendChild(createCell(row.expAdminRemain.value, row.expAdminRemain.align, true));
+        tr.appendChild(createCell(row.provSubsidy.value, row.provSubsidy.align, true));
+        tr.appendChild(createCell(row.provFund.value, row.provFund.align, true));
+        tr.appendChild(createCell(row.provLoan.value, row.provLoan.align, true));
+        tr.appendChild(createCell(row.provTrainIn.value, row.provTrainIn.align, true));
+        tr.appendChild(createCell(row.provTrainOut.value, row.provTrainOut.align, true));
+        tr.appendChild(createCell(row.provMeetingFee.value, row.provMeetingFee.align, true));
+        tr.appendChild(createCell(row.provMeeting.value, row.provMeeting.align, true));
+        tr.appendChild(createCell(row.provTravel.value, row.provTravel.align, true));
+        tr.appendChild(createCell(row.provPerdiem.value, row.provPerdiem.align, true));
+        tr.appendChild(createCell(row.provHotel.value, row.provHotel.align, true));
+        tr.appendChild(createCell(row.provMaterial.value, row.provMaterial.align, true));
+        tr.appendChild(createCell(row.provElectric.value, row.provElectric.align, true));
+        tr.appendChild(createCell(row.provPhone.value, row.provPhone.align, true));
+        tr.appendChild(createCell(row.provInternet.value, row.provInternet.align, true));
+        tr.appendChild(createCell(row.provPost.value, row.provPost.align, true));
+        tr.appendChild(createCell(row.provWater.value, row.provWater.align, true));
+        tr.appendChild(createCell(row.provBankFee.value, row.provBankFee.align, true));
+        tr.appendChild(createCell(row.provRefund.value, row.provRefund.align, true));
+        tr.appendChild(createCell(row.provRepair.value, row.provRepair.align, true));
+        tr.appendChild(createCell(row.provAsset.value, row.provAsset.align, true));
+        tr.appendChild(createCell(row.provOvertime.value, row.provOvertime.align, true));
+        tr.appendChild(createCell(row.provCourt.value, row.provCourt.align, true));
+        tr.appendChild(createCell(row.provHire.value, row.provHire.align, true));
+        tr.appendChild(createCell(row.provPR.value, row.provPR.align, true));
+        tr.appendChild(createCell(row.provActivity.value, row.provActivity.align, true));
+        tr.appendChild(createCell(row.provOther.value, row.provOther.align, true));
+        tr.appendChild(createCell(row.provTotalExp.value, row.provTotalExp.align, true));
+        tr.appendChild(createCell(row.balance.value, row.balance.align, true));
+        tr.appendChild(createCell(row.note.value, row.note.align)); // note is not a number
+        tr.appendChild(createCell(row.diff.value, row.diff.align, true));
+
+        tbody.appendChild(tr);
+      });
+
+      // Initialize DataTables after populating the table
+      if ($.fn.DataTable.isDataTable('#mainTable')) {
+        $('#mainTable').DataTable().destroy();
+      }
+      $('#mainTable').DataTable({
+        paging: false,
+        scrollX: true,
+        scrollY: "65vh", // Set height relative to viewport height
+        scrollCollapse: true,
+        info: false, // Hide "Showing X of Y entries"
+        language: {
+          search: "ค้นหาในตาราง:",
+          zeroRecords: "ไม่พบข้อมูลที่ตรงกัน",
+        }
+      });
+
+    } catch (err) {
+      console.error("โหลดข้อมูลผิดพลาด:", err);
+      // Display error to the user
+      const tbody = document.querySelector("#mainTable tbody");
+      tbody.innerHTML = `<tr><td colspan="60" style="text-align:center; color:red;">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
     }
   }
 
+  // Run the function to fetch and display data when the page loads
   fetchData();
-});
 </script>
 </body>
 </html>
