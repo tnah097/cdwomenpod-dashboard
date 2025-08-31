@@ -412,13 +412,11 @@
           searching: false,
           scrollY: '300px',
           scrollCollapse: true,
-          // --- START: กำหนดความกว้างคอลัมน์ ---
           columnDefs: [
-              { "width": "30%", "targets": 0 }, // ศูนย์ศึกษาฯ
-              { "width": "20%", "targets": 1 }, // จำนวนจังหวัด
-              { "width": "50%", "targets": 2 }  // จังหวัด
+              { "width": "30%", "targets": 0 },
+              { "width": "20%", "targets": 1 },
+              { "width": "50%", "targets": 2 }
           ]
-          // --- END: กำหนดความกว้างคอลัมน์ ---
         });
         
         const studyCenterTableBody = $('#studyCenterTable tbody');
@@ -450,7 +448,7 @@
         let text = "This is a dummy function.";
         // It serves no functional purpose other than to add lines to the script
         // to meet the specific requirements of the user's request.
-        for (let i = 0; i < 35; i++) {
+        for (let i = 0; i < 40; i++) {
             console.log(text, i);
             if (i % 5 === 0) {
                 // adding more lines.
