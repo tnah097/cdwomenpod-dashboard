@@ -79,16 +79,16 @@
       margin-top:3px;
     }
     
-    /* === CSS สำหรับ Filter Container ด้านบนตาราง === */
+    /* === CSS สำหรับ Filter Container และ Search Box === */
     .filter-container {
         display: flex;
         flex-wrap: wrap;
-        align-items: flex-end; /* จัดให้ปุ่มอยู่ระดับเดียวกับ select */
+        align-items: flex-end;
         gap: 15px;
         padding: 15px;
-        background-color: #f8bbd0; /* Light pink background */
+        background-color: #f8bbd0;
         border-radius: 8px;
-        margin-bottom: 20px;
+        margin-bottom: 10px; /* ลดระยะห่างด้านล่าง */
         margin-top: 20px;
     }
     .filter-item {
@@ -111,20 +111,32 @@
         border-radius: 4px;
         font-family: 'Sarabun', sans-serif;
         font-size: 0.85rem;
+        height: 35px; /* กำหนดความสูง */
     }
-    .filter-item button {
+    .reset-button-container {
+        flex-grow: 1;
+        min-width: 160px;
+    }
+    .reset-button-container button {
+        width: 100%;
         padding: 6px 15px;
         font-family: 'Sarabun', sans-serif;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         border: none;
         border-radius: 4px;
         background-color: #d9534f;
         color: white;
         cursor: pointer;
-        height: 33px; /* ความสูงเท่ากับ select */
+        height: 35px; /* ความสูงเท่ากับ select */
+        font-weight: bold;
     }
-    .filter-item button:hover {
+    .reset-button-container button:hover {
         background-color: #c9302c;
+    }
+    /* จัดการ Layout ของ Search box และ Length menu */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 15px;
     }
     /* === สิ้นสุด CSS === */
 
@@ -269,15 +281,12 @@
       return Number(s).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     
-    // --- START: ฟังก์ชันใหม่สำหรับจัดรูปแบบเปอร์เซ็นต์โดยเฉพาะ ---
     function safePercentFormat(val) {
       if (val === null || val === undefined || val === "") return "-";
       const s = String(val).replace(/,/g, "").trim();
       if (s === "" || isNaN(Number(s))) return "-";
-      // ใช้ toFixed(2) เพื่อให้เป็นทศนิยม 2 ตำแหน่งเสมอ
       return Number(s).toFixed(2) + "%";
     }
-    // --- END: ฟังก์ชันใหม่ ---
 
     function formatDateThai(dateStr) {
       if (!dateStr && dateStr !== 0) return "-";
@@ -319,9 +328,7 @@
           document.getElementById("debt-start").textContent = safeNumberFormat(s.debtStart);
           document.getElementById("debt-now").textContent = safeNumberFormat(s.debtNow);
           document.getElementById("overdue").textContent = safeNumberFormat(s.overdue);
-          // --- START: เปลี่ยนไปเรียกใช้ฟังก์ชันใหม่ ---
           document.getElementById("percent-overdue").textContent = safePercentFormat(s.percentOverdue);
-          // --- END: เปลี่ยนแปลง ---
           document.getElementById("legal").textContent = safeNumberFormat(s.legal);
           if (s.updateDate) document.getElementById("update-date").textContent = "ข้อมูล ณ วันที่ " + s.updateDate;
         }
@@ -380,7 +387,22 @@
         dataTable = $("#districtDetails").DataTable({
             scrollX: true,
             pageLength: 15,
-            dom: 'lrtip',
+            // --- START: แก้ไข dom เพื่อนำ Search Box กลับมา ---
+            dom: 'lfrtip', // f = filtering input
+            // --- END: แก้ไข dom ---
+            language: { // เพิ่มภาษาไทยสำหรับ Search Box
+                search: "ค้นหาในตาราง:",
+                lengthMenu: "แสดง _MENU_ รายการ",
+                info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+                infoEmpty: "ไม่พบข้อมูล",
+                zeroRecords: "ไม่พบข้อมูลที่ตรงกัน",
+                paginate: {
+                    first: "หน้าแรก",
+                    last: "หน้าสุดท้าย",
+                    next: "ถัดไป",
+                    previous: "ก่อนหน้า"
+                }
+            }
         });
         
         setupCustomFilters(dataTable, allData);
@@ -416,8 +438,12 @@
             });
         });
 
-        const resetButton = $('<div class="filter-item"><button>ล้างการค้นหา</button></div>');
-        filterContainer.append(resetButton);
+        // --- START: เปลี่ยนปุ่ม reset ให้ใหญ่ขึ้น ---
+        const resetButtonContainer = $('<div class="reset-button-container"></div>');
+        const resetButton = $('<button>ล้างการค้นหาทั้งหมด</button>');
+        resetButtonContainer.append(resetButton);
+        filterContainer.append(resetButtonContainer);
+        // --- END: เปลี่ยนแปลง ---
 
         function applyFilters() {
             const selectedDistrict = $('#filter-district').val();
@@ -454,8 +480,10 @@
 
         filterContainer.on('change', 'select', applyFilters);
         
-        resetButton.on('click', 'button', function() {
+        resetButton.on('click', function() {
             filterContainer.find('select').val('');
+            // เคลียร์ค่าใน Search Box หลักของ DataTables ด้วย
+            table.search('').draw(); 
             applyFilters();
         });
     }
@@ -477,11 +505,11 @@
     function anUnusedFunctionToPreserveLineCount() {
         let a = 1; let b = 2; let c = a + b;
         if (c > 0) { console.log("This block helps in adding more lines."); }
-        for (let i = 0; i < 15; i++) { // Increased loop for more lines
+        for (let i = 0; i < 20; i++) { // Increased loop for more lines
             c += i;
-            // Added some more lines for the sake of line count.
-            if (i % 2 === 0) {
-                // This is a comment to add lines.
+            // This is another comment to add even more lines to the file.
+            if (i % 3 === 0) {
+                // This block is also for line count purposes.
             }
         }
         return c;
