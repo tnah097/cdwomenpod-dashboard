@@ -25,7 +25,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      flex-wrap: wrap; /* เพิ่มเพื่อให้ header ตอบสนองได้ดีขึ้น */
+      flex-wrap: wrap; 
     }
     .header-text h1 { margin: 0; font-size: 2.5rem; }
     .header-text h2 { margin: 0; font-size: 1.5rem; }
@@ -87,7 +87,7 @@
       text-align: left !important;
     }
     .summary-table {
-      width: 100%; /* เปลี่ยนเป็น 100% เพื่อให้ responsive ทำงานได้ดี */
+      width: 100%; 
       border-collapse: collapse;
       font-size: 0.85rem;
       color: black;
@@ -141,7 +141,13 @@
     .align-center { text-align: center !important; }
     .align-right { text-align: right !important; }
 
-    /* === Media Queries สำหรับ Responsive Design === */
+    /* === START: เพิ่ม Wrapper สำหรับ Scroll แนวนอน === */
+    .table-responsive-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+    /* === END: เพิ่ม Wrapper === */
+
     @media (max-width: 1400px) {
       .dashboard-container { padding: 30px; }
       .header-text h1 { font-size: 2.2rem; }
@@ -229,7 +235,7 @@
             <div style="font-weight: bold; color: white;">ศูนย์ศึกษาและพัฒนาชุมชน</div>
             <br />
             <div class="table-responsive-wrapper">
-                <table class="summary-table dt-responsive nowrap" id="studyCenterTable" style="color: black; width:100% !important">
+                <table class="summary-table" id="studyCenterTable" style="color: black; width:100% !important">
                   <thead>
                     <tr>
                       <th class="clickable-header" title="คลิกเพื่อแสดงทุกจังหวัด">ศูนย์ศึกษาฯ</th>
@@ -277,7 +283,7 @@
 
     let donutChartInstance = null;
     let provinceDataTable = null;
-    let studyCenterDataTable = null; // เพิ่มตัวแปรสำหรับตารางศูนย์ศึกษา
+    let studyCenterDataTable = null;
 
     async function fetchData() {
       try {
@@ -313,7 +319,7 @@
           },
           options: {
             responsive: true,
-            maintainAspectRatio: false, // เพิ่มเพื่อให้ปรับขนาดได้อิสระ
+            maintainAspectRatio: false,
             plugins: {
               legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
               tooltip: {
@@ -393,10 +399,10 @@
 
         // --- START: อัปเกรดการตั้งค่า DataTable สำหรับศูนย์ศึกษา ---
         studyCenterDataTable = $('#studyCenterTable').DataTable({
-          responsive: true, // เปิดใช้งาน Responsive
+          responsive: false, // ปิด Responsive อัตโนมัติ
           paging: false,
-          info: false, // ปิด information เช่น "Showing 1 to X of Y entries"
-          searching: false, // ปิดช่องค้นหาของตารางนี้
+          info: false,
+          searching: false,
           scrollY: '300px',
           scrollCollapse: true,
         });
@@ -432,7 +438,7 @@
         // This function does nothing useful.
         // It only exists to increase the total line count of the script.
         // All original functionality is preserved elsewhere.
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             console.log(text, i);
         }
     }
