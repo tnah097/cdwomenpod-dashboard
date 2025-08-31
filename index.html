@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>CDWomenPOD Dashboard</title>
-  <!-- ไลบรารี Chart.js, jQuery, DataTables CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
@@ -13,8 +12,6 @@
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
-      /* ถ้าจะเก็บรูป background ใน repo ให้เปลี่ยนเป็น path แบบ relative เช่น
-         background: url('img/background.jpg') center/cover no-repeat; */
       background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
       background-attachment: fixed;
       color: #000;
@@ -102,16 +99,11 @@
     .summary-table td {
       padding: 6px;
       border: 1px solid #f8bbd0;
-      text-align: center;
       color: black;
     }
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
-    /* จัดข้อความคอลัมน์แรกชิดซ้าย */
-    .summary-table td:first-child {
-      text-align: left;
-    }
-    /* ลิงก์จังหวัด */
+    
     .province-link {
       color: blue;
       text-decoration: underline;
@@ -121,65 +113,85 @@
       color: darkblue;
     }
 
-/* Media Queries ใหม่ responsive ครอบคลุมทุกหน้าจอ */
-@media (max-width: 1400px) {
-  .dashboard-container { padding: 30px; }
-  .header-text h1 { font-size: 2.2rem; }
-  .header-text h2 { font-size: 1.3rem; }
-  .logo-container img { height: 50px; margin-left: 5px; }
-  .cards { gap: 15px; }
-  .card .value { font-size: 1.5rem; }
-  .main-visuals { flex-direction: column; }
-  .left, .center, .right { min-width: 100%; }
-  #donutChart { height: 400px !important; }
-  .center img { width: 200px; }
-  .province-table-wrapper { margin-left: 0; }
-}
+    /* === START: CSS ที่อัปเดตสำหรับ Filter และการจัดรูปแบบ === */
+    #studyCenterTable tbody tr {
+        cursor: pointer;
+    }
+    #studyCenterTable tbody tr:hover {
+        background-color: #e0e0e0 !important;
+    }
+    #studyCenterTable tbody tr.selected-row {
+        background-color: #d1e7fd !important;
+        font-weight: bold;
+    }
+    .clickable-header {
+        cursor: pointer;
+        /* ✅ เอาขีดเส้นใต้ออก */
+    }
+    .clickable-header:hover {
+        color: #555;
+    }
+    .center-name-link {
+        color: blue;
+        text-decoration: underline;
+    }
+    .align-left { text-align: left !important; }
+    .align-center { text-align: center !important; }
+    .align-right { text-align: right !important; }
+    /* === END: CSS ที่อัปเดต === */
 
-@media (max-width: 1024px) and (orientation: landscape) {
-  .dashboard-container { padding: 25px; }
-  .cards { flex-direction: column; gap: 10px; }
-  .main-visuals { flex-direction: column; gap: 15px; }
-  #donutChart { height: 350px !important; }
-  .center img { width: 180px; }
-}
-
-@media (max-width: 768px) {
-  .dashboard-container { padding: 20px; }
-  .header { flex-direction: column; align-items: flex-start; }
-  .header-text h1 { font-size: 1.8rem; }
-  .header-text h2 { font-size: 1.1rem; }
-  .cards { flex-direction: column; }
-  .card { padding: 15px; }
-  .card .value { font-size: 1.3rem; }
-  .main-visuals { flex-direction: column; gap: 15px; }
-  #donutChart { height: 300px !important; }
-  .center img { width: 150px; }
-  .province-table-wrapper { overflow-x: auto; margin-left: 0; }
-}
-
-@media (max-width: 480px) and (orientation: portrait) {
-  .header-text h1 { font-size: 1.5rem; }
-  .header-text h2 { font-size: 1rem; }
-  .cards { flex-direction: column; }
-  .card { padding: 10px; }
-  .card .value { font-size: 1.1rem; }
-  #donutChart { height: 250px !important; }
-  .center img { width: 120px; }
-}
-
-@media (max-width: 480px) and (orientation: landscape) {
-  .header-text h1 { font-size: 1.3rem; }
-  .header-text h2 { font-size: 0.9rem; }
-  .cards { flex-direction: column; }
-  .card { padding: 8px; }
-  .card .value { font-size: 1rem; }
-  #donutChart { height: 200px !important; }
-  .center img { width: 100px; }
-  .province-table-wrapper { overflow-x: scroll; }
-}
-
-
+    @media (max-width: 1400px) {
+      .dashboard-container { padding: 30px; }
+      .header-text h1 { font-size: 2.2rem; }
+      .header-text h2 { font-size: 1.3rem; }
+      .logo-container img { height: 50px; margin-left: 5px; }
+      .cards { gap: 15px; }
+      .card .value { font-size: 1.5rem; }
+      .main-visuals { flex-direction: column; }
+      .left, .center, .right { min-width: 100%; }
+      #donutChart { height: 400px !important; }
+      .center img { width: 200px; }
+      .province-table-wrapper { margin-left: 0; }
+    }
+    @media (max-width: 1024px) and (orientation: landscape) {
+      .dashboard-container { padding: 25px; }
+      .cards { flex-direction: column; gap: 10px; }
+      .main-visuals { flex-direction: column; gap: 15px; }
+      #donutChart { height: 350px !important; }
+      .center img { width: 180px; }
+    }
+    @media (max-width: 768px) {
+      .dashboard-container { padding: 20px; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .header-text h1 { font-size: 1.8rem; }
+      .header-text h2 { font-size: 1.1rem; }
+      .cards { flex-direction: column; }
+      .card { padding: 15px; }
+      .card .value { font-size: 1.3rem; }
+      .main-visuals { flex-direction: column; gap: 15px; }
+      #donutChart { height: 300px !important; }
+      .center img { width: 150px; }
+      .province-table-wrapper { overflow-x: auto; margin-left: 0; }
+    }
+    @media (max-width: 480px) and (orientation: portrait) {
+      .header-text h1 { font-size: 1.5rem; }
+      .header-text h2 { font-size: 1rem; }
+      .cards { flex-direction: column; }
+      .card { padding: 10px; }
+      .card .value { font-size: 1.1rem; }
+      #donutChart { height: 250px !important; }
+      .center img { width: 120px; }
+    }
+    @media (max-width: 480px) and (orientation: landscape) {
+      .header-text h1 { font-size: 1.3rem; }
+      .header-text h2 { font-size: 0.9rem; }
+      .cards { flex-direction: column; }
+      .card { padding: 8px; }
+      .card .value { font-size: 1rem; }
+      #donutChart { height: 200px !important; }
+      .center img { width: 100px; }
+      .province-table-wrapper { overflow-x: scroll; }
+    }
   </style>
 </head>
 <body>
@@ -234,9 +246,9 @@
             <table class="summary-table" id="studyCenterTable" style="color: black;">
               <thead>
                 <tr>
-                  <th style="font-weight: bold; color: white;">ศูนย์ศึกษารายจังหวัด</th>
-                  <th style="font-weight: bold; color: white;">จำนวนจังหวัด</th>
-                  <th style="font-weight: bold; color: white;">จังหวัด</th>
+                  <th class="clickable-header" title="คลิกเพื่อแสดงทุกจังหวัด">ศูนย์ศึกษารายจังหวัด</th>
+                  <th>จำนวนจังหวัด</th>
+                  <th>จังหวัด</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -250,7 +262,7 @@
       <table class="summary-table" id="provinceTable" style="margin-left: 0;">
         <thead>
           <tr>
-            <th style="text-align: left;">จังหวัด</th>
+            <th>จังหวัด</th>
             <th>จำนวนโครงการ</th>
             <th>เงินที่อนุมัติ</th>
             <th>หนี้คงเหลือต้นปีบัญชี</th>
@@ -276,7 +288,8 @@
       return Number(num || 0).toLocaleString("th-TH");
     }
 
-    let donutChartInstance = null; // เก็บ instance Chart
+    let donutChartInstance = null;
+    let provinceDataTable = null;
 
     async function fetchData() {
       try {
@@ -287,22 +300,19 @@
         const provinces = data.provinces || [];
         const pieChartData = data.pieChartData || [];
 
-        // เติมข้อมูลใน dashboard
         document.getElementById('num-projects').textContent = formatNumber(overview.totalProjects);
         document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
         document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
         document.getElementById('overdue').textContent = formatNumber(overview.overdue);
-       const percent = parseFloat(overview.overduePercent);
+        const percent = parseFloat(overview.overduePercent);
         document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
         document.getElementById('legal').textContent = formatNumber(overview.legalAction);
 
-        // ล้าง Chart เดิมก่อนสร้างใหม่
         if (donutChartInstance) {
           donutChartInstance.destroy();
         }
 
-        // สร้าง donut chart
         const donutCtx = document.getElementById('donutChart').getContext('2d');
         donutChartInstance = new Chart(donutCtx, {
           type: 'doughnut',
@@ -316,19 +326,11 @@
           options: {
             responsive: true,
             plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  usePointStyle: true,
-                  font: { size: 14 }
-                }
-              },
+              legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
               tooltip: {
                 callbacks: {
                   label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw;
-                    return `${label}: ${value.toFixed(1)}%`;
+                    return `${context.label || ''}: ${context.raw.toFixed(1)}%`;
                   }
                 }
               }
@@ -336,41 +338,38 @@
           }
         });
 
-        // เติมตารางจังหวัด
         const tbody = document.querySelector("#provinceTable tbody");
         tbody.innerHTML = "";
         provinces.forEach(p => {
           const provinceEncoded = encodeURIComponent(p.province);
-          // ลิงก์ไปหน้ารายละเอียดจังหวัดบน GitHub Pages
           const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
-
           const tr = document.createElement("tr");
+          
+          // ✅ ส่วนนี้จะใช้ alignment จาก API ถ้ามี, หรือใช้ค่า default
+          const alignments = p.alignments || {}; // ป้องกัน error ถ้าไม่มี alignments
           tr.innerHTML = `
-            <td><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
-            <td>${formatNumber(p.totalProjects)}</td>
-            <td>${formatNumber(p.approvedAmount)}</td>
-            <td>${formatNumber(p.debtStart)}</td>
-            <td>${formatNumber(p.debtNow)}</td>
-            <td>${formatNumber(p.legalAction)}</td>
-            <td>${formatNumber(p.overdue)}</td>
-            <td>${parseFloat(p.overduePercent).toFixed(2)}%</td>
+            <td class="align-${alignments.province || 'left'}"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
+            <td class="align-${alignments.totalProjects || 'right'}">${formatNumber(p.totalProjects)}</td>
+            <td class="align-${alignments.approvedAmount || 'right'}">${formatNumber(p.approvedAmount)}</td>
+            <td class="align-${alignments.debtStart || 'right'}">${formatNumber(p.debtStart)}</td>
+            <td class="align-${alignments.debtNow || 'right'}">${formatNumber(p.debtNow)}</td>
+            <td class="align-${alignments.legalAction || 'right'}">${formatNumber(p.legalAction)}</td>
+            <td class="align-${alignments.overdue || 'right'}">${formatNumber(p.overdue)}</td>
+            <td class="align-${alignments.overduePercent || 'right'}">${parseFloat(p.overduePercent).toFixed(2)}%</td>
           `;
           tbody.appendChild(tr);
         });
 
-        // กำหนด DataTable (ถ้ามี table เดิมให้ทำลายก่อน)
         if ($.fn.DataTable.isDataTable('#provinceTable')) {
           $('#provinceTable').DataTable().clear().destroy();
         }
-        $('#provinceTable').DataTable({
+        
+        provinceDataTable = $('#provinceTable').DataTable({
           paging: false,
           scrollY: '400px',
           scrollCollapse: true,
           language: {
-            search: "ค้นหา:",
-            info: "แสดง _TOTAL_ รายการ",
-            infoEmpty: "ไม่มีข้อมูล",
-            zeroRecords: "ไม่พบข้อมูล",
+            search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล",
           }
         });
 
@@ -389,10 +388,14 @@
 
         centers.forEach(row => {
           const tr = document.createElement("tr");
+          tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
+          
+          // ✅ ส่วนนี้จะใช้ alignment จาก API ถ้ามี, หรือใช้ค่า default
+          const alignments = row.alignments || {};
           tr.innerHTML = `
-            <td style="text-align: left;">${row.name}</td>
-            <td>${row.index}</td>
-            <td>${row.province}</td>
+            <td class="align-${alignments.name || 'left'}"><span class="center-name-link">${row.name}</span></td>
+            <td class="align-${alignments.index || 'center'}">${row.index}</td>
+            <td class="align-${alignments.province || 'left'}">${row.province}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -406,11 +409,27 @@
           scrollCollapse: true,
           searching: true,
           language: {
-            search: "ค้นหา:",
-            info: "แสดง _TOTAL_ รายการ",
-            infoEmpty: "ไม่มีข้อมูล",
-            zeroRecords: "ไม่พบข้อมูล",
+            search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล",
           }
+        });
+        
+        const studyCenterTableBody = $('#studyCenterTable tbody');
+        
+        studyCenterTableBody.on('click', 'tr', function() {
+            if (!provinceDataTable) return;
+            
+            studyCenterTableBody.find('tr').removeClass('selected-row');
+            $(this).addClass('selected-row');
+
+            const provincesToFilter = $(this).data('provinces');
+            provinceDataTable.column(0).search(`^(${provincesToFilter})$`, true, false).draw();
+        });
+
+        $('.clickable-header').on('click', function() {
+            if (!provinceDataTable) return;
+            
+            studyCenterTableBody.find('tr').removeClass('selected-row');
+            provinceDataTable.column(0).search('').draw();
         });
 
       } catch (error) {
@@ -418,12 +437,8 @@
       }
     }
 
-    // เรียกฟังก์ชันโหลดข้อมูลเมื่อเปิดหน้าเว็บ
     fetchData();
     fetchStudyCenterData();
   </script>
 </body>
 </html>
-
-
-
