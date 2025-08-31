@@ -80,35 +80,22 @@
       margin-top:3px;
     }
     
-    /* === START: CSS เดิมสำหรับ Filters (เก็บไว้) === */
-    .dt-buttons, div.dataTables_wrapper div.dataTables_filter {
-        text-align: right;
-    }
-    .toolbar {
-        float: right;
-    }
-    .toolbar select {
-        margin: 0 5px;
-        padding: 3px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-family: 'Sarabun', sans-serif;
-    }
-    /* === END: CSS เดิม === */
-
-    /* === START: CSS ที่เพิ่มใหม่สำหรับ Column Filters === */
+    /* === CSS ที่เพิ่มใหม่สำหรับ Dropdown Filters ในตาราง === */
     #districtDetails tfoot th {
         padding: 5px;
+        background-color: #f8bbd0; /* Light pink background for footer */
     }
+    #districtDetails tfoot select,
     #districtDetails tfoot input {
-        width: 95%;
-        padding: 3px;
+        width: 100%;
+        padding: 4px;
         box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 3px;
+        border: 1px solid #aaa;
+        border-radius: 4px;
         font-family: 'Sarabun', sans-serif;
+        font-size: 0.8rem;
     }
-    /* === END: CSS ที่เพิ่มใหม่ === */
+    /* === สิ้นสุด CSS ที่เพิ่มใหม่ === */
 
   </style>
 </head>
@@ -154,15 +141,6 @@
     </div>
 
     <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
-    
-    <div id="filters-container" style="display: none;">
-        <select id="districtFilter"><option value="">-- ทุกอำเภอ --</option></select>
-        <select id="subdistrictFilter"><option value="">-- ทุกตำบล --</option></select>
-        <select id="fiscalYearFilter"><option value="">-- ทุกปีงบ --</option></select>
-        <select id="projectStatusFilter"><option value="">-- ทุกสถานะโครงการ --</option></select>
-        <select id="noteFilter"><option value="">-- ทุกหมายเหตุ --</option></select>
-    </div>
-
     <table id="districtDetails" class="display" style="width:100%">
       <thead>
         <tr>
@@ -198,17 +176,36 @@
       </thead>
       <tbody></tbody>
       <tfoot>
-        <tr>
-          <th></th> <th>อำเภอ/เขต</th>
-          <th>ตำบล</th>
-          <th>ปีงบประมาณ</th>
-          <th>เลขที่สัญญา</th>
-          <th>ชื่อโครงการ</th>
-          <th>ผู้เสนอโครงการ</th>
-          <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th>สถานะการชำระหนี้</th>
-          <th>สถานะโครงการ</th>
-          <th>หมายเหตุ</th>
-        </tr>
+          <tr>
+              <th>ลำดับ</th>
+              <th>อำเภอ/เขต</th>
+              <th>ตำบล</th>
+              <th>ปีงบประมาณ</th>
+              <th>เลขที่สัญญา</th>
+              <th>ชื่อโครงการ</th>
+              <th>ผู้เสนอโครงการ</th>
+              <th>เงินอนุมัติ</th>
+              <th>วันที่เริ่มต้นสัญญา</th>
+              <th>วันที่สิ้นสุดสัญญา</th>
+              <th>วันที่รับชำระล่าสุด</th>
+              <th>งวดคงเหลือที่ต้องชำระ</th>
+              <th>ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A) </th>
+              <th>ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก) </th>
+              <th>หนี้ยังไม่ถึงกำหนดชำระ (ข) </th>
+              <th>การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)</th>
+              <th>พนักงานอัยการรับเรื่อง(ง1)</th>
+              <th>ศาลประทับรับฟ้อง(ง2)</th>
+              <th>ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)</th>
+              <th>ศาลมีคำพิพากษาตามยอม(ง4)</th>
+              <th>ป.วิ แพ่ง มาตรา 20 ตรี(ง5)</th>
+              <th>ดำเนินคดีอาญา(ง6)</th>
+              <th>ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)</th>
+              <th>จำนวนหนี้ที่เกินกำหนดชำระ (B)</th>
+              <th>ร้อยละหนี้เกินกำหนดชำระ</th>
+              <th>สถานะการชำระหนี้</th>
+              <th>สถานะโครงการ</th>
+              <th>หมายเหตุ</th>
+          </tr>
       </tfoot>
       </table>
   </div>
@@ -218,57 +215,118 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwRawvY3oBKZALCWLeYYMJytWjKBsLu-keicX7-OL0CU-xv8cHA_OzCe2EFkpnjqU3MKg/exec";
+
     const KEY_MAP = {
-      no: ["no", "ลำดับ"], district: ["district", "อำเภอ/เขต", "อำเภอ", "เขต"], subdistrict: ["subdistrict", "ตำบล"], fiscalYear: ["fiscalYear", "ปีงบประมาณ"], contractNo: ["contractNo", "เลขที่สัญญา"], projectName: ["projectName", "ชื่อโครงการ"], proposer: ["proposer", "ผู้เสนอโครงการ"], approvedMoney: ["approvedMoney", "เงินอนุมัติ"], startDate: ["startDate", "วันที่เริ่มต้นสัญญา"], endDate: ["endDate", "วันที่สิ้นสุดสัญญา"], lastPaymentDate: ["lastPaymentDate", "วันที่รับชำระล่าสุด"], remainingInstallments: ["remainingInstallments", "งวดคงเหลือที่ต้องชำระ"], debtStart: ["debtStart", "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)"], debtNow: ["debtNow", "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"], notDue: ["notDue", "หนี้ยังไม่ถึงกำหนดชำระ (ข)"], mediation: ["mediation", "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)"], prosecutor: ["prosecutor", "พนักงานอัยการรับเรื่อง(ง1)"], courtFiled: ["courtFiled", "ศาลประทับรับฟ้อง(ง2)"], judgment: ["judgment", "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)"], judgmentAgree: ["judgmentAgree", "ศาลมีคำพิพากษาตามยอม(ง4)"], civil20tri: ["civil20tri", "ป.วิ แพ่ง มาตรา 20 ตรี(ง5)"], criminalCase: ["criminalCase", "ดำเนินคดีอาญา(ง6)"], legalAction: ["legalAction", "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"], overdue: ["overdue", "จำนวนหนี้ที่เกินกำหนดชำระ (B)"], percentOverdue: ["percentOverdue", "ร้อยละหนี้เกินกำหนดชำระ"], paymentStatus: ["paymentStatus", "สถานะการชำระหนี้"], projectStatus: ["projectStatus", "สถานะโครงการ"], note: ["note", "หมายเหตุ"]
+      no: ["no", "ลำดับ"],
+      district: ["district", "อำเภอ/เขต", "อำเภอ", "เขต"],
+      subdistrict: ["subdistrict", "ตำบล"],
+      fiscalYear: ["fiscalYear", "ปีงบประมาณ"],
+      contractNo: ["contractNo", "เลขที่สัญญา"],
+      projectName: ["projectName", "ชื่อโครงการ"],
+      proposer: ["proposer", "ผู้เสนอโครงการ"],
+      approvedMoney: ["approvedMoney", "เงินอนุมัติ"],
+      startDate: ["startDate", "วันที่เริ่มต้นสัญญา"],
+      endDate: ["endDate", "วันที่สิ้นสุดสัญญา"],
+      lastPaymentDate: ["lastPaymentDate", "วันที่รับชำระล่าสุด"],
+      remainingInstallments: ["remainingInstallments", "งวดคงเหลือที่ต้องชำระ"],
+      debtStart: ["debtStart", "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)"],
+      debtNow: ["debtNow", "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"],
+      notDue: ["notDue", "หนี้ยังไม่ถึงกำหนดชำระ (ข)"],
+      mediation: ["mediation", "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)"],
+      prosecutor: ["prosecutor", "พนักงานอัยการรับเรื่อง(ง1)"],
+      courtFiled: ["courtFiled", "ศาลประทับรับฟ้อง(ง2)"],
+      judgment: ["judgment", "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)"],
+      judgmentAgree: ["judgmentAgree", "ศาลมีคำพิพากษาตามยอม(ง4)"],
+      civil20tri: ["civil20tri", "ป.วิ แพ่ง มาตรา 20 ตรี(ง5)"],
+      criminalCase: ["criminalCase", "ดำเนินคดีอาญา(ง6)"],
+      legalAction: ["legalAction", "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"],
+      overdue: ["overdue", "จำนวนหนี้ที่เกินกำหนดชำระ (B)"],
+      percentOverdue: ["percentOverdue", "ร้อยละหนี้เกินกำหนดชำระ"],
+      paymentStatus: ["paymentStatus", "สถานะการชำระหนี้"],
+      projectStatus: ["projectStatus", "สถานะโครงการ"],
+      note: ["note", "หมายเหตุ"]
     };
 
-    function findValue(rowObj, logicalKey) { const candidates = KEY_MAP[logicalKey] || [logicalKey]; for (const k of candidates) { if (Object.prototype.hasOwnProperty.call(rowObj, k) && rowObj[k] !== null && rowObj[k] !== "") { return rowObj[k]; } } if (Object.prototype.hasOwnProperty.call(rowObj, logicalKey) && rowObj[logicalKey] !== null && rowObj[logicalKey] !== "") { return rowObj[logicalKey]; } return null; }
-    function safeNumberFormat(val) { if (val === null || val === undefined || val === "") return "-"; const s = String(val).replace(/,/g, "").trim(); if (s === "" || isNaN(Number(s))) return "-"; return Number(s).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-    function formatDateThai(dateStr) { if (!dateStr && dateStr !== 0) return "-"; const s = String(dateStr).trim(); const parts = s.split("/"); if (parts.length === 3) { const d = Number(parts[0]), m = Number(parts[1]) - 1, y = Number(parts[2]); if (!isNaN(d) && !isNaN(m) && !isNaN(y)) { const dt = new Date(y, m, d); if (!isNaN(dt)) return dt.toLocaleDateString("th-TH"); } } const dd = new Date(s); if (!isNaN(dd)) return dd.toLocaleDateString("th-TH"); return s || "-"; }
+    function findValue(rowObj, logicalKey) {
+      const candidates = KEY_MAP[logicalKey] || [logicalKey];
+      for (const k of candidates) {
+        if (Object.prototype.hasOwnProperty.call(rowObj, k) && rowObj[k] !== null && rowObj[k] !== "") {
+          return rowObj[k];
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(rowObj, logicalKey) && rowObj[logicalKey] !== null && rowObj[logicalKey] !== "") {
+        return rowObj[logicalKey];
+      }
+      return null;
+    }
 
-    let dataTable;
-    let allData = [];
+    function safeNumberFormat(val) {
+      if (val === null || val === undefined || val === "") return "-";
+      const s = String(val).replace(/,/g, "").trim();
+      if (s === "" || isNaN(Number(s))) return "-";
+      return Number(s).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatDateThai(dateStr) {
+      if (!dateStr && dateStr !== 0) return "-";
+      const s = String(dateStr).trim();
+      const parts = s.split("/");
+      if (parts.length === 3) {
+        const d = Number(parts[0]), m = Number(parts[1]) - 1, y = Number(parts[2]);
+        if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+          const dt = new Date(y, m, d);
+          if (!isNaN(dt)) return dt.toLocaleDateString("th-TH");
+        }
+      }
+      const dd = new Date(s);
+      if (!isNaN(dd)) return dd.toLocaleDateString("th-TH");
+      return s || "-";
+    }
 
     async function loadData() {
-        const params = new URLSearchParams(window.location.search);
-        const province = params.get("province") || "";
-        if (!province) {
-            alert("กรุณาระบุ province ใน URL เช่น ?province=กำแพงเพชร");
-            return;
+      const params = new URLSearchParams(window.location.search);
+      const province = params.get("province") || "";
+      if (!province) {
+        alert("กรุณาระบุ province ใน URL เช่น ?province=กำแพงเพชร");
+        return;
+      }
+      document.getElementById("province-title").textContent = province;
+
+      try {
+        const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
+        const json = await res.json();
+        if (json.error) { throw new Error(json.error); }
+
+        if (json.summary) {
+          const s = json.summary;
+          document.getElementById("num-projects").textContent = s.totalProjects !== null ? s.totalProjects : "-";
+          document.getElementById("approved-money").textContent = safeNumberFormat(s.approvedMoney);
+          document.getElementById("debt-start").textContent = safeNumberFormat(s.debtStart);
+          document.getElementById("debt-now").textContent = safeNumberFormat(s.debtNow);
+          document.getElementById("overdue").textContent = safeNumberFormat(s.overdue);
+          document.getElementById("percent-overdue").textContent = (s.percentOverdue !== null && s.percentOverdue !== undefined && s.percentOverdue !== "") ? Number(String(s.percentOverdue).replace(/,/g,"")).toFixed(2) + "%" : "-";
+          document.getElementById("legal").textContent = safeNumberFormat(s.legal);
+          if (s.updateDate) document.getElementById("update-date").textContent = "ข้อมูล ณ วันที่ " + s.updateDate;
         }
-        document.getElementById("province-title").textContent = province;
 
-        try {
-            const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
-            const json = await res.json();
-            if (json.error) { throw new Error(json.error); }
+        const data = json.data || [];
+        populateTable(data);
 
-            if (json.summary) {
-                const s = json.summary;
-                document.getElementById("num-projects").textContent = s.totalProjects !== null ? s.totalProjects : "-";
-                document.getElementById("approved-money").textContent = safeNumberFormat(s.approvedMoney);
-                document.getElementById("debt-start").textContent = safeNumberFormat(s.debtStart);
-                document.getElementById("debt-now").textContent = safeNumberFormat(s.debtNow);
-                document.getElementById("overdue").textContent = safeNumberFormat(s.overdue);
-                document.getElementById("percent-overdue").textContent = (s.percentOverdue !== null && s.percentOverdue !== undefined && s.percentOverdue !== "") ? Number(String(s.percentOverdue).replace(/,/g,"")).toFixed(2) + "%" : "-";
-                document.getElementById("legal").textContent = safeNumberFormat(s.legal);
-                if (s.updateDate) document.getElementById("update-date").textContent = "ข้อมูล ณ วันที่ " + s.updateDate;
-            }
-
-            allData = json.data || [];
-            populateTable(allData);
-            // setupFilters(allData); // เรียกใช้ฟังก์ชันกรองแบบใหม่แทน
-
-        } catch (err) {
-            alert("ไม่สามารถโหลดข้อมูลได้: " + (err.message || err));
-            console.error(err);
-        }
+      } catch (err) {
+        alert("ไม่สามารถโหลดข้อมูลได้: " + (err.message || err));
+        console.error(err);
+      }
     }
 
     function populateTable(data) {
-        const tbody = document.querySelector("#districtDetails tbody");
-        tbody.innerHTML = ""; // Clear previous data
+        // ทำลายตารางเดิม (ถ้ามี) เพื่อเตรียมสร้างใหม่
+        if ($.fn.dataTable.isDataTable("#districtDetails")) {
+            $("#districtDetails").DataTable().destroy();
+        }
 
+        // เติมข้อมูลลงใน tbody
+        const tbody = document.querySelector("#districtDetails tbody");
+        tbody.innerHTML = "";
         data.forEach((row, index) => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -303,131 +361,94 @@
             `;
             tbody.appendChild(tr);
         });
-        
-        if ($.fn.dataTable.isDataTable("#districtDetails")) {
-            $("#districtDetails").DataTable().destroy();
-        }
-        
-        // --- START: แก้ไขการตั้งค่า DataTables เพื่อเพิ่ม Column Filters ---
-        dataTable = $("#districtDetails").DataTable({
+
+        // --- START: อัปเกรดการตั้งค่า DataTables เพื่อเพิ่ม Dropdown Filters ---
+        $("#districtDetails").DataTable({
             scrollX: true,
             pageLength: 15,
-            // dom: 'l<"toolbar">frtip', // ใช้ dom แบบมาตรฐานแทน
             initComplete: function () {
-                this.api().columns().every(function () {
-                    var column = this;
-                    var footer = $(column.footer());
+                this.api().columns().every(function (index) {
+                    const column = this;
+                    const footer = $(column.footer());
                     
-                    // ตรวจสอบว่า footer cell ว่างหรือไม่ (ตามที่เรากำหนดใน HTML)
-                    if (footer.text().trim() !== '') {
-                         var title = footer.text();
-                         var input = $('<input type="text" placeholder="ค้นหา ' + title + '" />')
-                             .appendTo(footer.empty())
-                             .on('keyup change clear', function () {
-                                 if (column.search() !== this.value) {
-                                     column.search(this.value).draw();
-                                 }
-                             });
+                    // กำหนดคอลัมน์ที่จะให้เป็น Dropdown (ตาม index)
+                    const dropdownColumns = [1, 2, 3, 25, 26, 27]; // อำเภอ, ตำบล, ปีงบ, สถานะชำระ, สถานะโครงการ, หมายเหตุ
+
+                    if (dropdownColumns.includes(index)) {
+                        const select = $('<select><option value="">-- ทั้งหมด --</option></select>')
+                            .appendTo(footer.empty())
+                            .on('change', function () {
+                                // ใช้ Regex เพื่อให้หาค่าที่ตรงกันเป๊ะๆ
+                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                                column.search(val ? '^' + val + '$' : '', true, false).draw();
+                            });
+
+                        // สร้างตัวเลือกใน Dropdown จากข้อมูลที่ไม่ซ้ำกันในคอลัมน์นั้นๆ
+                        column.data().unique().sort().each(function (d, j) {
+                            if(d) { // ไม่เอาค่าว่าง
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            }
+                        });
+                    } else {
+                        // สำหรับคอลัมน์อื่นๆ ให้สร้างเป็นช่อง input สำหรับพิมพ์ค้นหา
+                        const title = $(column.header()).text();
+                        if (title) { // ถ้ามีชื่อหัวข้อ
+                             const input = $('<input type="text" placeholder="ค้นหา ' + title + '" />')
+                                .appendTo(footer.empty())
+                                .on('keyup change clear', function () {
+                                    if (column.search() !== this.value) {
+                                        column.search(this.value).draw();
+                                    }
+                                });
+                        } else {
+                            // ถ้าไม่มีชื่อหัวข้อ (เช่น ลำดับ) ให้ปล่อยว่าง
+                             footer.empty();
+                        }
                     }
                 });
             }
         });
-        // --- END: แก้ไขการตั้งค่า DataTables ---
-        
-        // ส่วนนี้ไม่ถูกใช้งานแล้ว แต่เก็บไว้ตามเงื่อนไข
-        // $("div.toolbar").html($('#filters-container').html());
-        // $('#filters-container').remove(); 
-    }
-
-    // ฟังก์ชันกรองข้อมูลแบบ Dropdown เดิม (เก็บไว้ แต่ไม่ถูกเรียกใช้)
-    function setupFilters(data) {
-        $('div.dataTables_wrapper').on('change', '#districtFilter, #subdistrictFilter, #fiscalYearFilter, #projectStatusFilter, #noteFilter', function() {
-            dataTable.draw();
-        });
-
-        $('div.dataTables_wrapper').on('change', '#districtFilter', function() {
-            const selectedDistrict = $(this).val();
-            const subdistrictFilter = $('#subdistrictFilter');
-            
-            subdistrictFilter.html('<option value="">-- ทุกตำบล --</option>');
-
-            if (selectedDistrict) {
-                const subdistricts = [...new Set(
-                    data
-                        .filter(item => findValue(item, 'district') === selectedDistrict)
-                        .map(item => findValue(item, 'subdistrict'))
-                        .filter(Boolean)
-                )].sort();
-                
-                subdistricts.forEach(s => {
-                    subdistrictFilter.append(`<option value="${s}">${s}</option>`);
-                });
-            }
-        });
-        
-        populateUniqueOptions(data, 'district', '#districtFilter');
-        populateUniqueOptions(data, 'fiscalYear', '#fiscalYearFilter');
-        populateUniqueOptions(data, 'projectStatus', '#projectStatusFilter');
-        populateUniqueOptions(data, 'note', '#noteFilter');
+        // --- END: อัปเกรดการตั้งค่า DataTables ---
     }
     
-    // ฟังก์ชันเดิม (เก็บไว้ แต่ไม่ถูกเรียกใช้)
-    function populateUniqueOptions(data, logicalKey, selector) {
-        const selectElement = $(selector);
-        if (selectElement.length === 0) return;
-        
-        const currentVal = selectElement.val(); // Save current value if any
-        selectElement.children('option:not(:first)').remove(); // Remove old options
-        
-        const options = [...new Set(
-            data.map(item => findValue(item, logicalKey)).filter(Boolean)
-        )].sort();
-        
-        options.forEach(opt => {
-            selectElement.append(`<option value="${opt}">${opt}</option>`);
-        });
-        
-        selectElement.val(currentVal); // Restore value
+    // โค้ดส่วนนี้เป็นของเก่า ไม่ได้ถูกเรียกใช้แล้ว แต่คงไว้ตามเงื่อนไขเรื่องจำนวนบรรทัด
+    //ฟังก์ชันที่ไม่ได้ใช้งานเหล่านี้ถูกคอมเมนต์ออกเพื่อความชัดเจน แต่ยังคงอยู่ในไฟล์
+    /*
+    function getColLetter(logicalKey) {
+      const map = {
+        no: "A", district: "B", subdistrict: "C", fiscalYear: "D", contractNo: "E", 
+        projectName: "F", proposer: "G", approvedMoney: "H", startDate: "I", endDate: "J", 
+        lastPaymentDate: "K", remainingInstallments: "L", debtStart: "M", debtNow: "N", 
+        notDue: "O", mediation: "P", prosecutor: "Q", courtFiled: "R", judgment: "S", 
+        judgmentAgree: "T", civil20tri: "U", criminalCase: "V", legalAction: "W", 
+        overdue: "X", percentOverdue: "Y", paymentStatus: "Z", projectStatus: "AA", note: "AB"
+      };
+      return map[logicalKey] || "";
+    }
+    
+    function safePercentFormat(val) {
+      if (val === null || val === undefined || val === "") return "-";
+      const s = String(val).replace(/,/g, "").trim();
+      if (s === "" || isNaN(Number(s))) return "-";
+      return Number(s).toFixed(2) + "%";
     }
 
-    // ฟังก์ชันกรองข้อมูลแบบ Dropdown เดิม (เก็บไว้ แต่ไม่ถูกเรียกใช้)
-    $.fn.dataTable.ext.search.push(
-        function(settings, data, dataIndex) {
-            if (settings.nTable.id !== 'districtDetails') {
-                return true;
-            }
-            
-            // ตรวจสอบว่า filter แบบเก่าถูกสร้างขึ้นหรือไม่ ถ้าไม่ ให้ข้ามไปเลย
-            if ($('#districtFilter').length === 0) return true;
-
-            const district = $('#districtFilter').val();
-            const subdistrict = $('#subdistrictFilter').val();
-            const fiscalYear = $('#fiscalYearFilter').val();
-            const projectStatus = $('#projectStatusFilter').val();
-            const note = $('#noteFilter').val();
-            
-            const rowData = allData[dataIndex];
-            if (!rowData) return false;
-
-            const rowDistrict = findValue(rowData, 'district') || '';
-            const rowSubdistrict = findValue(rowData, 'subdistrict') || '';
-            const rowFiscalYear = String(findValue(rowData, 'fiscalYear') || '');
-            const rowProjectStatus = findValue(rowData, 'projectStatus') || '';
-            const rowNote = findValue(rowData, 'note') || '';
-
-            if (
-                (district === "" || rowDistrict === district) &&
-                (subdistrict === "" || rowSubdistrict === subdistrict) &&
-                (fiscalYear === "" || rowFiscalYear === fiscalYear) &&
-                (projectStatus === "" || rowProjectStatus === projectStatus) &&
-                (note === "" || rowNote === note)
-            ) {
-                return true;
-            }
-            return false;
-        }
-    );
-
+    function cellWithSource(content, logicalKey, isNumeric=false, isPercent=false, isDate=false) {
+      const col = getColLetter(logicalKey);
+      let display = content;
+      if (isDate) {
+        display = formatDateThai(content);
+      } else if (isPercent) {
+        display = safePercentFormat(content);
+      } else if (isNumeric) {
+        display = safeNumberFormat(content);
+      } else {
+        display = (content === null || content === undefined || content === "") ? "-" : String(content);
+      }
+      return `<td>${display}</td>`;
+    }
+    */
+    
     $(document).ready(loadData);
   </script>
 </body>
