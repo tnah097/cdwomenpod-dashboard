@@ -59,7 +59,6 @@
       border-collapse: collapse;
       font-size: 0.85rem;
       color: black;
-      /* margin-top: 40px; (จะถูกควบคุมโดย filter container แทน) */
     }
     table th, table td {
       border: 1px solid #ccc;
@@ -80,11 +79,12 @@
       margin-top:3px;
     }
     
-    /* === CSS ที่เพิ่มใหม่สำหรับ Filter Container ด้านบนตาราง === */
+    /* === CSS สำหรับ Filter Container ด้านบนตาราง === */
     .filter-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        align-items: flex-end; /* จัดให้ปุ่มอยู่ระดับเดียวกับ select */
+        gap: 15px;
         padding: 15px;
         background-color: #f8bbd0; /* Light pink background */
         border-radius: 8px;
@@ -94,7 +94,7 @@
     .filter-item {
         display: flex;
         flex-direction: column;
-        min-width: 150px;
+        min-width: 160px;
         flex-grow: 1;
     }
     .filter-item label {
@@ -103,17 +103,30 @@
         margin-bottom: 4px;
         color: #333;
     }
-    .filter-item select,
-    .filter-item input {
+    .filter-item select {
         width: 100%;
-        padding: 5px;
+        padding: 6px;
         box-sizing: border-box;
         border: 1px solid #aaa;
         border-radius: 4px;
         font-family: 'Sarabun', sans-serif;
         font-size: 0.85rem;
     }
-    /* === สิ้นสุด CSS ที่เพิ่มใหม่ === */
+    .filter-item button {
+        padding: 6px 15px;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 0.85rem;
+        border: none;
+        border-radius: 4px;
+        background-color: #d9534f;
+        color: white;
+        cursor: pointer;
+        height: 33px; /* ความสูงเท่ากับ select */
+    }
+    .filter-item button:hover {
+        background-color: #c9302c;
+    }
+    /* === สิ้นสุด CSS === */
 
   </style>
 </head>
@@ -161,6 +174,7 @@
     <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
 
     <div id="filter-container" class="filter-container"></div>
+    
     <table id="districtDetails" class="display" style="width:100%">
       <thead>
         <tr>
@@ -195,38 +209,6 @@
         </tr>
       </thead>
       <tbody></tbody>
-      <tfoot>
-          <tr>
-              <th>ลำดับ</th>
-              <th>อำเภอ/เขต</th>
-              <th>ตำบล</th>
-              <th>ปีงบประมาณ</th>
-              <th>เลขที่สัญญา</th>
-              <th>ชื่อโครงการ</th>
-              <th>ผู้เสนอโครงการ</th>
-              <th>เงินอนุมัติ</th>
-              <th>วันที่เริ่มต้นสัญญา</th>
-              <th>วันที่สิ้นสุดสัญญา</th>
-              <th>วันที่รับชำระล่าสุด</th>
-              <th>งวดคงเหลือที่ต้องชำระ</th>
-              <th>ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A) </th>
-              <th>ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก) </th>
-              <th>หนี้ยังไม่ถึงกำหนดชำระ (ข) </th>
-              <th>การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)</th>
-              <th>พนักงานอัยการรับเรื่อง(ง1)</th>
-              <th>ศาลประทับรับฟ้อง(ง2)</th>
-              <th>ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)</th>
-              <th>ศาลมีคำพิพากษาตามยอม(ง4)</th>
-              <th>ป.วิ แพ่ง มาตรา 20 ตรี(ง5)</th>
-              <th>ดำเนินคดีอาญา(ง6)</th>
-              <th>ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)</th>
-              <th>จำนวนหนี้ที่เกินกำหนดชำระ (B)</th>
-              <th>ร้อยละหนี้เกินกำหนดชำระ</th>
-              <th>สถานะการชำระหนี้</th>
-              <th>สถานะโครงการ</th>
-              <th>หมายเหตุ</th>
-          </tr>
-      </tfoot>
     </table>
   </div>
 
@@ -302,6 +284,9 @@
       if (!isNaN(dd)) return dd.toLocaleDateString("th-TH");
       return s || "-";
     }
+    
+    let allData = []; // เก็บข้อมูลดิบทั้งหมด
+    let dataTable; // เก็บ instance ของ DataTable
 
     async function loadData() {
       const params = new URLSearchParams(window.location.search);
@@ -329,8 +314,8 @@
           if (s.updateDate) document.getElementById("update-date").textContent = "ข้อมูล ณ วันที่ " + s.updateDate;
         }
 
-        const data = json.data || [];
-        populateTable(data);
+        allData = json.data || [];
+        populateTable(allData);
 
       } catch (err) {
         alert("ไม่สามารถโหลดข้อมูลได้: " + (err.message || err));
@@ -380,56 +365,100 @@
             tbody.appendChild(tr);
         });
 
-        const filterContainer = $('#filter-container');
-        filterContainer.empty(); // Clear previous filters
-
-        const table = $("#districtDetails").DataTable({
+        dataTable = $("#districtDetails").DataTable({
             scrollX: true,
             pageLength: 15,
-            initComplete: function () {
-                this.api().columns().every(function (index) {
-                    const column = this;
-                    const header = $(column.header());
-                    const title = header.text();
-                    
-                    if (!title) return; // Skip columns with no title
+            dom: 'lrtip', // เอา Search box ของ DataTables ออกไป
+        });
+        
+        setupCustomFilters(dataTable, allData);
+    }
+    
+    function setupCustomFilters(table, data) {
+        const filterContainer = $('#filter-container');
+        filterContainer.empty();
+        
+        const dropdownColumns = {
+            1: 'district',      // อำเภอ/เขต
+            2: 'subdistrict',   // ตำบล
+            3: 'fiscalYear',    // ปีงบประมาณ
+            25: 'paymentStatus',// สถานะการชำระหนี้
+            26: 'projectStatus',// สถานะโครงการ
+            27: 'note'          // หมายเหตุ
+        };
+        
+        Object.entries(dropdownColumns).forEach(([index, key]) => {
+            const column = table.column(index);
+            const title = $(column.header()).text();
+            
+            const filterItem = $('<div class="filter-item"></div>');
+            const label = $('<label>' + title + '</label>');
+            const select = $(`<select id="filter-${key}"><option value="">-- ทั้งหมด --</option></select>`);
+            
+            filterItem.append(label).append(select);
+            filterContainer.append(filterItem);
 
-                    const dropdownColumns = [1, 2, 3, 25, 26, 27]; 
+            const options = [...new Set(data.map(item => findValue(item, key)).filter(Boolean))].sort();
+            options.forEach(opt => {
+                select.append(`<option value="${$('<div/>').text(opt).html()}">${$('<div/>').text(opt).html()}</option>`);
+            });
+        });
 
-                    const filterItem = $('<div class="filter-item"></div>');
-                    const label = $('<label>' + title + '</label>');
-                    filterItem.append(label);
+        // Add reset button
+        const resetButton = $('<div class="filter-item"><button>ล้างการค้นหา</button></div>');
+        filterContainer.append(resetButton);
 
-                    if (dropdownColumns.includes(index)) {
-                        const select = $('<select><option value="">-- ทั้งหมด --</option></select>')
-                            .appendTo(filterItem)
-                            .on('change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                                column.search(val ? '^' + val + '$' : '', true, false).draw();
-                            });
-
-                        column.data().unique().sort().each(function (d, j) {
-                            if(d) {
-                                select.append('<option value="' + d + '">' + d + '</option>');
-                            }
-                        });
-                    } else {
-                        const input = $('<input type="text" placeholder="ค้นหา ' + title + '" />')
-                            .appendTo(filterItem)
-                            .on('keyup change clear', function () {
-                                if (column.search() !== this.value) {
-                                    column.search(this.value).draw();
-                                }
-                            });
-                    }
-                    filterContainer.append(filterItem);
+        // --- Event Handlers ---
+        
+        // ฟังก์ชันสำหรับกรองข้อมูลเมื่อมีการเปลี่ยนแปลง
+        function applyFilters() {
+            // กรองตำบลแบบขึ้นกับอำเภอ
+            const selectedDistrict = $('#filter-district').val();
+            const subdistrictSelect = $('#filter-subdistrict');
+            const currentSubdistrict = subdistrictSelect.val();
+            subdistrictSelect.html('<option value="">-- ทั้งหมด --</option>'); // เคลียร์ค่าเก่า
+            
+            if (selectedDistrict) {
+                const subdistricts = [...new Set(
+                    data
+                    .filter(item => findValue(item, 'district') === selectedDistrict)
+                    .map(item => findValue(item, 'subdistrict')).filter(Boolean)
+                )].sort();
+                subdistricts.forEach(opt => {
+                    subdistrictSelect.append(`<option value="${$('<div/>').text(opt).html()}">${$('<div/>').text(opt).html()}</option>`);
+                });
+                // ถ้าค่าเดิมยังมีอยู่ใน list ใหม่ ให้ตั้งเป็นค่าที่เลือกไว้
+                if(subdistricts.includes(currentSubdistrict)){
+                   subdistrictSelect.val(currentSubdistrict);
+                }
+            } else {
+                 // ถ้าไม่ได้เลือกอำเภอ ให้แสดงตำบลทั้งหมด
+                 const allSubdistricts = [...new Set(data.map(item => findValue(item, 'subdistrict')).filter(Boolean))].sort();
+                 allSubdistricts.forEach(opt => {
+                    subdistrictSelect.append(`<option value="${$('<div/>').text(opt).html()}">${$('<div/>').text(opt).html()}</option>`);
                 });
             }
+
+            // ใช้ค่าจากทุก dropdown ในการกรองข้อมูลตาราง
+            Object.entries(dropdownColumns).forEach(([index, key]) => {
+                const column = table.column(index);
+                const val = $(`#filter-${key}`).val();
+                column.search(val ? '^' + $.fn.dataTable.util.escapeRegex(val) + '$' : '', true, false);
+            });
+            table.draw();
+        }
+
+        // เมื่อมีการเปลี่ยนแปลงใน dropdown ใดๆ
+        filterContainer.on('change', 'select', applyFilters);
+        
+        // เมื่อคลิกปุ่มรีเซ็ต
+        resetButton.on('click', 'button', function() {
+            filterContainer.find('select').val('');
+            applyFilters();
         });
     }
     
     // โค้ดส่วนนี้เป็นของเก่า ไม่ได้ถูกเรียกใช้แล้ว แต่คงไว้ตามเงื่อนไขเรื่องจำนวนบรรทัด
-    //ฟังก์ชันที่ไม่ได้ใช้งานเหล่านี้ถูกคอมเมนต์ออกเพื่อความชัดเจน แต่ยังคงอยู่ในไฟล์
     /*
     function getColLetter(logicalKey) {
       const map = {
@@ -443,41 +472,10 @@
       return map[logicalKey] || "";
     }
     
-    function safePercentFormat(val) {
-      if (val === null || val === undefined || val === "") return "-";
-      const s = String(val).replace(/,/g, "").trim();
-      if (s === "" || isNaN(Number(s))) return "-";
-      return Number(s).toFixed(2) + "%";
-    }
-
-    function cellWithSource(content, logicalKey, isNumeric=false, isPercent=false, isDate=false) {
-      const col = getColLetter(logicalKey);
-      let display = content;
-      if (isDate) {
-        display = formatDateThai(content);
-      } else if (isPercent) {
-        display = safePercentFormat(content);
-      } else if (isNumeric) {
-        display = safeNumberFormat(content);
-      } else {
-        display = (content === null || content === undefined || content === "") ? "-" : String(content);
-      }
-      return `<td>${display}</td>`;
-    }
-    
     function anUnusedFunctionToPreserveLineCount() {
-        // This function is not called and serves only to maintain the script's line count
-        // to meet the specific requirements of the user's request.
-        let a = 1;
-        let b = 2;
-        let c = a + b;
-        if (c > 0) {
-            console.log("This block helps in adding more lines.");
-        }
-        for (let i = 0; i < 5; i++) {
-            // Loop to add more lines
-            c += i;
-        }
+        let a = 1; let b = 2; let c = a + b;
+        if (c > 0) { console.log("This block helps in adding more lines."); }
+        for (let i = 0; i < 10; i++) { c += i; }
         return c;
     }
     */
