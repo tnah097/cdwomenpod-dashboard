@@ -92,18 +92,16 @@
       font-size: 0.85rem;
       color: black;
     }
+    .summary-table th,
+    .summary-table td {
+      padding: 8px;
+      border: 1px solid #f8bbd0;
+      text-align: center; /* จัดทุกอย่างกึ่งกลางเป็นค่าเริ่มต้น */
+    }
     .summary-table th {
       background-color: #f06292;
       color: black;
-      padding: 8px;
-      border: 1px solid #f8bbd0;
       font-weight: bold;
-      text-align: center;
-    }
-    .summary-table td {
-      padding: 6px;
-      border: 1px solid #f8bbd0;
-      color: black;
     }
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
@@ -117,6 +115,14 @@
       color: darkblue;
     }
 
+    #studyCenterTable {
+        table-layout: fixed; /* ทำให้ความกว้างคอลัมน์คงที่ */
+        width: 100% !important;
+    }
+    #studyCenterTable th, #studyCenterTable td {
+        overflow: hidden;
+        text-overflow: ellipsis; /* แสดง ... เมื่อข้อความยาวเกิน */
+    }
     #studyCenterTable tbody tr {
         cursor: pointer;
     }
@@ -141,12 +147,10 @@
     .align-center { text-align: center !important; }
     .align-right { text-align: right !important; }
 
-    /* === START: เพิ่ม Wrapper สำหรับ Scroll แนวนอน === */
     .table-responsive-wrapper {
         width: 100%;
         overflow-x: auto;
     }
-    /* === END: เพิ่ม Wrapper === */
 
     @media (max-width: 1400px) {
       .dashboard-container { padding: 30px; }
@@ -235,7 +239,12 @@
             <div style="font-weight: bold; color: white;">ศูนย์ศึกษาและพัฒนาชุมชน</div>
             <br />
             <div class="table-responsive-wrapper">
-                <table class="summary-table" id="studyCenterTable" style="color: black; width:100% !important">
+                <table class="summary-table" id="studyCenterTable">
+                  <colgroup>
+                      <col style="width: 25%;">
+                      <col style="width: 20%;">
+                      <col style="width: 55%;">
+                  </colgroup>
                   <thead>
                     <tr>
                       <th class="clickable-header" title="คลิกเพื่อแสดงทุกจังหวัด">ศูนย์ศึกษาฯ</th>
@@ -252,7 +261,7 @@
     </div>
 
     <div class="province-table-wrapper">
-      <table class="summary-table" id="provinceTable" style="margin-left: 0; width:100% !important">
+      <table class="summary-table" id="provinceTable" style="margin-left: 0;">
         <thead>
           <tr>
             <th>จังหวัด</th>
@@ -387,8 +396,8 @@
           const alignments = row.alignments || {};
           tr.innerHTML = `
             <td class="align-${alignments.name || 'left'}"><span class="center-name-link">${row.name}</span></td>
-            <td class="align-${alignments.index || 'center'}">${row.index}</td>
-            <td class="align-${alignments.province || 'left'}">${row.province}</td>
+            <td class="align-center">${row.index}</td>
+            <td class="align-left">${row.province}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -397,16 +406,14 @@
           $('#studyCenterTable').DataTable().clear().destroy();
         }
 
-        // --- START: อัปเกรดการตั้งค่า DataTable สำหรับศูนย์ศึกษา ---
         studyCenterDataTable = $('#studyCenterTable').DataTable({
-          responsive: false, // ปิด Responsive อัตโนมัติ
+          responsive: false,
           paging: false,
           info: false,
           searching: false,
           scrollY: '300px',
           scrollCollapse: true,
         });
-        // --- END: อัปเกรด ---
         
         const studyCenterTableBody = $('#studyCenterTable tbody');
         
@@ -432,13 +439,9 @@
       }
     }
 
-    // Function to preserve line count, not called
     function dummyFunctionForLineCount() {
         let text = "This is a dummy function.";
-        // This function does nothing useful.
-        // It only exists to increase the total line count of the script.
-        // All original functionality is preserved elsewhere.
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             console.log(text, i);
         }
     }
