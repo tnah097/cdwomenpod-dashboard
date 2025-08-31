@@ -80,7 +80,7 @@
       margin-top:3px;
     }
     
-    /* === START: CSS ที่เพิ่มเข้ามาสำหรับ Filters === */
+    /* === START: CSS เดิมสำหรับ Filters (เก็บไว้) === */
     .dt-buttons, div.dataTables_wrapper div.dataTables_filter {
         text-align: right;
     }
@@ -94,7 +94,21 @@
         border-radius: 4px;
         font-family: 'Sarabun', sans-serif;
     }
-    /* === END: CSS ที่เพิ่มเข้ามา === */
+    /* === END: CSS เดิม === */
+
+    /* === START: CSS ที่เพิ่มใหม่สำหรับ Column Filters === */
+    #districtDetails tfoot th {
+        padding: 5px;
+    }
+    #districtDetails tfoot input {
+        width: 95%;
+        padding: 3px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-family: 'Sarabun', sans-serif;
+    }
+    /* === END: CSS ที่เพิ่มใหม่ === */
 
   </style>
 </head>
@@ -148,6 +162,7 @@
         <select id="projectStatusFilter"><option value="">-- ทุกสถานะโครงการ --</option></select>
         <select id="noteFilter"><option value="">-- ทุกหมายเหตุ --</option></select>
     </div>
+
     <table id="districtDetails" class="display" style="width:100%">
       <thead>
         <tr>
@@ -182,7 +197,20 @@
         </tr>
       </thead>
       <tbody></tbody>
-    </table>
+      <tfoot>
+        <tr>
+          <th></th> <th>อำเภอ/เขต</th>
+          <th>ตำบล</th>
+          <th>ปีงบประมาณ</th>
+          <th>เลขที่สัญญา</th>
+          <th>ชื่อโครงการ</th>
+          <th>ผู้เสนอโครงการ</th>
+          <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th>สถานะการชำระหนี้</th>
+          <th>สถานะโครงการ</th>
+          <th>หมายเหตุ</th>
+        </tr>
+      </tfoot>
+      </table>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -229,7 +257,7 @@
 
             allData = json.data || [];
             populateTable(allData);
-            setupFilters(allData);
+            // setupFilters(allData); // เรียกใช้ฟังก์ชันกรองแบบใหม่แทน
 
         } catch (err) {
             alert("ไม่สามารถโหลดข้อมูลได้: " + (err.message || err));
@@ -280,16 +308,38 @@
             $("#districtDetails").DataTable().destroy();
         }
         
+        // --- START: แก้ไขการตั้งค่า DataTables เพื่อเพิ่ม Column Filters ---
         dataTable = $("#districtDetails").DataTable({
             scrollX: true,
             pageLength: 15,
-            dom: 'l<"toolbar">frtip'
+            // dom: 'l<"toolbar">frtip', // ใช้ dom แบบมาตรฐานแทน
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    var footer = $(column.footer());
+                    
+                    // ตรวจสอบว่า footer cell ว่างหรือไม่ (ตามที่เรากำหนดใน HTML)
+                    if (footer.text().trim() !== '') {
+                         var title = footer.text();
+                         var input = $('<input type="text" placeholder="ค้นหา ' + title + '" />')
+                             .appendTo(footer.empty())
+                             .on('keyup change clear', function () {
+                                 if (column.search() !== this.value) {
+                                     column.search(this.value).draw();
+                                 }
+                             });
+                    }
+                });
+            }
         });
+        // --- END: แก้ไขการตั้งค่า DataTables ---
         
-        $("div.toolbar").html($('#filters-container').html());
-        $('#filters-container').remove();
+        // ส่วนนี้ไม่ถูกใช้งานแล้ว แต่เก็บไว้ตามเงื่อนไข
+        // $("div.toolbar").html($('#filters-container').html());
+        // $('#filters-container').remove(); 
     }
 
+    // ฟังก์ชันกรองข้อมูลแบบ Dropdown เดิม (เก็บไว้ แต่ไม่ถูกเรียกใช้)
     function setupFilters(data) {
         $('div.dataTables_wrapper').on('change', '#districtFilter, #subdistrictFilter, #fiscalYearFilter, #projectStatusFilter, #noteFilter', function() {
             dataTable.draw();
@@ -321,6 +371,7 @@
         populateUniqueOptions(data, 'note', '#noteFilter');
     }
     
+    // ฟังก์ชันเดิม (เก็บไว้ แต่ไม่ถูกเรียกใช้)
     function populateUniqueOptions(data, logicalKey, selector) {
         const selectElement = $(selector);
         if (selectElement.length === 0) return;
@@ -339,12 +390,16 @@
         selectElement.val(currentVal); // Restore value
     }
 
+    // ฟังก์ชันกรองข้อมูลแบบ Dropdown เดิม (เก็บไว้ แต่ไม่ถูกเรียกใช้)
     $.fn.dataTable.ext.search.push(
         function(settings, data, dataIndex) {
             if (settings.nTable.id !== 'districtDetails') {
                 return true;
             }
             
+            // ตรวจสอบว่า filter แบบเก่าถูกสร้างขึ้นหรือไม่ ถ้าไม่ ให้ข้ามไปเลย
+            if ($('#districtFilter').length === 0) return true;
+
             const district = $('#districtFilter').val();
             const subdistrict = $('#subdistrictFilter').val();
             const fiscalYear = $('#fiscalYearFilter').val();
