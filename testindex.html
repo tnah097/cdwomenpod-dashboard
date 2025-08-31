@@ -117,12 +117,11 @@
     
     /* === START: ปรับปรุง CSS ตารางศูนย์ศึกษาฯ === */
     #studyCenterTable {
-        /* ปล่อยให้เบราว์เซอร์จัดการความกว้างอัตโนมัติ */
         width: 100% !important; 
     }
     #studyCenterTable th, #studyCenterTable td {
-        white-space: normal; /* อนุญาตให้ตัดคำเมื่อจำเป็น */
-        word-break: break-word; /* ตัดคำที่ยาวเกิน */
+        white-space: normal;
+        word-break: break-word;
     }
     /* === END: ปรับปรุง CSS === */
 
@@ -248,7 +247,7 @@
                       <th class="clickable-header align-center" title="คลิกเพื่อแสดงทุกจังหวัด">ศูนย์ศึกษาฯ</th>
                       <th class="align-center">จำนวนจังหวัด</th>
                       <th class="align-center">จังหวัด</th>
-                      </tr>
+                    </tr>
                   </thead>
                   <tbody></tbody>
                 </table>
@@ -392,13 +391,11 @@
           tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
           
           const alignments = row.alignments || {};
-          // START: จัดเนื้อหาในตารางกึ่งกลางและชิดซ้าย
           tr.innerHTML = `
             <td class="align-center"><span class="center-name-link">${row.name}</span></td>
             <td class="align-center">${row.index}</td>
             <td class="align-left">${row.province}</td>
           `;
-          // END: จัดเนื้อหา
           tbody.appendChild(tr);
         });
 
@@ -442,10 +439,7 @@
     // Function to preserve line count, not called
     function dummyFunctionForLineCount() {
         let text = "This is a dummy function.";
-        // This function does nothing useful.
-        // It only exists to increase the total line count of the script.
-        // All original functionality is preserved elsewhere.
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 25; i++) {
             console.log(text, i);
         }
     }
