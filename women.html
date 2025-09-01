@@ -1,1 +1,276 @@
 
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>CDWomenPOD Dashboard</title>
+  <!-- ไลบรารี Chart.js, jQuery, DataTables CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ... (CSS เหมือนเดิม ไม่เปลี่ยน) ... */
+    body {
+      font-family: 'Sarabun', sans-serif;
+      margin: 0;
+      background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
+      background-attachment: fixed;
+      color: #000;
+    }
+    /* ... (ตัด CSS ซ้ำ) ... */
+    /* (ใช้ CSS จากโค้ดที่คุณให้มาเลย) */
+  </style>
+</head>
+<body>
+  <div class="dashboard-container scale-control">
+    <!-- ... ส่วน HTML เหมือนเดิม ... -->
+    <div class="header">
+      <div class="header-text">
+        <h1><span style="color: navy;">CD</span><span style="color: deeppink;">Women</span><span style="color: red;">POD</span></h1>
+        <h2><span style="color: black;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ </span><span style="color: red;" id="province-title">รายจังหวัด</span></h2>
+        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">
+          ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
+        </div>
+      </div>
+      <div class="logo-container">
+        <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+      </div>
+    </div>
+    <div style="color: navy; font-weight: bold; text-align: right; font-size: 1.5rem; margin-top: 1rem;">
+      ข้อมูล ณ วันที่ 20 กรกฎาคม 2568
+    </div>
+
+    <div class="cards">
+      <div class="card pink">จำนวนโครงการ<div class="value" id="num-projects">-</div></div>
+      <div class="card light-pink">
+        ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567<div class="value" id="debt-oct">-</div>
+        ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now">-</div>
+      </div>
+      <div class="card orange">
+        หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue">-</div>
+        ร้อยละ<div class="value" id="percent-overdue">-</div>
+      </div>
+    </div>
+
+    <div class="main-visuals">
+      <div class="left">
+        <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
+        <br />
+        <canvas id="donutChart"></canvas>
+      </div>
+      <div class="center">
+        <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
+      </div>
+
+      <div class="right">
+        <div class="cards" style="flex-direction: column; gap: 20px;">
+          <div class="card deep-pastel-pink">เงินที่อนุมัติ<div class="value" id="approved-money">-</div></div>
+          <div class="card deep-pastel-pink">ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal">-</div></div>
+
+          <div class="card deep-pastel-pink">
+            <div style="font-weight: bold; color: white;">ศูนย์ศึกษารายและพัฒนาชุมชน</div>
+            <br />
+            <table class="summary-table" id="studyCenterTable" style="color: black;">
+              <thead>
+                <tr>
+                  <th style="font-weight: bold; color: white;">ศูนย์ศึกษารายจังหวัด</th>
+                  <th style="font-weight: bold; color: white;">ลำดับ</th>
+                  <th style="font-weight: bold; color: white;">จังหวัด</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="province-table-wrapper">
+      <table class="summary-table" id="provinceTable" style="margin-left: 0;">
+        <thead>
+          <tr>
+            <th style="text-align: left;">จังหวัด</th>
+            <th>จำนวนโครงการ</th>
+            <th>เงินที่อนุมัติ</th>
+            <th>หนี้คงเหลือต้นปีบัญชี</th>
+            <th>ลูกหนี้คงเหลือ ณ ปัจจุบัน</th>
+            <th>หนี้ที่ดำเนินการตามกฎหมาย</th>
+            <th>หนี้เกินกำหนดชำระ</th>
+            <th>ร้อยละหนี้เกินกำหนดชำระ</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbx295pbo3p-ouvzXJ7PpPFZ5II0AEURzZMG6tteqdoC0Je-nfuiUIGE13xUmiQkIq3S/exec";
+    const pastelColors = [
+      '#FF202B', '#87FEBC', '#FFB6B7', '#FFDD63', '#F68B71',
+      '#DAB9E6', '#A0E8E8', '#ADFF2F', '#FFFF00', '#FFA500'
+    ];
+
+    function formatNumber(num) {
+      return Number(num || 0).toLocaleString("th-TH");
+    }
+
+    let donutChartInstance = null; // เก็บ instance Chart
+
+    async function fetchData() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        const overview = data.overview || {};
+        const provinces = data.provinces || [];
+        const pieChartData = data.pieChartData || [];
+
+        // เติมข้อมูลใน dashboard
+        document.getElementById('num-projects').textContent = formatNumber(overview.totalProjects);
+        document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
+        document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
+        document.getElementById('overdue').textContent = formatNumber(overview.overdue);
+
+        // แก้ไขตรงนี้ ให้แสดง 2 ตำแหน่งทศนิยม
+        const percent = parseFloat(overview.overduePercent);
+        document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
+
+        document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
+        document.getElementById('legal').textContent = formatNumber(overview.legalAction);
+
+        // ล้าง Chart เดิมก่อนสร้างใหม่
+        if (donutChartInstance) {
+          donutChartInstance.destroy();
+        }
+
+        // สร้าง donut chart
+        const donutCtx = document.getElementById('donutChart').getContext('2d');
+        donutChartInstance = new Chart(donutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: pieChartData.map(p => p.province),
+            datasets: [{
+              // แปลงเป็น float และ fix 2 ตำแหน่งก่อนแสดงผลใน chart
+              data: pieChartData.map(p => {
+                const val = parseFloat(p.percent);
+                return isNaN(val) ? 0 : +val.toFixed(2);
+              }),
+              backgroundColor: pastelColors.slice(0, pieChartData.length)
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true,
+                  font: { size: 14 }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw;
+                    // แสดงทศนิยม 2 ตำแหน่งใน tooltip
+                    return ${label}: ${value.toFixed(2)}%;
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // เติมตารางจังหวัด
+        const tbody = document.querySelector("#provinceTable tbody");
+        tbody.innerHTML = "";
+        provinces.forEach(p => {
+          const provinceEncoded = encodeURIComponent(p.province);
+          // ลิงก์ไปหน้ารายละเอียดจังหวัดบน GitHub Pages
+          const url = https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded};
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = 
+            <td><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
+            <td>${formatNumber(p.totalProjects)}</td>
+            <td>${formatNumber(p.approvedAmount)}</td>
+            <td>${formatNumber(p.debtStart)}</td>
+            <td>${formatNumber(p.debtNow)}</td>
+            <td>${formatNumber(p.legalAction)}</td>
+            <td>${formatNumber(p.overdue)}</td>
+            <td>${(isNaN(parseFloat(p.overduePercent)) ? 0 : parseFloat(p.overduePercent).toFixed(2))}%</td>
+          ;
+          tbody.appendChild(tr);
+        });
+
+        // กำหนด DataTable (ถ้ามี table เดิมให้ทำลายก่อน)
+        if ($.fn.DataTable.isDataTable('#provinceTable')) {
+          $('#provinceTable').DataTable().clear().destroy();
+        }
+        $('#provinceTable').DataTable({
+          paging: false,
+          scrollY: '400px',
+          scrollCollapse: true,
+          language: {
+            search: "ค้นหา:",
+            info: "แสดง _TOTAL_ รายการ",
+            infoEmpty: "ไม่มีข้อมูล",
+            zeroRecords: "ไม่พบข้อมูล",
+          }
+        });
+
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
+      }
+    }
+
+    async function fetchStudyCenterData() {
+      try {
+        const res = await fetch(${API_URL}?action=studyCenter);
+        const data = await res.json();
+        const centers = data.studyCenter || [];
+        const tbody = document.querySelector("#studyCenterTable tbody");
+        tbody.innerHTML = "";
+
+        centers.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = 
+            <td style="text-align: left;">${row.name}</td>
+            <td>${row.index}</td>
+            <td>${row.province}</td>
+          ;
+          tbody.appendChild(tr);
+        });
+
+        if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
+          $('#studyCenterTable').DataTable().clear().destroy();
+        }
+        $('#studyCenterTable').DataTable({
+          paging: false,
+          scrollY: '300px',
+          scrollCollapse: true,
+          searching: true,
+          language: {
+            search: "ค้นหา:",
+            info: "แสดง _TOTAL_ รายการ",
+            infoEmpty: "ไม่มีข้อมูล",
+            zeroRecords: "ไม่พบข้อมูล",
+          }
+        });
+
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลศูนย์ศึกษา:", error);
+      }
+    }
+
+    // เรียกฟังก์ชันโหลดข้อมูลเมื่อเปิดหน้าเว็บ
+    fetchData();
+    fetchStudyCenterData();
+  </script>
+</body>
+</html>
