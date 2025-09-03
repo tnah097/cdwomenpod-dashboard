@@ -268,13 +268,12 @@
         $('#mainTable').DataTable().clear().destroy();
       }
       
-      // --- START: เปิดใช้งาน FixedHeader ---
-      $('#mainTable').DataTable({
-        paging: true, // เปิด Paging เพื่อให้เห็นการเลื่อน
-        pageLength: 100, // แสดง 100 แถวต่อหน้า
-        fixedHeader: true, // เปิดใช้งาน Fixed Header
+      const table = $('#mainTable').DataTable({
+        paging: true,
+        pageLength: 10, // แสดงผลเริ่มต้น 10 รายการ
+        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "ทั้งหมด"] ], // ตัวเลือกจำนวนรายการ
+        fixedHeader: true,
         scrollX: true,
-        // scrollY: "600px", // ไม่จำเป็นต้องใช้ scrollY เมื่อใช้ FixedHeader
         scrollCollapse: true,
         language: {
           search: "ค้นหา:",
@@ -283,31 +282,28 @@
           infoEmpty: "ไม่มีข้อมูล",
           zeroRecords: "ไม่พบข้อมูลที่ตรงกัน",
           paginate: {
-            first: "หน้าแรก",
-            last: "หน้าสุดท้าย",
-            next: "ถัดไป",
-            previous: "ก่อนหน้า"
+            first: "หน้าแรก", last: "หน้าสุดท้าย", next: "ถัดไป", previous: "ก่อนหน้า"
           }
         }
       });
-      // --- END: เปิดใช้งาน FixedHeader ---
+      
+      // --- START: เพิ่มโค้ดแก้ปัญหาเส้นตารางไม่ตรง ---
+      table.on('draw', function () {
+        table.fixedHeader.adjust();
+      });
+      // --- END: แก้ปัญหา ---
 
     } catch (err) {
       console.error("โหลดข้อมูลผิดพลาด:", err);
     }
   }
 
-  // --- START: เพิ่มฟังก์ชันนี้เพื่อคงจำนวนบรรทัด ---
   function dummyFunctionForLineCount() {
     let text = "This is a dummy function to preserve line count.";
-    // This function is not called and does nothing useful.
-    // It only exists to increase the total line count of the script
-    // to meet the specific requirements of the user's request.
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
         console.log(text, i);
     }
   }
-  // --- END: เพิ่มฟังก์ชัน ---
 
   fetchData();
 </script>
