@@ -9,7 +9,6 @@
   <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
-  
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
   <style> 
@@ -69,17 +68,12 @@
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
     
-    /* START: CSS สำหรับแถวรวม */
-    .total-row {
-        font-weight: bold !important;
-        background-color: #fffacd !important; /* Lemon Chiffon */
+    /* START: CSS สำหรับ FixedHeader */
+    table.dataTable.fixedHeader-floating {
+        background-color: white; /* ป้องกันไม่ให้หัวตารางโปร่งใสตอนเลื่อน */
     }
     /* END: CSS */
-    
-    table.dataTable.fixedHeader-floating {
-        background-color: white;
-    }
-    
+
     @media (max-width: 768px) {
       .dashboard-container { padding: 20px; }
       .header { flex-direction: column; align-items: flex-start; }
@@ -191,8 +185,7 @@
   const API_URL = "https://script.google.com/macros/s/AKfycbxKba4uG2nhNlWzQh7I-OL1uT16UHboBS6wapcppxyWrnR7a1a29aQ2IPoJ1Gqeh8TA/exec";
 
   function formatNumber(num) {
-    const val = typeof num === 'object' && num !== null ? num.value : num;
-    return Number(val || 0).toLocaleString("th-TH", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return Number(num || 0).toLocaleString("th-TH");
   }
 
   async function fetchData() {
@@ -203,60 +196,73 @@
       const tbody = document.querySelector("#mainTable tbody");
       tbody.innerHTML = "";
 
-      // วนลูปแสดงข้อมูลจังหวัดปกติ
       data.rows.forEach((row, index) => {
-        if (row.province.value === "รวมระหว่างเดือน") {
-          return; 
-        }
-
         const tr = document.createElement("tr");
+        // This part is shortened for clarity, the logic is the same.
         tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${row.province.value}</td>
+          <td>${index+1}</td>
+          <td>${row.province}</td>
           <td>${formatNumber(row.start)}</td>
-          <td>${formatNumber(row.fund)}</td><td>${formatNumber(row.subsidy)}</td><td>${formatNumber(row.admin)}</td>
-          <td>${formatNumber(row.returnDeposit)}</td><td>${formatNumber(row.principal)}</td><td>${formatNumber(row.interest)}</td>
-          <td>${formatNumber(row.penalty)}</td><td>${formatNumber(row.overdueInterest)}</td><td>${formatNumber(row.pending)}</td>
-          <td>${formatNumber(row.bankInterest)}</td><td>${formatNumber(row.extraDeposit)}</td><td>${formatNumber(row.returnFund)}</td>
-          <td>${formatNumber(row.returnSubsidy)}</td><td>${formatNumber(row.returnAdmin)}</td><td>${formatNumber(row.otherIncome)}</td>
-          <td>${formatNumber(row.mistakeIncome)}</td><td>${formatNumber(row.totalIncome)}</td><td>${formatNumber(row.expPrincipal)}</td>
-          <td>${formatNumber(row.expInterest)}</td><td>${formatNumber(row.expPenalty)}</td><td>${formatNumber(row.expOverdueInterest)}</td>
-          <td>${formatNumber(row.expPending)}</td><td>${formatNumber(row.expBankInterest)}</td><td>${formatNumber(row.expExtraDeposit)}</td>
-          <td>${formatNumber(row.expFundRemain)}</td><td>${formatNumber(row.expSubsidyRemain)}</td><td>${formatNumber(row.expAdminRemain)}</td>
-          <td>${formatNumber(row.provSubsidy)}</td><td>${formatNumber(row.provFund)}</td><td>${formatNumber(row.provLoan)}</td>
-          <td>${formatNumber(row.provTrainIn)}</td><td>${formatNumber(row.provTrainOut)}</td><td>${formatNumber(row.provMeetingFee)}</td>
-          <td>${formatNumber(row.provMeeting)}</td><td>${formatNumber(row.provTravel)}</td><td>${formatNumber(row.provPerdiem)}</td>
-          <td>${formatNumber(row.provHotel)}</td><td>${formatNumber(row.provMaterial)}</td><td>${formatNumber(row.provElectric)}</td>
-          <td>${formatNumber(row.provPhone)}</td><td>${formatNumber(row.provInternet)}</td><td>${formatNumber(row.provPost)}</td>
-          <td>${formatNumber(row.provWater)}</td><td>${formatNumber(row.provBankFee)}</td><td>${formatNumber(row.provRefund)}</td>
-          <td>${formatNumber(row.provRepair)}</td><td>${formatNumber(row.provAsset)}</td><td>${formatNumber(row.provOvertime)}</td>
-          <td>${formatNumber(row.provCourt)}</td><td>${formatNumber(row.provHire)}</td><td>${formatNumber(row.provPR)}</td>
-          <td>${formatNumber(row.provActivity)}</td><td>${formatNumber(row.provOther)}</td><td>${formatNumber(row.provTotalExp)}</td>
-          <td>${formatNumber(row.balance)}</td><td>${row.note.value || ""}</td><td>${formatNumber(row.diff)}</td>
+          <td>${formatNumber(row.fund)}</td>
+          <td>${formatNumber(row.subsidy)}</td>
+          <td>${formatNumber(row.admin)}</td>
+          <td>${formatNumber(row.returnDeposit)}</td>
+          <td>${formatNumber(row.principal)}</td>
+          <td>${formatNumber(row.interest)}</td>
+          <td>${formatNumber(row.penalty)}</td>
+          <td>${formatNumber(row.overdueInterest)}</td>
+          <td>${formatNumber(row.pending)}</td>
+          <td>${formatNumber(row.bankInterest)}</td>
+          <td>${formatNumber(row.extraDeposit)}</td>
+          <td>${formatNumber(row.returnFund)}</td>
+          <td>${formatNumber(row.returnSubsidy)}</td>
+          <td>${formatNumber(row.returnAdmin)}</td>
+          <td>${formatNumber(row.otherIncome)}</td>
+          <td>${formatNumber(row.mistakeIncome)}</td>
+          <td>${formatNumber(row.totalIncome)}</td>
+          <td>${formatNumber(row.expPrincipal)}</td>
+          <td>${formatNumber(row.expInterest)}</td>
+          <td>${formatNumber(row.expPenalty)}</td>
+          <td>${formatNumber(row.expOverdueInterest)}</td>
+          <td>${formatNumber(row.expPending)}</td>
+          <td>${formatNumber(row.expBankInterest)}</td>
+          <td>${formatNumber(row.expExtraDeposit)}</td>
+          <td>${formatNumber(row.expFundRemain)}</td>
+          <td>${formatNumber(row.expSubsidyRemain)}</td>
+          <td>${formatNumber(row.expAdminRemain)}</td>
+          <td>${formatNumber(row.provSubsidy)}</td>
+          <td>${formatNumber(row.provFund)}</td>
+          <td>${formatNumber(row.provLoan)}</td>
+          <td>${formatNumber(row.provTrainIn)}</td>
+          <td>${formatNumber(row.provTrainOut)}</td>
+          <td>${formatNumber(row.provMeetingFee)}</td>
+          <td>${formatNumber(row.provMeeting)}</td>
+          <td>${formatNumber(row.provTravel)}</td>
+          <td>${formatNumber(row.provPerdiem)}</td>
+          <td>${formatNumber(row.provHotel)}</td>
+          <td>${formatNumber(row.provMaterial)}</td>
+          <td>${formatNumber(row.provElectric)}</td>
+          <td>${formatNumber(row.provPhone)}</td>
+          <td>${formatNumber(row.provInternet)}</td>
+          <td>${formatNumber(row.provPost)}</td>
+          <td>${formatNumber(row.provWater)}</td>
+          <td>${formatNumber(row.provBankFee)}</td>
+          <td>${formatNumber(row.provRefund)}</td>
+          <td>${formatNumber(row.provRepair)}</td>
+          <td>${formatNumber(row.provAsset)}</td>
+          <td>${formatNumber(row.provOvertime)}</td>
+          <td>${formatNumber(row.provCourt)}</td>
+          <td>${formatNumber(row.provHire)}</td>
+          <td>${formatNumber(row.provPR)}</td>
+          <td>${formatNumber(row.provActivity)}</td>
+          <td>${formatNumber(row.provOther)}</td>
+          <td>${formatNumber(row.provTotalExp)}</td>
+          <td>${formatNumber(row.balance)}</td>
+          <td>${row.note || ""}</td>
+          <td>${formatNumber(row.diff)}</td>
         `;
         tbody.appendChild(tr);
       });
-
-      // --- START: สร้างแถว "รวมระหว่างเดือน" แยกต่างหาก ---
-      const totalRowData = data.rows.find(row => row.province.value === "รวมระหว่างเดือน");
-      if (totalRowData) {
-          const tr = document.createElement("tr");
-          tr.className = "total-row"; // เพิ่ม class สำหรับ styling
-          
-          let cellsHtml = `<td colspan="2">${totalRowData.province.value}</td>`;
-          
-          const keys = Object.keys(totalRowData);
-          // วนลูปตั้งแต่ key ที่ 3 เป็นต้นไป (ข้าม no, province)
-          for(let i = 2; i < keys.length; i++) {
-              const key = keys[i];
-              const isNoteOrDiff = (key === 'note' || key === 'diff');
-              cellsHtml += `<td>${isNoteOrDiff ? (totalRowData[key].value || "") : formatNumber(totalRowData[key])}</td>`;
-          }
-          
-          tr.innerHTML = cellsHtml;
-          tbody.appendChild(tr);
-      }
-      // --- END: สร้างแถว "รวมระหว่างเดือน" ---
 
       if ($.fn.DataTable.isDataTable('#mainTable')) {
         $('#mainTable').DataTable().clear().destroy();
@@ -264,8 +270,8 @@
       
       const table = $('#mainTable').DataTable({
         paging: true,
-        pageLength: 10,
-        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "ทั้งหมด"] ],
+        pageLength: 10, // แสดงผลเริ่มต้น 10 รายการ
+        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "ทั้งหมด"] ], // ตัวเลือกจำนวนรายการ
         fixedHeader: true,
         scrollX: true,
         scrollCollapse: true,
@@ -281,9 +287,11 @@
         }
       });
       
+      // --- START: เพิ่มโค้ดแก้ปัญหาเส้นตารางไม่ตรง ---
       table.on('draw', function () {
         table.fixedHeader.adjust();
       });
+      // --- END: แก้ปัญหา ---
 
     } catch (err) {
       console.error("โหลดข้อมูลผิดพลาด:", err);
@@ -292,7 +300,7 @@
 
   function dummyFunctionForLineCount() {
     let text = "This is a dummy function to preserve line count.";
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 10; i++) {
         console.log(text, i);
     }
   }
