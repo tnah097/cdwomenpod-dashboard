@@ -267,7 +267,7 @@
       const candidates = KEY_MAP[logicalKey] || [logicalKey];
       for (const k of candidates) {
         if (Object.prototype.hasOwnProperty.call(rowObj, k) && rowObj[k] !== null && rowObj[k] !== "") {
-          return rowObj[k];
+          return rowObj[k]; 
         }
       }
       if (Object.prototype.hasOwnProperty.call(rowObj, logicalKey) && rowObj[logicalKey] !== null && rowObj[logicalKey] !== "") {
@@ -522,5 +522,6 @@
   </script>
 </body>
 </html>
+
 
 
