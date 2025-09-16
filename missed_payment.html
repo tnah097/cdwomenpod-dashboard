@@ -9,23 +9,28 @@
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
-      background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat fixed;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       padding: 20px;
       box-sizing: border-box;
+      /* พื้นหลังโปร่งใสแบบเห็นพื้นหลังด้านหลัง */
+      background: 
+        linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)),
+        url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat fixed;
     }
+
     .container {
-      background-color: rgba(255, 255, 255, 0.92);
       border-radius: 25px;
       padding: 40px 30px;
       box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
       width: 100%;
       max-width: 600px;
       box-sizing: border-box;
+      background-color: rgba(255, 255, 255, 0.92); /* การ์ดยังโปร่งใสเล็กน้อย */
     }
+
     .header-section {
       display: flex;
       justify-content: space-between;
@@ -34,27 +39,32 @@
       flex-wrap: wrap;
       gap: 10px;
     }
+
     .header-text h1 {
       font-size: 2rem;
       font-weight: bold;
       margin: 0;
       color: navy;
     }
+
     .header-text h2 {
       font-size: 1.2rem;
       margin: 5px 0;
       color: deeppink;
     }
+
     .logos img {
       height: 60px;
       margin-left: 5px;
     }
+
     .calculator-card {
       background-color: #ffebf2;
       padding: 25px;
       border-radius: 20px;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
     }
+
     .formula {
       font-style: italic;
       text-align: center;
@@ -65,16 +75,19 @@
       padding: 10px;
       border-radius: 12px;
     }
+
     .input-group {
       display: flex;
       flex-direction: column;
       margin-bottom: 15px;
     }
+
     .input-group label {
       font-weight: bold;
       margin-bottom: 6px;
       color: #333;
     }
+
     .input-group input {
       padding: 12px;
       border: 2px solid #f8bbd0;
@@ -82,11 +95,13 @@
       font-size: 1rem;
       transition: 0.3s ease;
     }
+
     .input-group input:focus {
       outline: none;
       border-color: #e91e63;
       box-shadow: 0 0 8px rgba(233, 30, 99, 0.3);
     }
+
     .calc-button {
       width: 100%;
       padding: 15px;
@@ -100,10 +115,12 @@
       transition: 0.3s ease;
       margin-top: 10px;
     }
+
     .calc-button:hover {
       background-color: #c2185b;
       transform: translateY(-3px);
     }
+
     .result-box {
       margin-top: 20px;
       padding: 20px;
@@ -115,6 +132,7 @@
       font-weight: bold;
       color: #880e4f;
     }
+
     .small-text {
       text-align: right;
       font-size: 0.9rem;
@@ -128,6 +146,7 @@
     <div class="header-section">
       <div class="header-text">
         <h1>การคิดคำนวณดอกเบี้ยผิดนัด</h1>
+        <h2>โปรแกรมช่วยคำนวณ</h2>
       </div>
       <div class="logos">
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
@@ -135,47 +154,43 @@
       </div>
     </div>
 
- <p class="formula" style="line-height: 1.5;">
-  ดอกเบี้ยผิดนัด = (เงินต้น x อัตราดอกเบี้ย x จำนวนวันที่ผิดนัด) <br>
-  _________________________________________________<br>
-  <span style="display: inline-block; margin-top: 8px;">
-    365 วัน (จำนวนวันใน 1 ปี)
-  </span>
-</p>
-         
+    <p class="formula" style="line-height: 1.5;">
+      ดอกเบี้ยผิดนัด = (เงินต้น x อัตราดอกเบี้ย x จำนวนวันที่ผิดนัด) <br>
+      _________________________________________________<br>
+      <span style="display: inline-block; margin-top: 8px;">
+        365 วัน (จำนวนวันใน 1 ปี)
+      </span>
+    </p>
+
+    <div class="input-group">
+      <label for="principal">เงินต้นค้างชำระ (บาท):</label>
+      <input type="number" id="principal" placeholder="เช่น 50000">
+      <p style="color: red; font-size: 0.9rem; margin-top: 5px;">
+        หมายเหตุ* ให้ดูยอดเงินต้นคงเหลือสุดท้ายของงวดที่ผิดนัด
       </p>
+    </div>
 
-      <div class="input-group">
-  <label for="principal">เงินต้นค้างชำระ (บาท):</label>
-  <input type="number" id="principal" placeholder="เช่น 50000">
-  <p style="color: red; font-size: 0.9rem; margin-top: 5px;">
-    หมายเหตุ* ให้ดูยอดเงินต้นคงเหลือสุดท้ายของงวดที่ผิดนัดในงวดนั้น
-  </p>
-</div>
+    <div class="input-group">
+      <label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label>
+      <input type="number" id="rate" value="5" readonly>
+    </div>
 
+    <div class="input-group">
+      <label for="dueDate">วันที่ครบกำหนดชำระ/วันที่จ่ายชำระครั้งสุดท้าย:</label>
+      <input type="date" id="dueDate">
+    </div>
 
-      <div class="input-group">
-        <label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label>
-        <input type="number" id="rate" value="5" readonly>
-      </div>
+    <div class="input-group">
+      <label for="paymentDate">วันที่จ่ายชำระ:</label>
+      <input type="date" id="paymentDate">
+    </div>
 
-      <div class="input-group">
-        <label for="dueDate">วันที่ครบกำหนดชำระ/วันที่จ่ายชำระครั้งสุดท้าย:</label>
-        <input type="date" id="dueDate">
-      </div>
+    <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
 
-      <div class="input-group">
-        <label for="paymentDate">วันที่จ่ายชำระ:</label>
-        <input type="date" id="paymentDate">
-      </div>
+    <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
 
-      <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
-
-      <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
-
-      <div id="result" class="result-box">
-        ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท
-      </div>
+    <div id="result" class="result-box">
+      ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท
     </div>
   </div>
 
