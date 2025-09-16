@@ -9,12 +9,11 @@
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
-      /* เปลี่ยนพื้นหลังตามภาพที่คุณให้มา */
       background-color: #fbebf3;
       background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7kC31F758eO63F696l_55F0b0l1_0l558wQ&s');
       background-repeat: no-repeat;
       background-position: center;
-      background-size: 80%; /* ปรับขนาด watermark */
+      background-size: 80%;
       color: #333;
       display: flex;
       justify-content: center;
@@ -43,19 +42,19 @@
     .header-text h1 {
       font-size: 2.2rem;
       font-weight: bold;
-      color: #000080; /* navy */
+      color: #000080;
       margin: 0;
     }
     .header-text h2 {
       font-size: 1.2rem;
-      color: #c2185b; /* deeppink */
+      color: #c2185b;
       margin: 5px 0 0;
     }
     .header-text span.red {
-      color: #b71c1c; /* red */
+      color: #b71c1c;
     }
     .header-text span.pink {
-      color: #ff69b4; /* hotpink */
+      color: #ff69b4;
     }
     .logos {
       display: flex;
@@ -91,7 +90,7 @@
       color: #333;
       margin-bottom: 8px;
     }
-    .input-group input[type="number"] {
+    .input-group input {
       padding: 12px;
       border: 2px solid #f8bbd0;
       border-radius: 8px;
@@ -100,7 +99,7 @@
       box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
-    .input-group input[type="number"]:focus {
+    .input-group input:focus {
       outline: none;
       border-color: #e91e63;
     }
@@ -131,6 +130,12 @@
       font-weight: bold;
       color: #880e4f;
     }
+    .small-text {
+      text-align: right;
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
@@ -148,6 +153,7 @@
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="กองทุนพัฒนาบทบาทสตรี" class="main-logo" />
       </div>
     </div>
+
     <div class="calculator-card">
       <div class="calc-header">
         <h2>การคิดคำนวณดอกเบี้ยผิดนัด</h2>
@@ -166,8 +172,9 @@
         <input type="number" id="rate" placeholder="ป้อนอัตราดอกเบี้ย" step="0.01">
       </div>
       <div class="input-group">
-        <label for="days">จำนวนวันที่ผิดนัด (วัน):</label>
-        <input type="number" id="days" placeholder="ป้อนจำนวนวัน">
+        <label for="dueDate">วันที่กำหนดชำระเงินต้น:</label>
+        <input type="date" id="dueDate">
+        <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
       </div>
       <button class="calc-button" onclick="calculateInterest()">คำนวณ</button>
       <div id="result" class="result-box">
@@ -179,15 +186,47 @@
     function calculateInterest() {
       const principal = document.getElementById('principal').value;
       const rate = document.getElementById('rate').value;
-      const days = document.getElementById('days').value;
+      const dueDateStr = document.getElementById('dueDate').value;
       const resultBox = document.getElementById('result');
-      if (principal === "" || rate === "" || days === "" || isNaN(principal) || isNaN(rate) || isNaN(days)) {
+      const daysCountElement = document.getElementById('daysCount');
+      // Check for empty inputs or non-numeric values
+      if (principal === "" || rate === "" || dueDateStr === "" || isNaN(principal) || isNaN(rate)) {
         resultBox.innerHTML = "โปรดป้อนข้อมูลให้ครบถ้วนและถูกต้อง";
+        daysCountElement.innerHTML = "จำนวนวันที่ผิดนัด: 0 วัน";
         return;
       }
-      const interest = (parseFloat(principal) * parseFloat(rate) / 100 * parseFloat(days)) / 365;
+      // Calculate days in default
+      const dueDate = new Date(dueDateStr + 'T00:00:00Z'); // Parse date in UTC to avoid timezone issues
+      const now = new Date();
+      const diffTime = now.getTime() - dueDate.getTime();
+      const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (days < 0) {
+        daysCountElement.innerHTML = "วันที่กำหนดชำระยังไม่ถึง";
+        resultBox.innerHTML = "ดอกเบี้ยที่ต้องชำระ: 0.00 บาท";
+        return;
+      }
+      daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: **${days}** วัน`;
+      const interest = (parseFloat(principal) * parseFloat(rate) / 100 * days) / 365;
       resultBox.innerHTML = `ดอกเบี้ยที่ต้องชำระ: **${interest.toFixed(2)}** บาท`;
     }
+    // You can also add an event listener to update the days count in real-time
+    document.getElementById('dueDate').addEventListener('change', () => {
+      const dueDateStr = document.getElementById('dueDate').value;
+      const daysCountElement = document.getElementById('daysCount');
+      if (dueDateStr) {
+        const dueDate = new Date(dueDateStr + 'T00:00:00Z');
+        const now = new Date();
+        const diffTime = now.getTime() - dueDate.getTime();
+        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (days < 0) {
+          daysCountElement.innerHTML = "วันที่กำหนดชำระยังไม่ถึง";
+        } else {
+          daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: **${days}** วัน`;
+        }
+      } else {
+        daysCountElement.innerHTML = "จำนวนวันที่ผิดนัด: 0 วัน";
+      }
+    });
   </script>
 </body>
 </html>
