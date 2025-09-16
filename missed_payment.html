@@ -1,233 +1,199 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>โปรแกรมคำนวณดอกเบี้ยผิดนัด</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Sarabun', sans-serif;
-      margin: 0;
-      background-color: #fbebf3;
-      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7kC31F758eO63F696l_55F0b0l1_0l558wQ&s');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 80%;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .container {
-      background-color: rgba(255, 255, 255, 0.95);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 700px;
-      box-sizing: border-box;
-    }
-    .header-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 30px;
-    }
-    .header-text {
-      text-align: left;
-    }
-    .header-text h1 {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #000080;
-      margin: 0;
-    }
-    .header-text h2 {
-      font-size: 1.2rem;
-      color: #c2185b;
-      margin: 5px 0 0;
-    }
-    .header-text span.red {
-      color: #b71c1c;
-    }
-    .header-text span.pink {
-      color: #ff69b4;
-    }
-    .logos {
-      display: flex;
-      align-items: flex-end;
-    }
-    .logos img.main-logo {
-      height: 80px;
-    }
-    .logos img.cdd-logo {
-      height: 60px;
-      margin-right: 10px;
-    }
-    .calculator-card {
-      background-color: #ffebee;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-    }
-    .formula {
-      font-style: italic;
-      text-align: center;
-      margin-bottom: 30px;
-      color: #880e4f;
-      line-height: 1.6;
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 20px;
-    }
-    .input-group label {
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 8px;
-    }
-    .input-group input {
-      padding: 12px;
-      border: 2px solid #f8bbd0;
-      border-radius: 8px;
-      font-size: 1rem;
-      width: 100%;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    .input-group input:focus {
-      outline: none;
-      border-color: #e91e63;
-    }
-    .calc-button {
-      width: 100%;
-      padding: 15px;
-      background-color: #e91e63;
-      color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .calc-button:hover {
-      background-color: #c2185b;
-      transform: translateY(-3px);
-    }
-    .result-box {
-      margin-top: 30px;
-      padding: 25px;
-      border: 3px dashed #d6336c;
-      border-radius: 15px;
-      background-color: #fff8f9;
-      text-align: center;
-      font-size: 2rem;
-      font-weight: bold;
-      color: #880e4f;
-    }
-    .small-text {
-      text-align: right;
-      font-size: 0.9rem;
-      color: #777;
-      margin-top: 5px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>โปรแกรมคำนวณดอกเบี้ยผิดนัด</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      margin: 0;
+      background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.92);
+      border-radius: 25px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+    }
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header-text h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+      color: navy;
+    }
+    .header-text h2 {
+      font-size: 1.2rem;
+      margin: 5px 0;
+      color: deeppink;
+    }
+    .logos img {
+      height: 60px;
+      margin-left: 5px;
+    }
+    .calculator-card {
+      background-color: #ffebf2;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+    .formula {
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #c2185b;
+      font-weight: bold;
+      background: #f8bbd0;
+      padding: 10px;
+      border-radius: 12px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    .input-group input {
+      padding: 12px;
+      border: 2px solid #f8bbd0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: 0.3s ease;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #e91e63;
+      box-shadow: 0 0 8px rgba(233, 30, 99, 0.3);
+    }
+    .calc-button {
+      width: 100%;
+      padding: 15px;
+      background-color: #e91e63;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      margin-top: 10px;
+    }
+    .calc-button:hover {
+      background-color: #c2185b;
+      transform: translateY(-3px);
+    }
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      border: 3px dashed #f06292;
+      border-radius: 15px;
+      background-color: #fff8fa;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #880e4f;
+    }
+    .small-text {
+      text-align: right;
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 3px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header-section">
-      <div class="header-text">
-        <h1>ทะเบียนคุมการรับ-จ่ายเงินฝากคลัง (รหัส 10962)</h1>
-        <h2>
-          รายงานประจำ <span class="red">ตุลาคม</span> พ.ศ. <span class="red">2567</span>
-        </h2>
-        <h2 style="margin-top: 5px;"><span class="pink">สกส.02/2568</span></h2>
-      </div>
-      <div class="logos">
-        <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" class="cdd-logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="กองทุนพัฒนาบทบาทสตรี" class="main-logo" />
-      </div>
-    </div>
+  <div class="container">
+    <div class="header-section">
+      <div class="header-text">
+        <h1>การคิดคำนวณดอกเบี้ยผิดนัด</h1>
+        <h2>กรณีผิดนัดในงวด</h2>
+      </div>
+      <div class="logos">
+        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+      </div>
+    </div>
 
-    <div class="calculator-card">
-      <div class="calc-header">
-        <h2>การคิดคำนวณดอกเบี้ยผิดนัด</h2>
-        <h3>กรณี ผิดนัดในงวด</h3>
-      </div>
-      <p class="formula">
-        **สูตรที่ใช้คิดคำนวณ:**<br/>
-        ดอกเบี้ยผิดนัด = (เงินต้นที่ผิดนัดในงวดนั้น x อัตราดอกเบี้ยผิดนัด x จำนวนวันที่ผิดนัด) / 365
-      </p>
-      <div class="input-group">
-        <label for="principal">เงินต้นที่ผิดนัดในงวดนั้น (บาท):</label>
-        <input type="number" id="principal" placeholder="ป้อนเงินต้น">
-      </div>
-      <div class="input-group">
-        <label for="rate">อัตราดอกเบี้ยผิดนัด (%):</label>
-        <input type="number" id="rate" placeholder="ป้อนอัตราดอกเบี้ย" step="0.01">
-      </div>
-      <div class="input-group">
-        <label for="dueDate">วันที่กำหนดชำระเงินต้น:</label>
-        <input type="date" id="dueDate">
-        <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
-      </div>
-      <button class="calc-button" onclick="calculateInterest()">คำนวณ</button>
-      <div id="result" class="result-box">
-        ดอกเบี้ยที่ต้องชำระ: 0.00 บาท
-      </div>
-    </div>
-  </div>
-  <script>
-    function calculateInterest() {
-      const principal = document.getElementById('principal').value;
-      const rate = document.getElementById('rate').value;
-      const dueDateStr = document.getElementById('dueDate').value;
-      const resultBox = document.getElementById('result');
-      const daysCountElement = document.getElementById('daysCount');
-      // Check for empty inputs or non-numeric values
-      if (principal === "" || rate === "" || dueDateStr === "" || isNaN(principal) || isNaN(rate)) {
-        resultBox.innerHTML = "โปรดป้อนข้อมูลให้ครบถ้วนและถูกต้อง";
-        daysCountElement.innerHTML = "จำนวนวันที่ผิดนัด: 0 วัน";
-        return;
-      }
-      // Calculate days in default
-      const dueDate = new Date(dueDateStr + 'T00:00:00Z'); // Parse date in UTC to avoid timezone issues
-      const now = new Date();
-      const diffTime = now.getTime() - dueDate.getTime();
-      const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      if (days < 0) {
-        daysCountElement.innerHTML = "วันที่กำหนดชำระยังไม่ถึง";
-        resultBox.innerHTML = "ดอกเบี้ยที่ต้องชำระ: 0.00 บาท";
-        return;
-      }
-      daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: **${days}** วัน`;
-      const interest = (parseFloat(principal) * parseFloat(rate) / 100 * days) / 365;
-      resultBox.innerHTML = `ดอกเบี้ยที่ต้องชำระ: **${interest.toFixed(2)}** บาท`;
-    }
-    // You can also add an event listener to update the days count in real-time
-    document.getElementById('dueDate').addEventListener('change', () => {
-      const dueDateStr = document.getElementById('dueDate').value;
-      const daysCountElement = document.getElementById('daysCount');
-      if (dueDateStr) {
-        const dueDate = new Date(dueDateStr + 'T00:00:00Z');
-        const now = new Date();
-        const diffTime = now.getTime() - dueDate.getTime();
-        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        if (days < 0) {
-          daysCountElement.innerHTML = "วันที่กำหนดชำระยังไม่ถึง";
-        } else {
-          daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: **${days}** วัน`;
-        }
-      } else {
-        daysCountElement.innerHTML = "จำนวนวันที่ผิดนัด: 0 วัน";
-      }
-    });
-  </script>
+    <div class="calculator-card">
+      <p class="formula">
+        ดอกเบี้ยผิดนัด = (เงินต้น x อัตราดอกเบี้ย x จำนวนวัน) ÷ 365
+      </p>
+
+      <div class="input-group">
+        <label for="principal">เงินต้นที่ผิดนัด (บาท):</label>
+        <input type="number" id="principal" placeholder="เช่น 50000">
+      </div>
+
+      <div class="input-group">
+        <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
+        <input type="number" id="rate" placeholder="เช่น 7.5" step="0.01">
+      </div>
+
+      <div class="input-group">
+        <label for="dueDate">วันที่ครบกำหนดชำระ:</label>
+        <input type="date" id="dueDate">
+        <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
+      </div>
+
+      <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ย</button>
+
+      <div id="result" class="result-box">
+        ดอกเบี้ยที่ต้องชำระ: 0.00 บาท
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateInterest() {
+      const principal = document.getElementById('principal').value;
+      const rate = document.getElementById('rate').value;
+      const dueDateStr = document.getElementById('dueDate').value;
+      const resultBox = document.getElementById('result');
+      const daysCountElement = document.getElementById('daysCount');
+
+      if (!principal || !rate || !dueDateStr) {
+        resultBox.innerHTML = "⚠️ โปรดกรอกข้อมูลให้ครบถ้วน";
+        return;
+      }
+
+      const dueDate = new Date(dueDateStr + 'T00:00:00');
+      const now = new Date();
+      const diffTime = now - dueDate;
+      const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      if (days <= 0) {
+        daysCountElement.innerHTML = "ยังไม่ถึงวันผิดนัด";
+        resultBox.innerHTML = "ดอกเบี้ยที่ต้องชำระ: 0.00 บาท";
+        return;
+      }
+
+      daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: ${days} วัน`;
+
+      const interest = (principal * (rate / 100) * days) / 365;
+      resultBox.innerHTML = `ดอกเบี้ยที่ต้องชำระ: ${interest.toFixed(2)} บาท`;
+    }
+  </script>
 </body>
 </html>
