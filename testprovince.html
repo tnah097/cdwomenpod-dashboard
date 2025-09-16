@@ -73,11 +73,9 @@
       color: black;
       font-weight: bold;
     }
-    /* START: CSS สำหรับ FixedHeader ให้สีพื้นหลังถูกต้อง */
     table.dataTable.fixedHeader-floating {
-        background-color: white; /* ป้องกันหัวข้อโปร่งใสตอนเลื่อน */
+        background-color: white;
     }
-    /* END: CSS */
     .src-note {
       display:block;
       font-size: 0.65rem;
@@ -233,295 +231,194 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwUZW4uEpsNZHAqKPv8dDuYEREfnfMf3ahlU84AvKaadPvGMhpvKBqsPpqeZXswuzz-Ww/exec";
 
     const KEY_MAP = {
-      no: ["no", "ลำดับ"],
-      district: ["district", "อำเภอ/เขต", "อำเภอ", "เขต"],
-      subdistrict: ["subdistrict", "ตำบล"],
-      fiscalYear: ["fiscalYear", "ปีงบประมาณ"],
-      contractNo: ["contractNo", "เลขที่สัญญา"],
-      projectName: ["projectName", "ชื่อโครงการ"],
-      proposer: ["proposer", "ผู้เสนอโครงการ"],
-      approvedMoney: ["approvedMoney", "เงินอนุมัติ"],
-      startDate: ["startDate", "วันที่เริ่มต้นสัญญา"],
-      endDate: ["endDate", "วันที่สิ้นสุดสัญญา"],
-      lastPaymentDate: ["lastPaymentDate", "วันที่รับชำระล่าสุด"],
-      remainingInstallments: ["remainingInstallments", "งวดคงเหลือที่ต้องชำระ"],
-      debtStart: ["debtStart", "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)"],
-      debtNow: ["debtNow", "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"],
-      notDue: ["notDue", "หนี้ยังไม่ถึงกำหนดชำระ (ข)"],
-      mediation: ["mediation", "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)"],
-      prosecutor: ["prosecutor", "พนักงานอัยการรับเรื่อง(ง1)"],
-      courtFiled: ["courtFiled", "ศาลประทับรับฟ้อง(ง2)"],
-      judgment: ["judgment", "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)"],
-      judgmentAgree: ["judgmentAgree", "ศาลมีคำพิพากษาตามยอม(ง4)"],
-      civil20tri: ["civil20tri", "ป.วิ แพ่ง มาตรา 20 ตรี(ง5)"],
-      criminalCase: ["criminalCase", "ดำเนินคดีอาญา(ง6)"],
-      legalAction: ["legalAction", "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"],
-      overdue: ["overdue", "จำนวนหนี้ที่เกินกำหนดชำระ (B)"],
-      percentOverdue: ["percentOverdue", "ร้อยละหนี้เกินกำหนดชำระ"],
-      paymentStatus: ["paymentStatus", "สถานะการชำระหนี้"],
-      projectStatus: ["projectStatus", "สถานะโครงการ"],
-      note: ["note", "หมายเหตุ"]
+      "province": "จังหวัด",
+      "district": "อำเภอ/เขต",
+      "subdistrict": "ตำบล",
+      "fiscalYear": "ปีงบประมาณ",
+      "contractNo": "เลขที่สัญญา",
+      "projectName": "ชื่อโครงการ",
+      "projectOwner": "ผู้เสนอโครงการ",
+      "approvedAmount": "เงินอนุมัติ",
+      "startDate": "วันที่เริ่มต้นสัญญา",
+      "endDate": "วันที่สิ้นสุดสัญญา",
+      "lastPaymentDate": "วันที่รับชำระล่าสุด",
+      "remainingInstallments": "งวดคงเหลือที่ต้องชำระ",
+      "debtStart": "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)",
+      "debtNow": "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
+      "debtNotDue": "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
+      "debtMediation": "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)",
+      "legalStep1": "พนักงานอัยการรับเรื่อง(ง1)",
+      "legalStep2": "ศาลประทับรับฟ้อง(ง2)",
+      "legalStep3": "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)",
+      "legalStep4": "ศาลมีคำพิพากษาตามยอม(ง4)",
+      "legalStep5": "ป.วิ แพ่ง มาตรา 20 ตรี(ง5)",
+      "legalStep6": "ดำเนินคดีอาญา(ง6)",
+      "legalDone": "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
+      "overdueAmount": "จำนวนหนี้ที่เกินกำหนดชำระ (B)",
+      "overduePercent": "ร้อยละหนี้เกินกำหนดชำระ",
+      "paymentStatus": "สถานะการชำระหนี้",
+      "projectStatus": "สถานะโครงการ",
+      "remark": "หมายเหตุ"
     };
 
     function findValue(rowObj, logicalKey) {
-      const candidates = KEY_MAP[logicalKey] || [logicalKey];
-      for (const k of candidates) {
-        if (Object.prototype.hasOwnProperty.call(rowObj, k) && rowObj[k] !== null && rowObj[k] !== "") {
-          return rowObj[k]; 
-        }
-      }
-      if (Object.prototype.hasOwnProperty.call(rowObj, logicalKey) && rowObj[logicalKey] !== null && rowObj[logicalKey] !== "") {
-        return rowObj[logicalKey];
-      }
-      return null;
+      const key = KEY_MAP[logicalKey];
+      return rowObj[key] !== undefined && rowObj[key] !== null ? rowObj[key] : "";
     }
 
     function safeNumberFormat(val) {
       if (val === null || val === undefined || val === "") return "-";
-      const s = String(val).replace(/,/g, "").trim();
-      if (s === "" || isNaN(Number(s))) return "-";
-      return Number(s).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const num = parseFloat(val);
+      if (isNaN(num)) return val;
+      return num.toLocaleString("th-TH", { maximumFractionDigits: 2 });
     }
-    
+
     function safePercentFormat(val) {
       if (val === null || val === undefined || val === "") return "-";
-      const s = String(val).replace(/,/g, "").trim();
-      if (s === "" || isNaN(Number(s))) return "-";
-      return Number(s).toFixed(2) + "%";
+      const num = parseFloat(val);
+      if (isNaN(num)) return val;
+      return num.toFixed(2) + "%";
     }
 
     function formatDateThai(dateStr) {
-      if (!dateStr && dateStr !== 0) return "-";
-      const s = String(dateStr).trim();
-      const parts = s.split("/");
-      if (parts.length === 3) {
-        const d = Number(parts[0]), m = Number(parts[1]) - 1, y = Number(parts[2]);
-        if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
-          const dt = new Date(y, m, d);
-          if (!isNaN(dt)) return dt.toLocaleDateString("th-TH");
-        }
-      }
-      const dd = new Date(s);
-      if (!isNaN(dd)) return dd.toLocaleDateString("th-TH");
-      return s || "-";
+      if (!dateStr) return "-";
+      const d = new Date(dateStr);
+      if (isNaN(d)) return dateStr;
+      return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
     }
-    
+
     let allData = [];
     let dataTable;
 
     async function loadData() {
-      const params = new URLSearchParams(window.location.search);
-      const province = params.get("province") || "";
-      if (!province) {
-        alert("กรุณาระบุ province ใน URL เช่น ?province=กำแพงเพชร");
-        return;
-      }
-      document.getElementById("province-title").textContent = province;
-
       try {
-        const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
+        const res = await fetch(API_URL);
         const json = await res.json();
-        if (json.error) { throw new Error(json.error); }
-
-        if (json.summary) {
-          const s = json.summary;
-          document.getElementById("num-projects").textContent = s.totalProjects !== null ? s.totalProjects : "-";
-          document.getElementById("approved-money").textContent = safeNumberFormat(s.approvedMoney);
-          document.getElementById("debt-start").textContent = safeNumberFormat(s.debtStart);
-          document.getElementById("debt-now").textContent = safeNumberFormat(s.debtNow);
-          document.getElementById("overdue").textContent = safeNumberFormat(s.overdue);
-          document.getElementById("percent-overdue").textContent = safePercentFormat(s.percentOverdue);
-          document.getElementById("legal").textContent = safeNumberFormat(s.legal);
-          if (s.updateDate) document.getElementById("update-date").textContent = "ข้อมูล ณ วันที่ " + s.updateDate;
-        }
-
         allData = json.data || [];
-        populateTable(allData);
 
+        populateCards(allData);
+        populateTable(allData);
+        setupCustomFilters(dataTable, allData);
       } catch (err) {
-        alert("ไม่สามารถโหลดข้อมูลได้: " + (err.message || err));
-        console.error(err);
+        console.error("Error loading data:", err);
       }
+    }
+
+    function populateCards(data) {
+      let numProjects = data.length;
+      let debtStart = data.reduce((sum, row) => sum + parseFloat(row[KEY_MAP['debtStart']] || 0), 0);
+      let debtNow = data.reduce((sum, row) => sum + parseFloat(row[KEY_MAP['debtNow']] || 0), 0);
+      let overdue = data.reduce((sum, row) => sum + parseFloat(row[KEY_MAP['overdueAmount']] || 0), 0);
+      let percentOverdue = data.reduce((sum, row) => sum + parseFloat(row[KEY_MAP['overduePercent']] || 0), 0);
+      let approvedMoney = data.reduce((sum, row) => sum + parseFloat(row[KEY_MAP['approvedAmount']] || 0), 0);
+      let legalDone = data.reduce((sum, row) => sum + parseFloat(row[KEY_MAP['legalDone']] || 0), 0);
+
+      $("#num-projects").text(numProjects);
+      $("#debt-start").text(safeNumberFormat(debtStart));
+      $("#debt-now").text(safeNumberFormat(debtNow));
+      $("#overdue").text(safeNumberFormat(overdue));
+      $("#percent-overdue").text(safePercentFormat(percentOverdue));
+      $("#approved-money").text(safeNumberFormat(approvedMoney));
+      $("#legal").text(safeNumberFormat(legalDone));
     }
 
     function populateTable(data) {
-        if ($.fn.dataTable.isDataTable("#districtDetails")) {
-            $("#districtDetails").DataTable().destroy();
-        }
+      const tbody = $("#districtDetails tbody");
+      tbody.empty();
+      data.forEach((row, idx) => {
+        const tr = $("<tr></tr>");
+        tr.append(`<td>${idx+1}</td>`);
+        tr.append(`<td>${findValue(row, 'district')}</td>`);
+        tr.append(`<td>${findValue(row, 'subdistrict')}</td>`);
+        tr.append(`<td>${findValue(row, 'fiscalYear')}</td>`);
+        tr.append(`<td>${findValue(row, 'contractNo')}</td>`);
+        tr.append(`<td>${findValue(row, 'projectName')}</td>`);
+        tr.append(`<td>${findValue(row, 'projectOwner')}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'approvedAmount'))}</td>`);
+        tr.append(`<td>${formatDateThai(findValue(row, 'startDate'))}</td>`);
+        tr.append(`<td>${formatDateThai(findValue(row, 'endDate'))}</td>`);
+        tr.append(`<td>${formatDateThai(findValue(row, 'lastPaymentDate'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'remainingInstallments'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'debtStart'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'debtNow'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'debtNotDue'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'debtMediation'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalStep1'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalStep2'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalStep3'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalStep4'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalStep5'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalStep6'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'legalDone'))}</td>`);
+        tr.append(`<td>${safeNumberFormat(findValue(row, 'overdueAmount'))}</td>`);
+        tr.append(`<td>${safePercentFormat(findValue(row, 'overduePercent'))}</td>`);
+        tr.append(`<td>${findValue(row, 'paymentStatus')}</td>`);
+        tr.append(`<td>${findValue(row, 'projectStatus')}</td>`);
+        tr.append(`<td>${findValue(row, 'remark')}</td>`);
+        tbody.append(tr);
+      });
 
-        const tbody = document.querySelector("#districtDetails tbody");
-        tbody.innerHTML = "";
-        data.forEach((row, index) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${findValue(row, "no") ?? (index + 1)}</td>
-                <td>${findValue(row, "district") ?? "-"}</td>
-                <td>${findValue(row, "subdistrict") ?? "-"}</td>
-                <td>${findValue(row, "fiscalYear") ?? "-"}</td>
-                <td>${(findValue(row, "contractNo") || "").toString().trim() || "-"}</td>
-                <td>${findValue(row, "projectName") ?? "-"}</td>
-                <td>${findValue(row, "proposer") ?? "-"}</td>
-                <td>${safeNumberFormat(findValue(row, "approvedMoney"))}</td>
-                <td>${formatDateThai(findValue(row, "startDate"))}</td>
-                <td>${formatDateThai(findValue(row, "endDate"))}</td>
-                <td>${formatDateThai(findValue(row, "lastPaymentDate"))}</td>
-                <td>${findValue(row, "remainingInstallments") ?? "-"}</td>
-                <td>${safeNumberFormat(findValue(row, "debtStart"))}</td>
-                <td>${safeNumberFormat(findValue(row, "debtNow"))}</td>
-                <td>${safeNumberFormat(findValue(row, "notDue"))}</td>
-                <td>${safeNumberFormat(findValue(row, "mediation"))}</td>
-                <td>${safeNumberFormat(findValue(row, "prosecutor"))}</td>
-                <td>${safeNumberFormat(findValue(row, "courtFiled"))}</td>
-                <td>${safeNumberFormat(findValue(row, "judgment"))}</td>
-                <td>${safeNumberFormat(findValue(row, "judgmentAgree"))}</td>
-                <td>${safeNumberFormat(findValue(row, "civil20tri"))}</td>
-                <td>${safeNumberFormat(findValue(row, "criminalCase"))}</td>
-                <td>${safeNumberFormat(findValue(row, "legalAction"))}</td>
-                <td>${safeNumberFormat(findValue(row, "overdue"))}</td>
-                <td>${safePercentFormat(findValue(row, "percentOverdue"))}</td>
-                <td>${findValue(row, "paymentStatus") ?? "-"}</td>
-                <td>${findValue(row, "projectStatus") ?? "-"}</td>
-                <td>${findValue(row, "note") ?? "-"}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        dataTable = $("#districtDetails").DataTable({
-            // --- START: เปิดใช้งาน FixedHeader ---
-            fixedHeader: true,
-            // --- END: เปิดใช้งาน ---
-            scrollX: true,
-            pageLength: 100, // แสดง 100 แถวตามที่ต้องการ
-            dom: 'lfrtip',
-            language: {
-                search: "ค้นหาในตาราง:",
-                lengthMenu: "แสดง _MENU_ รายการ",
-                info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
-                infoEmpty: "ไม่พบข้อมูล",
-                zeroRecords: "ไม่พบข้อมูลที่ตรงกัน",
-                paginate: {
-                    first: "หน้าแรก",
-                    last: "หน้าสุดท้าย",
-                    next: "ถัดไป",
-                    previous: "ก่อนหน้า"
-                }
-            }
-        });
-        
-        setupCustomFilters(dataTable, allData);
+      if ($.fn.dataTable.isDataTable("#districtDetails")) {
+        dataTable.clear().destroy();
+      }
+      dataTable = $("#districtDetails").DataTable({
+        scrollX: true,
+        fixedHeader: true,
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]]
+      });
     }
-    
+
     function setupCustomFilters(table, data) {
-        const filterContainer = $('#filter-container');
-        filterContainer.empty();
-        
-        const dropdownColumns = {
-            1: 'district',
-            2: 'subdistrict',
-            3: 'fiscalYear',
-            25: 'paymentStatus',
-            26: 'projectStatus',
-            27: 'note'
-        };
-        
-        Object.entries(dropdownColumns).forEach(([index, key]) => {
-            const column = table.column(index);
-            const title = $(column.header()).text();
-            
-            const filterItem = $('<div class="filter-item"></div>');
-            const label = $('<label>' + title + '</label>');
-            const select = $(`<select id="filter-${key}"><option value="">-- ทั้งหมด --</option></select>`);
-            
-            filterItem.append(label).append(select);
-            filterContainer.append(filterItem);
+      const container = $("#filter-container");
+      container.empty();
 
-            const options = [...new Set(data.map(item => findValue(item, key)).filter(Boolean))].sort();
-            options.forEach(opt => {
-                select.append(`<option value="${$('<div/>').text(opt).html()}">${$('<div/>').text(opt).html()}</option>`);
-            });
+      const filters = [
+        { key: 'district', label: 'เลือกอำเภอ' },
+        { key: 'subdistrict', label: 'เลือกตำบล' },
+        { key: 'fiscalYear', label: 'เลือกปีงบประมาณ' }
+      ];
+
+      filters.forEach(f => {
+        const uniqueValues = Array.from(new Set(data.map(d => findValue(d, f.key)))).sort();
+        const filterDiv = $(`<div class="filter-item"></div>`);
+        filterDiv.append(`<label>${f.label}</label>`);
+        const select = $(`<select data-key="${f.key}"><option value="">ทั้งหมด</option></select>`);
+        uniqueValues.forEach(val => select.append(`<option value="${val}">${val}</option>`));
+        filterDiv.append(select);
+        container.append(filterDiv);
+      });
+
+      const resetDiv = $(`<div class="reset-button-container"></div>`);
+      resetDiv.append('<button id="resetFilters">รีเซ็ตตัวกรอง</button>');
+      container.append(resetDiv);
+
+      $("#filter-container select").on("change", function() {
+        const key = $(this).data("key");
+        const val = $(this).val();
+        $.fn.dataTable.ext.search = [];
+        $.fn.dataTable.ext.search.push((settings, dataRow) => {
+          const columnIdx = {
+            district: 1,
+            subdistrict: 2,
+            fiscalYear: 3
+          }[key];
+          if (!val) return true;
+          return dataRow[columnIdx] === val;
         });
+        dataTable.draw();
+      });
 
-        const resetButtonContainer = $('<div class="reset-button-container"></div>');
-        const resetButton = $('<button>ล้างการค้นหาทั้งหมด</button>');
-        resetButtonContainer.append(resetButton);
-        filterContainer.append(resetButtonContainer);
-
-        function applyFilters() {
-            const selectedDistrict = $('#filter-district').val();
-            const subdistrictSelect = $('#filter-subdistrict');
-            const currentSubdistrict = subdistrictSelect.val();
-            subdistrictSelect.html('<option value="">-- ทั้งหมด --</option>');
-            
-            if (selectedDistrict) {
-                const subdistricts = [...new Set(
-                    data
-                    .filter(item => findValue(item, 'district') === selectedDistrict)
-                    .map(item => findValue(item, 'subdistrict')).filter(Boolean)
-                )].sort();
-                subdistricts.forEach(opt => {
-                    subdistrictSelect.append(`<option value="${$('<div/>').text(opt).html()}">${$('<div/>').text(opt).html()}</option>`);
-                });
-                if(subdistricts.includes(currentSubdistrict)){
-                   subdistrictSelect.val(currentSubdistrict);
-                }
-            } else {
-                 const allSubdistricts = [...new Set(data.map(item => findValue(item, 'subdistrict')).filter(Boolean))].sort();
-                 allSubdistricts.forEach(opt => {
-                    subdistrictSelect.append(`<option value="${$('<div/>').text(opt).html()}">${$('<div/>').text(opt).html()}</option>`);
-                });
-            }
-
-            Object.entries(dropdownColumns).forEach(([index, key]) => {
-                const column = table.column(index);
-                const val = $(`#filter-${key}`).val();
-                column.search(val ? '^' + $.fn.dataTable.util.escapeRegex(val) + '$' : '', true, false);
-            });
-            table.draw();
-        }
-
-        filterContainer.on('change', 'select', applyFilters);
-        
-        resetButton.on('click', function() {
-            filterContainer.find('select').val('');
-            table.search('').draw(); 
-            applyFilters();
-        });
+      $("#resetFilters").on("click", function() {
+        $("#filter-container select").val('');
+        $.fn.dataTable.ext.search = [];
+        dataTable.draw();
+      });
     }
-    
-    // โค้ดส่วนนี้เป็นของเก่า ไม่ได้ถูกเรียกใช้แล้ว แต่คงไว้ตามเงื่อนไขเรื่องจำนวนบรรทัด
-    /*
-    function getColLetter(logicalKey) {
-      const map = {
-        no: "A", district: "B", subdistrict: "C", fiscalYear: "D", contractNo: "E", 
-        projectName: "F", proposer: "G", approvedMoney: "H", startDate: "I", endDate: "J", 
-        lastPaymentDate: "K", remainingInstallments: "L", debtStart: "M", debtNow: "N", 
-        notDue: "O", mediation: "P", prosecutor: "Q", courtFiled: "R", judgment: "S", 
-        judgmentAgree: "T", civil20tri: "U", criminalCase: "V", legalAction: "W", 
-        overdue: "X", percentOverdue: "Y", paymentStatus: "Z", projectStatus: "AA", note: "AB"
-      };
-      return map[logicalKey] || "";
-    }
-    
-    function anUnusedFunctionToPreserveLineCount() {
-        let a = 1; let b = 2; let c = a + b;
-        if (c > 0) { console.log("This block helps in adding more lines to meet the requirement."); }
-        for (let i = 0; i < 25; i++) { // Increased loop for more lines
-            c += i;
-            if (i % 3 === 0) { 
-                // This is another comment to add even more lines to the file.
-                let d = c * 2;
-                // This is a redundant comment to ensure we meet the minimum line count requested.
-                // It serves no functional purpose other than to add lines to the script.
-            }
-        }
-        return c;
-    }
-    */
-    
-    $(document).ready(loadData);
+
+    $(document).ready(() => {
+      loadData();
+    });
   </script>
 </body>
 </html>
-
-
-
