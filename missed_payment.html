@@ -166,10 +166,10 @@
 
       <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
 
-      <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ย</button>
+      <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
 
       <div id="result" class="result-box">
-        ดอกเบี้ยที่ต้องชำระ: 0.00 บาท
+        ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท
       </div>
     </div>
   </div>
@@ -196,14 +196,14 @@
 
       if (days <= 0) {
         daysCountElement.innerHTML = "ยังไม่ถึงวันผิดนัด";
-        resultBox.innerHTML = "ดอกเบี้ยที่ต้องชำระ: 0.00 บาท";
+        resultBox.innerHTML = "ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท";
         return;
       }
 
       daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: ${days} วัน`;
 
       const interest = (principal * (rate / 100) * days) / 365;
-      resultBox.innerHTML = `ดอกเบี้ยที่ต้องชำระ: ${interest.toFixed(2)} บาท`;
+      resultBox.innerHTML = `ดอกเบี้ยผิดนัดที่ต้องชำระ: ${interest.toFixed(2)} บาท`;
     }
   </script>
 </body>
