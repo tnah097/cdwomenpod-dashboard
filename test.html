@@ -143,23 +143,20 @@
 <div class="card" style="background-color: #CC33FF;" onclick="window.open('#', '_blank')">
     Q&A
 </div>
-<div class="card" style="background-color: #FF3366;">
+<div class="card" 
+     style="background-color: #FF3366; color: white; padding: 20px; border-radius: 12px; cursor: pointer; text-align: center;"
+     onclick="openCalcLink('missed_payment')">
     โปรแกรมการคำนวณดอกเบี้ยผิดนัด
-    <br/>
-    <select class="dropdown" onchange="openCalcLink(this.value)">
-        <option value="">-- เลือกประเภท --</option>
-        <option value="missed_payment">กรณีผิดนัดในงวด</option>
-        <option value="incomplete_payment">กรณีชำระไม่ครบงวด</option>
-    </select>
 </div>
 
 <script>
-    function openCalcLink(option) {
-      if (option === "missed_payment") {
-        window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
-      } 
-    }
+function openCalcLink(option) {
+  if (option === "missed_payment") {
+    window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
+  } 
+}
 </script>
+
 
   <script>
     function openMemberLink(type) {
