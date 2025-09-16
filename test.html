@@ -143,11 +143,15 @@
 <div class="card" style="background-color: #CC33FF;" onclick="window.open('#', '_blank')">
     Q&A
 </div>
-<div class="card" style="background-color: #FF3366;" onclick="window.open('#', '_blank')">
+<div class="card" style="background-color: #FF3366;">
     โปรแกรมการคำนวณดอกเบี้ยผิดนัด
+    <br/>
+    <select class="dropdown" onchange="openCalcLink(this.value)">
+        <option value="">-- เลือกประเภท --</option>
+        <option value="missed_payment">กรณีผิดนัดในงวด</option>
+        <option value="incomplete_payment">กรณีชำระไม่ครบงวด</option>
+    </select>
 </div>
-    </div> 
-    </div> 
 
   <script>
     function openMemberLink(type) {
