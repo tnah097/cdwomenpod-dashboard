@@ -146,21 +146,22 @@
         <input type="number" id="principal" placeholder="เช่น 50000">
       </div>
 
-     <div class="input-group">
-  <label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label>
-  <input type="number" id="rate" value="5" disabled>
-</div>
+      <div class="input-group">
+        <label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label>
+        <input type="number" id="rate" value="5" readonly>
+      </div>
 
       <div class="input-group">
         <label for="dueDate">วันที่ครบกำหนดชำระ:</label>
         <input type="date" id="dueDate">
-    <div class="input-group">
-        <label for="dueDate">วันที่จ่ายชำระ:</label>
-        <input type="date" id="dueDate">
-
-        
-        <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
       </div>
+
+      <div class="input-group">
+        <label for="paymentDate">วันที่จ่ายชำระ:</label>
+        <input type="date" id="paymentDate">
+      </div>
+
+      <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
 
       <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ย</button>
 
@@ -172,20 +173,22 @@
 
   <script>
     function calculateInterest() {
-      const principal = document.getElementById('principal').value;
-      const rate = document.getElementById('rate').value;
+      const principal = parseFloat(document.getElementById('principal').value);
+      const rate = parseFloat(document.getElementById('rate').value);
       const dueDateStr = document.getElementById('dueDate').value;
+      const paymentDateStr = document.getElementById('paymentDate').value;
       const resultBox = document.getElementById('result');
       const daysCountElement = document.getElementById('daysCount');
 
-      if (!principal || !rate || !dueDateStr) {
+      if (!principal || !rate || !dueDateStr || !paymentDateStr) {
         resultBox.innerHTML = "⚠️ โปรดกรอกข้อมูลให้ครบถ้วน";
         return;
       }
 
       const dueDate = new Date(dueDateStr + 'T00:00:00');
-      const now = new Date();
-      const diffTime = now - dueDate;
+      const paymentDate = new Date(paymentDateStr + 'T00:00:00');
+
+      const diffTime = paymentDate - dueDate;
       const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
       if (days <= 0) {
