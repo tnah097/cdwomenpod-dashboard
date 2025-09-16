@@ -142,18 +142,23 @@
       </p>
 
       <div class="input-group">
-        <label for="principal">เงินต้นที่ผิดนัด (บาท):</label>
+        <label for="principal">เงินต้นผิดนัดคงเหลือ (บาท):</label>
         <input type="number" id="principal" placeholder="เช่น 50000">
       </div>
 
-      <div class="input-group">
-        <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
-        <input type="number" id="rate" placeholder="เช่น 7.5" step="0.01">
-      </div>
+     <div class="input-group">
+  <label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label>
+  <input type="number" id="rate" value="5" disabled>
+</div>
 
       <div class="input-group">
         <label for="dueDate">วันที่ครบกำหนดชำระ:</label>
         <input type="date" id="dueDate">
+    <div class="input-group">
+        <label for="dueDate">วันที่จ่ายชำระ:</label>
+        <input type="date" id="dueDate">
+
+        
         <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
       </div>
 
