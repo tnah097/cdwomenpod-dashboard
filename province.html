@@ -203,6 +203,12 @@
         .dataTables_wrapper .dataTables_filter {
             margin-bottom: 15px;
         }
+
+        .dataTables_wrapper .dataTables_info_custom {
+            float: left;
+            padding-top: 0.85em;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -262,6 +268,10 @@
         <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
 
         <div id="filter-container" class="filter-container"></div>
+        <div id="table-info-wrapper" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="dataTables_info_custom" id="custom-info"></div>
+            <div class="dataTables_length"></div>
+        </div>
 
         <table id="districtDetails" class="display" style="width:100%">
             <thead>
@@ -477,7 +487,7 @@
                 fixedHeader: true,
                 scrollX: true,
                 pageLength: 100,
-                dom: 'lfrtip',
+                dom: '<"top"lf<"dataTables_info_custom">r>tip',
                 language: {
                     search: "ค้นหาในตาราง:",
                     lengthMenu: "แสดง _MENU_ รายการ",
@@ -490,7 +500,18 @@
                         next: "ถัดไป",
                         previous: "ก่อนหน้า"
                     }
+                },
+                initComplete: function() {
+                    $('#table-info-wrapper .dataTables_length').append(
+                        $('.dataTables_wrapper .dataTables_length')
+                    );
+                    $('#table-info-wrapper .dataTables_info_custom').text(`แสดงจำนวนทั้งหมด ${this.api().rows().count()} รายการ`);
                 }
+            });
+
+            dataTable.on('draw.dt', function() {
+                const info = dataTable.page.info();
+                $('#custom-info').text(`แสดงจำนวนทั้งหมด ${info.recordsDisplay} รายการ`);
             });
 
             setupCustomFilters(dataTable, allData);
@@ -511,7 +532,7 @@
             };
 
             Object.entries(dropdownColumns).forEach(([index, key]) => {
-                const column = table.column(index);
+                const column = table.column(parseInt(index));
                 const title = $(column.header()).text();
 
                 const filterItem = $('<div class="filter-item"></div>');
@@ -558,7 +579,7 @@
                 }
 
                 Object.entries(dropdownColumns).forEach(([index, key]) => {
-                    const column = table.column(index);
+                    const column = table.column(parseInt(index));
                     const val = $(`#filter-${key}`).val();
                     column.search(val ? '^' + $.fn.dataTable.util.escapeRegex(val) + '$' : '', true, false);
                 });
@@ -600,10 +621,8 @@
             return c;
         }
         */
-
         // 🚀 Initial Call
         $(document).ready(loadData);
     </script>
 </body>
 </html>
-
