@@ -36,6 +36,11 @@
       margin-top: 40px;
     }
     .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
       padding: 20px;
       border-radius: 16px;
       color: white;
@@ -78,14 +83,14 @@
       .header-text h1 { font-size: 1.8rem; }
       .header-text h2 { font-size: 1.1rem; }
       .logo-container img { height: 50px; }
-      .card { font-size: 1rem; padding: 16px; }
+      .card { font-size: 1rem; padding: 16px; min-height: 110px; }
     }
     @media (max-width: 480px) {
       .header { flex-direction: column; align-items: center; }
       .header-text { text-align: center; }
       .logo-container { display: flex; justify-content: center; flex-wrap: wrap; }
       .logo-container img { margin: 5px; }
-      .card { font-size: 0.95rem; padding: 14px; }
+      .card { font-size: 0.95rem; padding: 14px; min-height: 100px; }
       .dropdown { font-size: 0.9rem; }
     }
   </style>
@@ -140,25 +145,23 @@
           <option value="allbanks">ทะเบียนรวม 3 ธนาคาร</option>
         </select>
       </div>
-<div class="card" style="background-color: #CC33FF;" onclick="window.open('#', '_blank')">
-    Q&A
-</div>
-<div class="card" 
-     style="background-color: #FF3366; color: white; padding: 20px; border-radius: 12px; cursor: pointer; text-align: center;"
-     onclick="openCalcLink('missed_payment')">
-    โปรแกรมการคำนวณดอกเบี้ยผิดนัด
-</div>
+      <div class="card" style="background-color: #CC33FF;" onclick="window.open('#', '_blank')">
+        Q&A
+      </div>
+      <div class="card" 
+           style="background-color: #FF3366; color: white; padding: 20px; border-radius: 12px; cursor: pointer; text-align: center;"
+           onclick="openCalcLink('missed_payment')">
+        โปรแกรมการคำนวณดอกเบี้ยผิดนัด
+      </div>
+    </div>
 
-<script>
-function openCalcLink(option) {
-  if (option === "missed_payment") {
-    window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
-  } 
-}
-</script>
+    <script>
+    function openCalcLink(option) {
+      if (option === "missed_payment") {
+        window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
+      } 
+    }
 
-
-  <script>
     function openMemberLink(type) {
       if (type === "person") {
         window.open("#บุคคล", "_blank");
@@ -173,6 +176,7 @@ function openCalcLink(option) {
         window.open(baseUrl + "#" + option, "_blank");
       }
     }
-  </script>
+    </script>
+  </div>
 </body>
 </html>
