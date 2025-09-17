@@ -312,6 +312,7 @@
         const percent = parseFloat(overview.overduePercent);
         document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
+        document.getElementById('not-due').textContent = formatNumber(overview.notDue);
         document.getElementById('legal').textContent = formatNumber(overview.legalAction);
 
         if (donutChartInstance) {
@@ -447,6 +448,7 @@
   </script>
 </body>
 </html>
+
 
 
 
