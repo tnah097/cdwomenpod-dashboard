@@ -85,7 +85,7 @@ tr.summary-row td {
   </div>
   <div class="logos">
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
   </div>
 
   <table id="kpiTable">
@@ -109,8 +109,8 @@ tr.summary-row td {
 <script>
 async function loadAndDisplayData() {
   // ------------------------------------------------------------------
-  // ▼▼▼ วาง URL ของ WEB APP "ตัวใหม่ล่าสุด" ที่คัดลอกมา ลงใน "" ตรงนี้! ▼▼▼
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbz4_uGBJqGm78Q356wVQSjUzV5K_3KHV9U_K37koHUBDfKKRXatKBAQxYbTWS4BqfuuBQ/exec"; 
+  // ▼▼▼ วาง URL ของ WEB APP "ตัวใหม่ล่าสุด" ที่ได้จากขั้นตอนที่ 1 ลงตรงนี้ ▼▼▼
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbzw1jHwCTESst-B9Pmv-pOlD98vxVenxole4yvOReZ5UJnOmXHMyhD39S7_QMmQt28FOA/exec"; 
   // ------------------------------------------------------------------
 
   const tbody = document.querySelector('#kpiTable tbody');
@@ -140,10 +140,10 @@ async function loadAndDisplayData() {
     });
 
     // 2. แสดงผลแถวสรุป (คะแนนเฉลี่ย)
-    if (data.summaryData) {
+    if (data.summaryData && data.summaryData.label) {
       const summary = data.summaryData;
       const tr = document.createElement('tr');
-      tr.className = 'summary-row'; // เพิ่ม class สำหรับ CSS
+      tr.className = 'summary-row';
       tr.innerHTML = `
         <td colspan="4" style="padding-right: 20px;">${summary.label}</td>
         <td colspan="2">${summary.value}</td>
