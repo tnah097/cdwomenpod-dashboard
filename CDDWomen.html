@@ -52,10 +52,10 @@ table {
   margin-top: 15px;
 }
 th, td {
-  /* --- ▼▼▼ แก้ไขตรงนี้! เปลี่ยนสีเส้นขอบให้เข้มขึ้น ▼▼▼ --- */
   border: 1px solid #f0a5bc; 
   padding: 8px 12px;
   text-align: center;
+  vertical-align: middle; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
 }
 th {
   background-color: #f8bbd0;
@@ -67,9 +67,9 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
   background-color: rgba(255,192,203,0.1);
 }
-/* --- สไตล์สำหรับแถวสรุปท้ายตาราง --- */
+/* สไตล์สำหรับแถวสรุปท้ายตาราง */
 tr.summary-row {
-  background-color: #f48fb1 !important; /* สีชมพูพาสเทลเข้มขึ้น */
+  background-color: #f48fb1 !important;
   font-weight: bold;
 }
 tr.summary-row td {
@@ -82,7 +82,7 @@ tr.summary-row td {
 <div class="container">
   <div class="header">
     <h1>สรุปผลการดำเนินงานตามตัวชี้วัดของกองทุนพัฒนาบทบาทสตรี</h1>
-    <p>กรมการพัฒนาชุมชน ประจำปีบัญชี 2568 จำนวน 6 ด้าน 15 ตัวชี้วัด ข้อมูล ณ วันที่ 15 กันยายน 2568</p>
+    <p>กรมการพัฒนาชุมชน ประจำปีบัญชี 2568 | ข้อมูล ณ วันที่ 18 กันยายน 2568</p>
   </div>
   <div class="logos">
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
@@ -122,10 +122,26 @@ async function loadAndDisplayData() {
 
     if (data.error) throw new Error(`ข้อผิดพลาดจาก Apps Script: ${data.error}`);
 
+    // --- ▼▼▼ โค้ดส่วนที่ปรับปรุงใหม่ ▼▼▼ ---
+    let lastSide = null; // ตัวแปรสำหรับเก็บค่า "ด้าน" ของแถวก่อนหน้า
+
     data.mainData.forEach(row => {
       const tr = document.createElement('tr');
+      const currentSide = row['ด้าน'] || '';
+      let sideCellHtml;
+
+      // ตรวจสอบว่า "ด้าน" ของแถวนี้เหมือนกับแถวที่แล้วหรือไม่
+      if (currentSide === lastSide) {
+        // ถ้าเหมือนกัน ให้สร้างเซลล์ว่างๆ
+        sideCellHtml = `<td></td>`;
+      } else {
+        // ถ้าเป็น "ด้าน" ใหม่ ให้แสดงข้อมูลและอัปเดตตัวแปร lastSide
+        sideCellHtml = `<td>${currentSide}</td>`;
+        lastSide = currentSide;
+      }
+
       tr.innerHTML = `
-        <td>${row['ด้าน'] || ''}</td>
+        ${sideCellHtml}
         <td style="text-align:left">${row['ตัวชี้วัด'] || ''}</td>
         <td>${row['หน่วยวัด'] || ''}</td>
         <td>${row['เป้าหมาย'] || ''}</td>
@@ -135,6 +151,7 @@ async function loadAndDisplayData() {
       `;
       tbody.appendChild(tr);
     });
+    // --- ▲▲▲ จบส่วนที่ปรับปรุง ▲▲▲ ---
 
     if (data.summaryData && data.summaryData.label) {
       const summary = data.summaryData;
