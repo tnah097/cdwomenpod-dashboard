@@ -5,6 +5,9 @@
 <title>สรุปผลตัวชี้วัดกองทุนพัฒนาบทบาทสตรี</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/alvaro-prieto/colResizable/master/colResizable-1.6.min.js"></script>
+
 <style>
 body {
   font-family: 'Sarabun', sans-serif;
@@ -50,12 +53,14 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
+  /* ทำให้ตารางมีความกว้างขั้นต่ำ เพื่อให้เลื่อนได้บนจอมือถือ */
+  min-width: 800px; 
 }
 th, td {
   border: 1px solid #f0a5bc; 
   padding: 8px 12px;
   text-align: center;
-  vertical-align: middle; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+  vertical-align: middle;
 }
 th {
   background-color: #f8bbd0;
@@ -67,7 +72,6 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
   background-color: rgba(255,192,203,0.1);
 }
-/* สไตล์สำหรับแถวสรุปท้ายตาราง */
 tr.summary-row {
   background-color: #f48fb1 !important;
   font-weight: bold;
@@ -75,6 +79,17 @@ tr.summary-row {
 tr.summary-row td {
   color: #880e4f;
   text-align: right;
+}
+.JCLRgrip {
+    background-color: deeppink;
+    width: 5px;
+}
+
+/* --- ▼▼▼ ส่วนที่เพิ่มเข้ามาเพื่อทำให้ Responsive ▼▼▼ --- */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* ทำให้เกิด scrollbar แนวนอนเมื่อตารางล้น */
+    -webkit-overflow-scrolling: touch; /* ทำให้เลื่อนลื่นบน iOS */
 }
 </style>
 </head>
@@ -89,23 +104,24 @@ tr.summary-row td {
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
   </div>
 
-  <table id="kpiTable">
-    <thead>
-      <tr>
-        <th>ด้าน</th>
-        <th>ตัวชี้วัด</th>
-        <th>หน่วยวัด</th>
-        <th>เป้าหมาย</th>
-        <th>ผลงาน</th>
-        <th>คะแนน</th>
-        <th>คาดการณ์ กันยายน</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="7" style="font-style: italic;">กำลังโหลดข้อมูล...</td></tr>
-    </tbody>
-  </table>
-</div>
+  <div class="table-wrapper">
+    <table id="kpiTable">
+      <thead>
+        <tr>
+          <th>ด้าน</th>
+          <th>ตัวชี้วัด</th>
+          <th>หน่วยวัด</th>
+          <th>เป้าหมาย</th>
+          <th>ผลงาน</th>
+          <th>คะแนน</th>
+          <th>คาดการณ์ กันยายน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="7" style="font-style: italic;">กำลังโหลดข้อมูล...</td></tr>
+      </tbody>
+    </table>
+  </div> </div>
 
 <script>
 async function loadAndDisplayData() {
@@ -122,20 +138,16 @@ async function loadAndDisplayData() {
 
     if (data.error) throw new Error(`ข้อผิดพลาดจาก Apps Script: ${data.error}`);
 
-    // --- ▼▼▼ โค้ดส่วนที่ปรับปรุงใหม่ ▼▼▼ ---
-    let lastSide = null; // ตัวแปรสำหรับเก็บค่า "ด้าน" ของแถวก่อนหน้า
+    let lastSide = null;
 
     data.mainData.forEach(row => {
       const tr = document.createElement('tr');
       const currentSide = row['ด้าน'] || '';
       let sideCellHtml;
 
-      // ตรวจสอบว่า "ด้าน" ของแถวนี้เหมือนกับแถวที่แล้วหรือไม่
       if (currentSide === lastSide) {
-        // ถ้าเหมือนกัน ให้สร้างเซลล์ว่างๆ
         sideCellHtml = `<td></td>`;
       } else {
-        // ถ้าเป็น "ด้าน" ใหม่ ให้แสดงข้อมูลและอัปเดตตัวแปร lastSide
         sideCellHtml = `<td>${currentSide}</td>`;
         lastSide = currentSide;
       }
@@ -151,7 +163,6 @@ async function loadAndDisplayData() {
       `;
       tbody.appendChild(tr);
     });
-    // --- ▲▲▲ จบส่วนที่ปรับปรุง ▲▲▲ ---
 
     if (data.summaryData && data.summaryData.label) {
       const summary = data.summaryData;
@@ -164,8 +175,15 @@ async function loadAndDisplayData() {
       `;
       tbody.appendChild(tr);
     }
+    
+    $("#kpiTable").colResizable({
+        liveDrag: true,
+        gripInnerHtml: "<div class='JCLRgrip'></div>",
+        minWidth: 30
+    });
 
-  } catch (error) {
+  } catch (error)
+ {
     console.error('ไม่สามารถดึงข้อมูลได้:', error);
     tbody.innerHTML = `<tr><td colspan="7" style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${error.message}</td></tr>`;
   }
