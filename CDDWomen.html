@@ -15,19 +15,16 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  /* พื้นหลังสีชมพูพาสเทล */
   background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
 }
-
 .container {
   width: 100%;
   max-width: 1200px;
-  background-color: rgba(255, 255, 255, 0.9); /* โปร่งแสงเล็กน้อย */
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 25px;
   padding: 30px;
   box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
 }
-
 .header {
   text-align: center;
   margin-bottom: 20px;
@@ -42,7 +39,6 @@ body {
   margin-top: 5px;
   font-weight: bold;
 }
-
 .logos {
   display: flex;
   justify-content: center;
@@ -50,7 +46,6 @@ body {
   margin-bottom: 20px;
 }
 .logos img { height: 60px; }
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -71,9 +66,14 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
   background-color: rgba(255,192,203,0.1);
 }
-.loading td {
+/* --- สไตล์สำหรับแถวสรุปท้ายตาราง --- */
+tr.summary-row {
+  background-color: #f48fb1 !important; /* สีชมพูพาสเทลเข้มขึ้น */
+  font-weight: bold;
+}
+tr.summary-row td {
   color: #880e4f;
-  font-style: italic;
+  text-align: right;
 }
 </style>
 </head>
@@ -85,7 +85,7 @@ tr:nth-child(odd) {
   </div>
   <div class="logos">
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
   </div>
 
   <table id="kpiTable">
@@ -101,35 +101,32 @@ tr:nth-child(odd) {
       </tr>
     </thead>
     <tbody>
-      <tr class="loading"><td colspan="7">กำลังโหลดข้อมูลจาก Google Sheet...</td></tr>
+      <tr><td colspan="7" style="font-style: italic;">กำลังโหลดข้อมูลจาก Google Sheet...</td></tr>
     </tbody>
   </table>
 </div>
 
 <script>
 async function loadAndDisplayData() {
-  // URL ของ Web App ที่คุณให้มา
-  const webAppUrl = "https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbyTkknBF6esfCbVbSRR2uyP0EJS7mGatr2yofUAKu4efxHSMDrCYb9FZxTbrDruHcPjmg/exec"; 
+  // ------------------------------------------------------------------
+  // ▼▼▼ วาง URL ของ WEB APP "ตัวใหม่ล่าสุด" ที่คัดลอกมา ลงใน "https://script.google.com/macros/s/AKfycbz4_uGBJqGm78Q356wVQSjUzV5K_3KHV9U_K37koHUBDfKKRXatKBAQxYbTWS4BqfuuBQ/exec" ตรงนี้! ▼▼▼
+  const webAppUrl = "YOUR_NEW_WEB_APP_URL_HERE"; 
+  // ------------------------------------------------------------------
 
   const tbody = document.querySelector('#kpiTable tbody');
 
   try {
     const response = await fetch(webAppUrl);
-    if (!response.ok) {
-      throw new Error(`เกิดข้อผิดพลาดจาก Server: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`เกิดข้อผิดพลาดจาก Server: ${response.status}`);
     const data = await response.json();
 
     tbody.innerHTML = ''; // เคลียร์ข้อความ "กำลังโหลด..."
 
-    if (data.error) {
-       throw new Error(`ข้อผิดพลาดจาก Apps Script: ${data.error}`);
-    }
+    if (data.error) throw new Error(`ข้อผิดพลาดจาก Apps Script: ${data.error}`);
 
-    data.forEach(row => {
+    // 1. แสดงผลข้อมูลหลัก
+    data.mainData.forEach(row => {
       const tr = document.createElement('tr');
-      // ใช้ชื่อหัวข้อคอลัมน์จาก Sheet ของคุณโดยตรง
-      // การใช้ || '' เพื่อป้องกัน error หากข้อมูลบางช่องเป็นค่าว่าง
       tr.innerHTML = `
         <td>${row['ด้าน'] || ''}</td>
         <td style="text-align:left">${row['ตัวชี้วัด'] || ''}</td>
@@ -142,13 +139,26 @@ async function loadAndDisplayData() {
       tbody.appendChild(tr);
     });
 
+    // 2. แสดงผลแถวสรุป (คะแนนเฉลี่ย)
+    if (data.summaryData) {
+      const summary = data.summaryData;
+      const tr = document.createElement('tr');
+      tr.className = 'summary-row'; // เพิ่ม class สำหรับ CSS
+      tr.innerHTML = `
+        <td colspan="4" style="padding-right: 20px;">${summary.label}</td>
+        <td colspan="2">${summary.value}</td>
+        <td>${summary.forecast}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
   } catch (error) {
     console.error('ไม่สามารถดึงข้อมูลได้:', error);
     tbody.innerHTML = `<tr><td colspan="7" style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${error.message}</td></tr>`;
   }
 }
 
-// เรียกใช้ฟังก์ชันเพื่อโหลดข้อมูลทันทีที่เปิดหน้าเว็บ
+// เรียกใช้ฟังก์ชันเพื่อโหลดข้อมูลทันที
 loadAndDisplayData();
 </script>
 
