@@ -8,8 +8,12 @@
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
-      /* 🌸 ทำพื้นหลังเป็นไล่สีชมพูพาสเทล */
-      background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
+      /* ✅ พื้นหลังไล่สีชมพูพาสเทลโปร่งใส */
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 230, 240, 0.8),
+        rgba(255, 209, 230, 0.8)
+      );
       background-attachment: fixed;
       color: #000;
     }
@@ -17,12 +21,12 @@
     .dashboard-container {
       width: 100%;
       max-width: 1200px;
-      margin: 0 auto; /* จัดให้อยู่กลางจอ */
-      /* ทำให้โปร่งใสเล็กน้อย */
-      background-color: rgba(255, 255, 255, 0.9);
+      /* ✅ โปร่งใสเล็กน้อยเพื่อให้เห็นพื้นหลัง */
+      background-color: rgba(255, 255, 255, 0.8);
       border-radius: 25px;
       padding: 30px;
       box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+      margin: 20px auto;
     }
 
     .header {
@@ -70,7 +74,7 @@
     .yellow { background-color: #FF9967; color: #fff; }
     .purple { background-color: #9C27B0; }
     .teal { background-color: #ba68c8; }
-    .debt-management { background-color: #ec407a; } /* ✅ เพิ่มการ์ดใหม่ */
+    .debt-management { background-color: #ec407a; }
 
     .dropdown {
       margin-top: 10px;
