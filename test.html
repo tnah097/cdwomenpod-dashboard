@@ -8,17 +8,23 @@
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
-      background-color: rgba(255, 182, 193, 0.4); /* ✅ พื้นหลังชมพูพาสเทลโปร่งใส */
+      /* 🌸 ทำพื้นหลังเป็นไล่สีชมพูพาสเทล */
+      background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
       background-attachment: fixed;
       color: #000;
     }
+
     .dashboard-container {
-      padding: 40px;
-      background-color: rgba(255, 255, 255, 0.92);
       width: 100%;
-      min-height: 100vh;
-      box-sizing: border-box;
+      max-width: 1200px;
+      margin: 0 auto; /* จัดให้อยู่กลางจอ */
+      /* ทำให้โปร่งใสเล็กน้อย */
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
     }
+
     .header {
       display: flex;
       justify-content: space-between;
