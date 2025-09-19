@@ -60,8 +60,10 @@
     .pink { background-color: #e91e63; }
     .orange { background-color: #ff9800; }
     .deep-pastel-pink { background-color: #f06292; }
-    .red { background-color: #F26665; }       
+    .red { background-color: #F26665; }
     .yellow { background-color: #FF9967; color: #fff; }
+    .purple { background-color: #9C27B0; }
+    .teal { background-color: #009688; }
 
     .dropdown {
       margin-top: 10px;
@@ -121,6 +123,9 @@
       <div class="card deep-pastel-pink" onclick="window.open('https://tnah097.github.io/cdwomenpod-dashboard/CDDWomen.html', '_blank')">
         การประเมินของกองทุนพัฒนาบทบาทสตรี ประจำปีบัญชี 2568
       </div>
+      <div class="card purple" onclick="window.open('https://script.google.com/macros/s/AKfycbwP9XCCvSRmLv3q_LNK9i8ArqLuTNtrLAnFYRqWTrbzMft9ed--ktiK1LH0IW_ehZQk/exec', '_blank')">
+        สรุปหนี้ครบกำหนดชำระ
+      </div>
       <div class="card red">
         จำนวนการสมัครสมาชิกกองทุนพัฒนาบทบาทสตรี
         <br/>
@@ -148,9 +153,7 @@
       <div class="card" style="background-color: #CC33FF;" onclick="window.open('#', '_blank')">
         Q&A
       </div>
-      <div class="card" 
-           style="background-color: #FF3366; color: white; padding: 20px; border-radius: 12px; cursor: pointer; text-align: center;"
-           onclick="openCalcLink('missed_payment')">
+      <div class="card teal" onclick="openCalcLink('missed_payment')">
         โปรแกรมการคำนวณดอกเบี้ยผิดนัด
       </div>
     </div>
@@ -159,14 +162,14 @@
     function openCalcLink(option) {
       if (option === "missed_payment") {
         window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
-      } 
+      }
     }
 
     function openMemberLink(type) {
       if (type === "person") {
-        window.open("#บุคคล", "_blank");
+        window.open("https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbxJLjRa_0bwNN2MobsGgn_bHYMOD9PNtQSa1XZT23vfx_9kayYFJx0uQzTM4OK1BsI2/exec?action=person", "_blank");
       } else if (type === "organization") {
-        window.open("#องค์กรสตรี", "_blank");
+        window.open("https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbxJLjRa_0bwNN2MobsGgn_bHYMOD9PNtQSa1XZT23vfx_9kayYFJx0uQzTM4OK1BsI2/exec?action=organization", "_blank");
       }
     }
 
