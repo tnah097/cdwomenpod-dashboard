@@ -65,49 +65,50 @@
   .logos img {
     height: 60px;
   }
-  
+  
   /* --- ปรับปรุงการจัดช่องไฟ --- */
   .report-content {
-    /* ลด line-height เพื่อให้ระยะห่างระหว่างบรรทัดในย่อหน้ากระชับขึ้น */
-    line-height: 1.6em; /* ใช้ 1.6em แทน 1.5 เพื่อให้กระชับแต่ยังอ่านง่าย */
+    line-height: 1.6em; 
     margin-top: 15px;
   }
-  
+  
   .report-content h3 {
-    /* ระยะห่างหัวข้อก่อนรายการถัดไป */
-    margin: 20px 0 10px 0; 
+    margin: 20px 0 10px 0; 
     color: #c2185b;
-    font-weight: 700; /* เน้นความหนา */
+    font-weight: 700; 
     word-break: break-word;
   }
 
   .report-content ul {
-    /* ปรับ margin และ padding ของรายการหลักให้กระชับ */
-    margin: 0 0 15px 20px; /* ลด margin ด้านบน */
+    /* กำหนด Margin ด้านบนเป็น 0 และควบคุมระยะห่างของกลุ่มด้วย Margin ด้านล่าง */
+    margin: 0 0 20px 20px; 
     display: block;
-    padding-left: 0; /* ไม่ต้องมี padding-left เพิ่ม ถ้ามีการกำหนด list-style-position แล้ว */
-    list-style-position: outside; /* จัดตำแหน่งจุดหัวข้อ */
+    padding-left: 0; 
+    list-style-position: outside; 
   }
 
   .report-content li {
-    /* ระยะห่างระหว่างรายการ (แต่ละข้อ) */
-    margin-bottom: 4px; /* ลดระยะห่างระหว่างข้อ เพื่อให้ดูเป็นกลุ่ม */
+    /* นี่คือจุดสำคัญ: ตั้งค่า margin เป็น 0 ทั้งหมด และใช้ padding-left เพื่อให้เนื้อหาดูไม่ชิดขอบ */
+    margin: 0; 
+    padding-left: 0;
+    /* กำหนด line-height ที่ li โดยตรงอีกครั้งเพื่อให้รายการกระชับเป็นพิเศษ */
+    line-height: 1.6em;
     word-break: break-word;
+    /* หากต้องการให้รายการชิดกว่านี้อีก ให้ลด line-height เป็น 1.5em หรือ 1.4em */
   }
-  
+  
   .report-content p {
-    /* การจัดการย่อหน้าทั่วไป */
-    margin: 0 0 1em 0; /* เว้นระยะห่างด้านล่างของแต่ละย่อหน้า */
+    margin: 0 0 1em 0; 
   }
 
   .note {
-    margin-top: 25px; /* เพิ่มระยะห่างด้านบนให้ชัดเจน */
+    margin-top: 25px; 
     font-style: italic;
     color: #880e4f;
-    line-height: 1.6em; /* ใช้ line-height เดียวกันเพื่อให้เข้ากัน */
+    line-height: 1.6em; 
     padding: 10px;
-    border-left: 4px solid #c2185b; /* เพิ่มเส้นแบ่งเพื่อให้ข้อความหมายเหตุโดดเด่น */
-    background-color: rgba(255, 240, 245, 0.7); /* สีพื้นหลังอ่อน ๆ */
+    border-left: 4px solid #c2185b; 
+    background-color: rgba(255, 240, 245, 0.7); 
   }
 
   @media (max-width: 600px) {
@@ -158,9 +159,9 @@
       <ul>
         <li>ลูกหนี้ที่ปรับโครงสร้างหนี้แล้ว ภายหลังผิดนัดชำระหนี้อีก ลูกหนี้จะต้องเสียดอกเบี้ยผิดนัดตามอัตราที่กฎหมายกำหนด</li>
       </ul>
-      
+      
             <p class="note">
-        ****** ทั้งนี้ ลูกหนี้สามารถแสดงความประสงค์ขอเข้ารวมมาตรการดังกล่าวได้ที่อำเภอ 
+        ****** ทั้งนี้ ลูกหนี้สามารถแสดงความประสงค์ขอเข้ารวมมาตรการดังกล่าวได้ที่อำเภอ 
         ในพื้นที่ที่ลูกหนี้ทำสัญญา/สำนักงานเลขานุการคณะอนุกรรมการบริหารกองทุนพัฒนาบทบาทสตรีกรุงเทพมหานคร
       </p>
     </div>
