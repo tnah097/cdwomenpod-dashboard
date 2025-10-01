@@ -27,15 +27,11 @@
       max-width: 800px;
       box-sizing: border-box;
       background-color: rgba(255, 255, 255, 0.92);
+      position: relative;
     }
 
     .header-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
       margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 10px;
     }
 
     .header-text h1 {
@@ -47,18 +43,27 @@
 
     .header-text h2 {
       font-size: 1.2rem;
-      margin: 5px 0;
+      margin: 5px 0 0 0;
       color: deeppink;
+    }
+
+    /* โลโก้อยู่มุมขวาบน */
+    .logos {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
     }
 
     .logos img {
       height: 60px;
-      margin-left: 5px;
     }
 
     .report-content {
       line-height: 1.6;
       color: #333;
+      margin-top: 20px;
     }
 
     .report-content h3 {
@@ -79,12 +84,6 @@
       font-style: italic;
       color: #880e4f;
     }
-
-    .section-title {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #e91e63;
-    }
   </style>
 </head>
 <body>
@@ -94,10 +93,11 @@
         <h1>ประกาศคณะกรรมการบริหารกองทุนพัฒนาบทบาทสตรี</h1>
         <h2>เรื่อง มาตรการไกล่เกลี่ยและประนีประนอมยอมความกรณีลูกหนี้ผิดนัด</h2>
       </div>
-      <div class="logos">
-        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
-      </div>
+    </div>
+
+    <div class="logos">
+      <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
     </div>
 
     <div class="report-content">
