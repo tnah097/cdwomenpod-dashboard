@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>ประกาศกองทุนพัฒนาบทบาทสตรี</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      background: 
+        linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), center/cover no-repeat fixed;
+    }
+
+    .container {
+      border-radius: 25px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+      width: 100%;
+      max-width: 800px;
+      box-sizing: border-box;
+      background-color: rgba(255, 255, 255, 0.92);
+      position: relative;
+    }
+
+    .header-section {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .header-text h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 60px 0 5px 0;
+      color: navy;
+    }
+
+    .header-text h2 {
+      font-size: 1.2rem;
+      margin: 0 0 10px 0;
+      color: deeppink;
+    }
+
+    .header-text p {
+      margin: 5px 0 10px 0;
+    }
+
+    .logos {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .logos img {
+      height: 60px;
+    }
+
+    .report-content {
+      line-height: 1.6;
+      color: #333;
+      margin-top: 20px;
+    }
+
+    .report-content h3 {
+      margin-top: 20px;
+      color: #c2185b;
+      cursor: pointer;
+    }
+
+    .report-content ul {
+      margin: 10px 0 10px 20px;
+      display: none;
+    }
+
+    .report-content li {
+      margin-bottom: 8px;
+    }
+
+    .note {
+      margin-top: 15px;
+      font-style: italic;
+      color: #880e4f;
+    }
+
+    /* Responsive สำหรับมือถือ */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+      }
+      .header-text h1 {
+        font-size: 1.5rem;
+        margin-top: 80px;
+      }
+      .header-text h2 {
+        font-size: 1rem;
+      }
+      .logos img {
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-section">
+      <div class="header-text">
+        <h1>ประกาศคณะกรรมการบริหารกองทุนพัฒนาบทบาทสตรี</h1>
+        <h2>เรื่อง หลักเกณฑ์ วิธีการ และเงื่อนไขเกี่ยวกับการลดอัตราดอกเบี้ยเงินกู้และอัตราดอกเบี้ยผิดนัด กองทุนพัฒนาบทบาทสตรี พ.ศ. 2566</h2>
+      </div>
+    </div>
+
+    <div class="logos">
+      <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+    </div>
+
+    <div class="report-content">
+      <h3 onclick="toggleContent(this)">หลักเกณฑ์</h3>
+      <ul>
+        <li>ลูกหนี้ที่ทำสัญญากู้ยืมเงินกับกองทุนพัฒนาบทบาทสตรี</li>
+        <li>ผิดนัดชำระหนี้</li>
+        <li>ไม่เคยปรับโครงสร้างหนี้มาก่อน</li>
+        <li>ต้องไม่เป็นลูกหนี้ที่อยู่ระหว่างการดำเนินคดีในชั้นศาล และลูกหนี้ที่ศาลได้มีคำพิพากษาในคดีแล้ว</li>
+      </ul>
+
+      <h3 onclick="toggleContent(this)">สิทธิที่ลูกหนี้จะได้รับ</h3>
+      <ul>
+        <li>ลูกหนี้จะได้รับสิทธิลดอัตราดอกเบี้ยผิดนัด เหลืออัตราร้อยละ 1 ต่อปี ในระยะ 3 เดือนแรก</li>
+        <li>หากลูกหนี้มีวินัยทางการเงินที่ดี ชำระหนี้ตรงตามกำหนด ในเดือนที่ 4 เป็นต้นไป ลูกหนี้จะได้รับสิทธิลดอัตราดอกเบี้ยผิดนัด เหลืออัตราร้อยละ 0.10 ต่อปี</li>
+      </ul>
+
+      <h3 onclick="toggleContent(this)">ระยะเวลาในการผ่อนชำระหนี้</h3>
+      <ul>
+        <li>ลูกหนี้ผ่อนชำระหนี้เป็นรายเดือน ในระยะเวลาการผ่อนชำระหนี้เกินกว่า 2 ปี แต่ต้องไม่เกิน 4 ปี</li>
+      </ul>
+
+      <h3 onclick="toggleContent(this)">กรณีผิดเงื่อนไข</h3>
+      <ul>
+        <li>ลูกหนี้ที่ปรับโครงสร้างหนี้แล้ว ภายหลังผิดนัดชำระหนี้อีก ลูกหนี้จะต้องเสียดอกเบี้ยผิดนัดตามอัตราที่กฎหมายกำหนด</li>
+      </ul>
+
+      <p class="note">ทั้งนี้ ลูกหนี้สามารถแสดงความประสงค์ขอเข้ารวมมาตรการดังกล่าวได้ที่อำเภอในพื้นที่ที่ลูกหนี้ทำสัญญา/สำนักงานเลขานุการคณะอนุกรรมการบริหารกองทุนพัฒนาบทบาทสตรีกรุงเทพมหานคร</p>
+    </div>
+  </div>
+
+  <script>
+    function toggleContent(header) {
+      const ul = header.nextElementSibling;
+      if (ul.style.display === "block") {
+        ul.style.display = "none";
+      } else {
+        ul.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
