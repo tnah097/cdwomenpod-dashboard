@@ -323,7 +323,7 @@
                 <div style="color: navy; font-weight: bold; margin-top: 8px;">
                     <span style="font-size: 1.2rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับจังหวัด</span><br />
                     <p align="right">
-                        <span style="font-size: 2rem;" id="update-date">ข้อมูล ณ วันที่ 20 กันยายน 2568 </span>
+                        <span style="font-size: 2rem;" id="update-date">ข้อมูล ณ วันที่ 30 กันยายน 2568 </span>
                     </p>
                 </div>
             </div>
@@ -510,21 +510,9 @@
             const s = String(val).replace(/,/g, "").trim();
             if (s === "" || isNaN(Number(s))) return "-";
             return Number(s).toFixed(2) + "%";
-        }
+        } 
 
-        function formatDateThai(dateStr) {
-            if (!dateStr && dateStr !== 0) return "-";
-            const s = String(dateStr).trim();
-            const parts = s.split("/");
-            if (parts.length === 3) {
-                const d = Number(parts[0]),
-                    m = Number(parts[1]) - 1,
-                    y = Number(parts[2]);
-                if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
-                    const dt = new Date(y, m, d);
-                    if (!isNaN(dt)) return dt.toLocaleDateString("th-TH");
-                }
-            }
+        
             const dd = new Date(s);
             if (!isNaN(dd)) return dd.toLocaleDateString("th-TH");
             return s || "-";
@@ -766,6 +754,7 @@
     </script>
 </body>
 </html>
+
 
 
 
