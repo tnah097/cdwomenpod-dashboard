@@ -15,8 +15,7 @@
       align-items: center;
       padding: 20px;
       box-sizing: border-box;
-      background: 
-        linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), center/cover no-repeat fixed;
+      background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), center/cover no-repeat fixed;
     }
 
     .container {
@@ -92,7 +91,6 @@
       color: #880e4f;
     }
 
-    /* Responsive สำหรับมือถือ */
     @media (max-width: 600px) {
       .container {
         padding: 20px 15px;
@@ -156,11 +154,7 @@
   <script>
     function toggleContent(header) {
       const ul = header.nextElementSibling;
-      if (ul.style.display === "block") {
-        ul.style.display = "none";
-      } else {
-        ul.style.display = "block";
-      }
+      ul.style.display = (ul.style.display === "block") ? "none" : "block";
     }
   </script>
 </body>
