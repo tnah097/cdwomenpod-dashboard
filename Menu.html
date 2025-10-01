@@ -22,8 +22,8 @@
       width: 100%;
       max-width: 1200px;
       /* ✅ โปร่งใสเล็กน้อยเพื่อให้เห็นพื้นหลัง */
-       background-color: rgba(255, 255, 255, 0.3);
-backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
       border-radius: 25px;
       padding: 30px;
       box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
@@ -138,8 +138,28 @@ backdrop-filter: blur(10px);
       <div class="card purple" onclick="window.open('https://script.google.com/macros/s/AKfycbwP9XCCvSRmLv3q_LNK9i8ArqLuTNtrLAnFYRqWTrbzMft9ed--ktiK1LH0IW_ehZQk/exec', '_blank')">
         สรุปหนี้ครบกำหนดชำระ
       </div>
-      <div class="card debt-management" onclick="window.open('#', '_blank')">
+      <!-- 🔹 เพิ่ม Dropdown มาตรการบริหารจัดการหนี้ -->
+      <div class="card debt-management">
         มาตรการบริหารจัดการหนี้
+        <br/>
+        <select class="dropdown" onchange="openDebtLink(this.value)">
+          <option value="">-- เลือกหัวข้อ --</option>
+          <option value="https://tnah097.github.io/cdwomenpod-dashboard/law001.html">
+            มาตรการไกล่เกลี่ยและประนีประนอมยอมความกรณีลูกหนี้ผิดนัด
+          </option>
+          <option value="https://tnah097.github.io/cdwomenpod-dashboard/law002.html">
+            หลักเกณฑ์ วิธีการ และเงื่อนไข การพิจารณาลด/งดเบี้ยปรับ/ดอกเบี้ยผิดนัด
+          </option>
+          <option value="https://tnah097.github.io/cdwomenpod-dashboard/law003.html">
+            มาตรการยกเลิกสัญญาค้ำประกันเงินกู้รายบุคคลและการปลดหนี้รายบุคคล
+          </option>
+          <option value="https://tnah097.github.io/cdwomenpod-dashboard/law004.html">
+            หลักเกณฑ์ วิธีการ และเงื่อนไขการลดอัตราดอกเบี้ยเงินกู้และดอกเบี้ยผิดนัด พ.ศ. 2566
+          </option>
+          <option value="https://tnah097.github.io/cdwomenpod-dashboard/law005.html">
+            มาตรการให้ความช่วยเหลือกรณีทุพพลภาพ ชราภาพ ถึงแก่ความตาย หรือไม่สามารถประกอบอาชีพได้ตามปกติ พ.ศ. 2568
+          </option>
+        </select>
       </div>
       <div class="card red">
         จำนวนการสมัครสมาชิกกองทุนพัฒนาบทบาทสตรี
@@ -174,26 +194,33 @@ backdrop-filter: blur(10px);
     </div>
 
     <script>
-    function openCalcLink(option) {
-      if (option === "missed_payment") {
-        window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
+      function openCalcLink(option) {
+        if (option === "missed_payment") {
+          window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
+        }
       }
-    }
 
-    function openMemberLink(type) {
-      if (type === "person") {
-        window.open("https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbxJLjRa_0bwNN2MobsGgn_bHYMOD9PNtQSa1XZT23vfx_9kayYFJx0uQzTM4OK1BsI2/exec?action=person", "_blank");
-      } else if (type === "organization") {
-        window.open("https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbxJLjRa_0bwNN2MobsGgn_bHYMOD9PNtQSa1XZT23vfx_9kayYFJx0uQzTM4OK1BsI2/exec?action=organization", "_blank");
+      function openMemberLink(type) {
+        if (type === "person") {
+          window.open("https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbxJLjRa_0bwNN2MobsGgn_bHYMOD9PNtQSa1XZT23vfx_9kayYFJx0uQzTM4OK1BsI2/exec?action=person", "_blank");
+        } else if (type === "organization") {
+          window.open("https://script.google.com/a/macros/thaimooc.ac.th/s/AKfycbxJLjRa_0bwNN2MobsGgn_bHYMOD9PNtQSa1XZT23vfx_9kayYFJx0uQzTM4OK1BsI2/exec?action=organization", "_blank");
+        }
       }
-    }
 
-    function openERPLink(option) {
-      const baseUrl = "https://tnah097.github.io/cdwomenpod-dashboard/accounting.html";
-      if(option){
-        window.open(baseUrl + "#" + option, "_blank");
+      function openERPLink(option) {
+        const baseUrl = "https://tnah097.github.io/cdwomenpod-dashboard/accounting.html";
+        if(option){
+          window.open(baseUrl + "#" + option, "_blank");
+        }
       }
-    }
+
+      // 🔹 ฟังก์ชันเปิดลิงก์มาตรการบริหารจัดการหนี้
+      function openDebtLink(url){
+        if(url){
+          window.open(url, "_blank");
+        }
+      }
     </script>
   </div>
 </body>
