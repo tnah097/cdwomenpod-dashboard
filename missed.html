@@ -2,9 +2,11 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>โปรแกรมคำนวณดอกเบี้ยผิดนัด (Interactive)</title>
+  <title>โปรแกรมคำนวณและจัดการหนี้</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
     body {
       font-family: 'Sarabun', sans-serif;
@@ -38,276 +40,261 @@
       gap: 10px;
     }
 
-    .header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
-    .header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
-    .logos img { height: 60px; margin-left: 5px; }
-
-    .calculator-card {
-      background-color: #ffebf2;
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-    }
-
-    .formula {
-      font-style: italic;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #c2185b;
+    .header-text h1 {
+      font-size: 2rem;
       font-weight: bold;
-      background: #f8bbd0;
-      padding: 10px;
-      border-radius: 12px;
+      margin: 0;
+      color: navy;
     }
 
-    .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-    .input-group label { font-weight: bold; margin-bottom: 6px; color: #333; }
-    .input-group input { padding: 12px; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 1rem; transition: 0.3s ease; }
-    .input-group input:focus { outline: none; border-color: #e91e63; box-shadow: 0 0 8px rgba(233, 30, 99, 0.3); }
-
-    .calc-button {
-      width: 100%; padding: 15px; background-color: #e91e63; color: white;
-      font-size: 1.3rem; font-weight: bold; border: none; border-radius: 15px;
-      cursor: pointer; transition: 0.3s ease; margin-top: 10px;
+    .header-text h2 {
+      font-size: 1.2rem;
+      margin: 5px 0;
+      color: deeppink;
     }
-    .calc-button:hover { background-color: #c2185b; transform: translateY(-3px); }
 
-    .result-box {
-      margin-top: 20px; padding: 20px; border: 3px dashed #f06292;
-      border-radius: 15px; background-color: #fff8fa; text-align: center;
-      font-size: 1.5rem; font-weight: bold; color: #880e4f;
+    .logos img {
+      height: 60px;
+      margin-left: 5px;
     }
-    .small-text { text-align: right; font-size: 0.9rem; color: #555; margin-top: 3px; }
 
-    /* --- STYLES FOR INTERACTIVE TABLE --- */
     .table-container {
-      border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3);
-      width: 100%; max-width: 1200px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3);
+      width: 100%;
+      max-width: 1200px;
+      box-sizing: border-box;
+      background-color: rgba(255, 255, 255, 0.95);
     }
-    .table-container h1 { color: navy; text-align: center; margin-bottom: 20px; }
-    .table-wrapper { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; white-space: nowrap; }
-    thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 1; }
-    
-    /* Editable cells styling */
-    td[contenteditable="true"] { background-color: #fffde7; cursor: pointer; }
-    td[contenteditable="true"]:focus { background-color: #fff; outline: 2px solid #005196; }
 
-    /* Conditional Formatting Classes */
+    .table-container h1 {
+        color: navy;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .upload-section {
+        background-color: #e3f2fd;
+        border: 2px dashed #0d47a1;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .upload-section label {
+        font-weight: bold;
+        color: #0d47a1;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+    input[type="file"] {
+        border: 1px solid #90caf9;
+        padding: 8px;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6), td:nth-child(7),
+    td:nth-child(8), td:nth-child(10), td:nth-child(11), td:nth-child(12), td:nth-child(13),
+    td:nth-child(14), td:nth-child(15), td:nth-child(16), td:nth-child(17) {
+        text-align: right; /* จัดตัวเลขชิดขวา */
+    }
+
+    thead th {
+        background-color: #002D62;
+        color: white;
+        position: sticky;
+        top: 0;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
     .status-paid { background-color: #d4edda !important; color: #155724; }
     .status-due { background-color: #f8d7da !important; color: #721c24; }
     .status-future { background-color: white !important; }
-    .status-paid td[contenteditable="true"], .status-due td[contenteditable="true"], .status-future td[contenteditable="true"] {
-        background-color: inherit; /* Make editable cells blend with row color */
-    }
-
-    .add-row-btn {
-        display: block; width: 200px; margin: 20px auto 0; padding: 12px;
-        background-color: #005196; color: white; font-size: 1rem; font-weight: bold;
-        border: none; border-radius: 10px; cursor: pointer; transition: 0.3s ease;
-    }
-    .add-row-btn:hover { background-color: #003b6f; transform: translateY(-2px); }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header-section">
-      <div class="header-text"><h1>การคิดคำนวณดอกเบี้ยผิดนัด</h1><h2>โปรแกรมช่วยคำนวณ</h2></div>
+      <div class="header-text">
+        <h1>Dashboard จัดการหนี้</h1>
+        <h2>กองทุนพัฒนาบทบาทสตรี</h2>
+      </div>
       <div class="logos">
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:AN9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
       </div>
-    </div>
-    <div class="calculator-card">
-        <p class="formula">ดอกเบี้ยผิดนัด = (เงินต้นคงเหลือ x (อัตราดอกเบี้ย/ 100) / 365) x จำนวนวันที่ผิดนัด</p>
-        <div class="input-group"><label for="principal">เงินต้นค้างชำระ (บาท):</label><input type="number" id="principal" placeholder="เช่น 50000"></div>
-        <div class="input-group"><label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label><input type="number" id="rate" value="5" readonly></div>
-        <div class="input-group"><label for="dueDate">วันที่ครบกำหนดชำระ/จ่ายครั้งสุดท้าย:</label><input type="date" id="dueDate"></div>
-        <div class="input-group"><label for="paymentDate">วันที่จ่ายชำระ:</label><input type="date" id="paymentDate"></div>
-        <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
-        <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
-        <div id="result" class="result-box">ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท</div>
     </div>
   </div>
 
   <div class="table-container">
-    <h1>ตารางคำนวณและตัดชำระหนี้ (Interactive)</h1>
+    <h1>ตารางคำนวณและตัดชำระหนี้</h1>
+    
+    <div class="upload-section">
+        <label for="excel-file">เลือกไฟล์ Excel (.xlsx, .xls, .csv) เพื่อแสดงข้อมูล</label>
+        <input type="file" id="excel-file" accept=".xlsx, .xls, .csv">
+    </div>
+
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>ลำดับ</th><th>กำหนดวันชำระ</th><th>เงินต้น</th><th>ดอกเบี้ย</th><th>เบี้ยปรับ</th><th>ด/บ ผิดนัดเดิม</th><th>ด/บ ผิดนัดใหม่</th><th>รวม</th><th>วันที่ชำระ</th><th>เงินที่ชำระ</th><th>รับคืน ด/บ ผิดนัดเดิม</th><th>รับคืน ด/บ ผิดนัดใหม่</th><th>รับคืนเบี้ยปรับ</th><th>รับคืนดอกเบี้ย</th><th>รับคืนเงินต้น</th><th>รับคืนรวม</th><th>หนี้คงเหลือ</th><th>สถานะ</th></tr>
+                    <th>ลำดับ</th>
+                    <th>กำหนดวันชำระ</th>
+                    <th>เงินต้น</th>
+                    <th>ดอกเบี้ย</th>
+                    <th>เบี้ยปรับ</th>
+                    <th>ด/บ ผิดนัดเดิม</th>
+                    <th>ด/บ ผิดนัดใหม่</th>
+                    <th>รวม</th>
+                    <th>วันที่ชำระ</th>
+                    <th>เงินที่ชำระ</th>
+                    <th>รับคืน ด/บ ผิดนัดเดิม</th>
+                    <th>รับคืน ด/บ ผิดนัดใหม่</th>
+                    <th>รับคืนเบี้ยปรับ</th>
+                    <th>รับคืนดอกเบี้ย</th>
+                    <th>รับคืนเงินต้น</th>
+                    <th>รับคืนรวม</th>
+                    <th>หนี้คงเหลือ</th>
+                    <th>สถานะ</th>
+                </tr>
             </thead>
             <tbody id="payment-table-body">
-                </tbody>
+                <tr>
+                    <td colspan="18" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel เพื่อแสดงข้อมูล...</td>
+                </tr>
+            </tbody>
         </table>
     </div>
-    <button class="add-row-btn" onclick="addNewRow()">+ เพิ่มงวดใหม่</button>
   </div>
 
   <script>
-    // --- ส่วน Script เครื่องคิดเลขเดิม ---
-    function calculateInterest() {
-      const principal = parseFloat(document.getElementById('principal').value) || 0;
-      const rate = parseFloat(document.getElementById('rate').value) || 0;
-      const dueDateStr = document.getElementById('dueDate').value;
-      const paymentDateStr = document.getElementById('paymentDate').value;
-      if (!principal || !rate || !dueDateStr || !paymentDateStr) {
-        document.getElementById('result').innerHTML = "⚠️ โปรดกรอกข้อมูลให้ครบถ้วน"; return;
-      }
-      const dueDate = new Date(dueDateStr); const paymentDate = new Date(paymentDateStr);
-      const days = Math.floor((paymentDate - dueDate) / (1000 * 60 * 60 * 24));
-      if (days <= 0) {
-        document.getElementById('daysCount').innerHTML = "ยังไม่ถึงวันผิดนัด";
-        document.getElementById('result').innerHTML = "ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท"; return;
-      }
-      document.getElementById('daysCount').innerHTML = `จำนวนวันที่ผิดนัด: ${days} วัน`;
-      const interest = (principal * (rate / 100) * days) / 365;
-      document.getElementById('result').innerHTML = `ดอกเบี้ยผิดนัดที่ต้องชำระ: ${interest.toFixed(2)} บาท`;
-    }
-
-    // --- Script ใหม่สำหรับตาราง Interactive ---
-    
-    // ข้อมูลเริ่มต้นจากไฟล์ CSV ของคุณ
-    const initialData = [
-        {ลำดับ: 3, กำหนดวันชำระ: "2013-11-15", เงินต้น: 2834, ดอกเบี้ย: 5500, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 0, ดบผิดนัดใหม่: 0, วันที่ชำระ: "2013-11-15", เงินที่ชำระ: 8334},
-        {ลำดับ: 59, กำหนดวันชำระ: "2025-07-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 117.84, วันที่ชำระ: "", เงินที่ชำระ: 0},
-        {ลำดับ: 60, กำหนดวันชำระ: "2025-08-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 84.93, วันที่ชำระ: "", เงินที่ชำระ: 0},
-        {ลำดับ: 61, กำหนดวันชำระ: "2025-09-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 50.96, วันที่ชำระ: "", เงินที่ชำระ: 0},
-        {ลำดับ: 62, กำหนดวันชำระ: "2025-10-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 0, วันที่ชำระ: "", เงินที่ชำระ: 0},
-        {ลำดับ: 63, กำหนดวันชำระ: "2025-11-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 0, วันที่ชำระ: "", เงินที่ชำระ: 0}
-    ];
-
-    const tableBody = document.getElementById('payment-table-body');
-
-    function createRow(data) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td contenteditable="true">${data.ลำดับ || ''}</td>
-            <td contenteditable="true">${data.กำหนดวันชำระ || ''}</td>
-            <td contenteditable="true">${data.เงินต้น || 0}</td>
-            <td contenteditable="true">${data.ดอกเบี้ย || 0}</td>
-            <td contenteditable="true">${data.เบี้ยปรับ || 0}</td>
-            <td contenteditable="true">${data.ดบผิดนัดเดิม || 0}</td>
-            <td contenteditable="true">${data.ดบผิดนัดใหม่ || 0}</td>
-            <td class="col-sum">0</td>
-            <td contenteditable="true">${data.วันที่ชำระ || ''}</td>
-            <td contenteditable="true" class="col-payment-amount">${data.เงินที่ชำระ || 0}</td>
-            <td class="col-paid-old-default">0</td>
-            <td class="col-paid-new-default">0</td>
-            <td class="col-paid-penalty">0</td>
-            <td class="col-paid-interest">0</td>
-            <td class="col-paid-principal">0</td>
-            <td class="col-paid-sum">0</td>
-            <td class="col-remaining">0</td>
-            <td class="col-status"></td>
-        `;
-
-        // Add event listener to editable cells
-        row.querySelectorAll('td[contenteditable="true"]').forEach(cell => {
-            cell.addEventListener('input', () => calculateRow(row));
-        });
-
-        tableBody.appendChild(row);
-        calculateRow(row); // Initial calculation
-    }
-
-    function calculateRow(row) {
-        const cells = row.cells;
-        
-        // Helper to get number from cell
-        const getNum = (index) => parseFloat(cells[index].textContent.replace(/,/g, '')) || 0;
-
-        // Get values from input columns
-        const principal = getNum(2);
-        const interest = getNum(3);
-        const penalty = getNum(4);
-        const oldDefault = getNum(5);
-        const newDefault = getNum(6);
-        const paymentAmount = getNum(9);
-
-        // 1. Calculate sum
-        const sum = principal + interest + penalty + oldDefault + newDefault;
-        cells[7].textContent = sum.toFixed(2);
-
-        // 2. Settlement logic
-        let remainingPayment = paymentAmount;
-
-        const paidOldDefault = Math.min(oldDefault, remainingPayment);
-        remainingPayment -= paidOldDefault;
-        cells[10].textContent = paidOldDefault.toFixed(2);
-
-        const paidNewDefault = Math.min(newDefault, remainingPayment);
-        remainingPayment -= paidNewDefault;
-        cells[11].textContent = paidNewDefault.toFixed(2);
-
-        const paidPenalty = Math.min(penalty, remainingPayment);
-        remainingPayment -= paidPenalty;
-        cells[12].textContent = paidPenalty.toFixed(2);
-        
-        const paidInterest = Math.min(interest, remainingPayment);
-        remainingPayment -= paidInterest;
-        cells[13].textContent = paidInterest.toFixed(2);
-
-        const paidPrincipal = Math.min(principal, remainingPayment);
-        remainingPayment -= paidPrincipal;
-        cells[14].textContent = paidPrincipal.toFixed(2);
-
-        // 3. Calculate paid sum and remaining debt
-        const paidSum = paidOldDefault + paidNewDefault + paidPenalty + paidInterest + paidPrincipal;
-        cells[15].textContent = paidSum.toFixed(2);
-
-        const remainingDebt = sum - paidSum;
-        cells[16].textContent = remainingDebt.toFixed(2);
-
-        // 4. Update status and color
-        updateStatusAndColor(row);
-    }
-
-    function updateStatusAndColor(row) {
-        const dueDateStr = row.cells[1].textContent;
-        const remainingDebt = parseFloat(row.cells[16].textContent);
-        const statusCell = row.cells[17];
-
-        row.classList.remove('status-paid', 'status-due', 'status-future');
-
-        if (!dueDateStr) {
-            statusCell.textContent = 'ระบุวันที่';
-            row.classList.add('status-future');
-            return;
-        }
-
+    function applyRowColors() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const dueDate = new Date(dueDateStr);
-        
-        if (remainingDebt <= 0.009) { // Using a small tolerance for floating point
-            statusCell.textContent = 'ชำระครบแล้ว';
-            row.classList.add('status-paid');
-        } else if (dueDate < today) {
-            statusCell.textContent = 'ค้างชำระ';
-            row.classList.add('status-due');
-        } else {
-            statusCell.textContent = 'ยังไม่ถึงกำหนด';
-            row.classList.add('status-future');
-        }
+
+        const rows = document.querySelectorAll("#payment-table-body tr");
+        if (rows.length === 0) return;
+
+        rows.forEach(row => {
+            const dueDateCell = row.cells[1];
+            const statusCell = row.cells[17];
+            
+            if (!dueDateCell || !statusCell || !dueDateCell.textContent) return;
+
+            let dateParts = dueDateCell.textContent.split('/');
+            const dueDate = dateParts.length === 3 ? new Date(dateParts[2] - 543, dateParts[1] - 1, dateParts[0]) : new Date(dueDateCell.textContent);
+
+            const status = statusCell.textContent.trim();
+
+            row.classList.remove('status-paid', 'status-due', 'status-future');
+            
+            if (status === "ชำระครบแล้ว") {
+                row.classList.add('status-paid');
+            } else if (status === "ค้างชำระ" && dueDate < today) {
+                row.classList.add('status-due');
+            } else {
+                 row.classList.add('status-future');
+            }
+        });
     }
 
-    function addNewRow() {
-        const lastRow = tableBody.lastElementChild;
-        let newSeq = 1;
-        if (lastRow) {
-            newSeq = parseInt(lastRow.cells[0].textContent) + 1;
-        }
-        createRow({ ลำดับ: newSeq });
-    }
+    const excelFileInput = document.getElementById('excel-file');
 
-    // Initial render of the table on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        initialData.forEach(data => createRow(data));
+    excelFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+            
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
+            
+            const tableBody = document.getElementById('payment-table-body');
+            tableBody.innerHTML = '';
+
+            jsonData.forEach(rowData => {
+                const tr = document.createElement('tr');
+                
+                // *** START: ส่วนที่แก้ไขตามคำขอ ***
+                // 1. ดึงค่าตัวเลขสำหรับคำนวณออกมาและแปลงเป็นตัวเลข (ป้องกัน error ถ้าเซลล์ว่าง)
+                const principal = parseFloat(rowData['เงินต้น'] || 0);
+                const interest = parseFloat(rowData['ดอกเบี้ย'] || 0);
+                const penalty = parseFloat(rowData['เบี้ยปรับ'] || 0);
+                const oldDefaultInterest = parseFloat(rowData['ด/บ ผิดนัดเดิม'] || 0);
+                const newDefaultInterest = parseFloat(rowData['ด/บ ผิดนัดใหม่'] || 0);
+
+                // 2. คำนวณยอด 'รวม' โดยใช้สูตร SUM จากค่าด้านบน
+                const calculatedTotal = principal + interest + penalty + oldDefaultInterest + newDefaultInterest;
+                // *** END: ส่วนที่แก้ไขตามคำขอ ***
+                
+                const cells = [
+                    rowData['ลำดับ'] || '',
+                    rowData['กำหนดวันชำระ'] ? new Date(rowData['กำหนดวันชำระ']).toLocaleDateString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '',
+                    principal,
+                    interest,
+                    penalty,
+                    oldDefaultInterest,
+                    newDefaultInterest,
+                    calculatedTotal, // << ใช้ค่าที่คำนวณใหม่ตรงนี้
+                    rowData['วันที่ชำระ'] ? new Date(rowData['วันที่ชำระ']).toLocaleDateString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-',
+                    parseFloat(rowData['เงินที่ชำระ'] || 0),
+                    parseFloat(rowData['รับคืน ด/บ ผิดนัดเดิม'] || 0),
+                    parseFloat(rowData['รับคืน ด/บ ผิดนัดใหม่'] || 0),
+                    parseFloat(rowData['รับคืนเบี้ยปรับ'] || 0),
+                    parseFloat(rowData['รับคืนดอกเบี้ย'] || 0),
+                    parseFloat(rowData['รับคืนเงินต้น'] || 0),
+                    parseFloat(rowData['รับคืนรวม'] || 0),
+                    parseFloat(rowData['หนี้คงเหลือ'] || 0), // หากคอลัมน์นี้มีสูตรใน Excel ก็สามารถคำนวณแบบเดียวกับ 'รวม' ได้เช่นกัน
+                    rowData['สถานะ'] || ''
+                ];
+                
+                cells.forEach(cellData => {
+                    const td = document.createElement('td');
+                    if (typeof cellData === 'number') {
+                        td.textContent = cellData.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    } else {
+                        td.textContent = cellData;
+                    }
+                    tr.appendChild(td);
+                });
+
+                tableBody.appendChild(tr);
+            });
+            
+            applyRowColors();
+        };
+
+        reader.readAsArrayBuffer(file);
     });
-
   </script>
 </body>
 </html>
