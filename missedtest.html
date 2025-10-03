@@ -57,7 +57,6 @@
     .status-paid { background-color: #d4edda !important; color: #155724; }
     .status-due { background-color: #f8d7da !important; color: #721c24; }
     
-    /* --- CSS ใหม่สำหรับส่วนสรุปและประวัติ --- */
     .summary-table-wrapper { margin-top: 20px; overflow-x: auto; }
     .summary-table { width: 100%; }
     .summary-table th { background-color: #e9ecef; color: #495057; }
@@ -79,15 +78,34 @@
     </div>
     <div class="calculator-card">
         <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
-        <div class="input-group"><label for="principal">เงินต้น (สำหรับคำนวณ):</label><input type="number" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ"></div>
-        <div class="input-group"><label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label><input type="date" id="dueDate"></div>
-        <div class="input-group"><label for="paymentDateCalc">วันที่จ่ายชำระ (สำหรับคำนวณ):</label><input type="date" id="paymentDateCalc"></div>
+        <div class="input-group">
+            <label for="principal">เงินต้น (สำหรับคำนวณ):</label>
+            <input type="text" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ" onkeyup="formatNumberInput(this)">
+        </div>
+        <div class="input-group">
+            <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
+            <input type="number" id="rate" value="5" readonly>
+        </div>
+        <div class="input-group">
+            <label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label>
+            <input type="date" id="dueDate">
+        </div>
+        <div class="input-group">
+            <label for="paymentDateCalc">วันที่จ่ายชำระ (สำหรับคำนวณ):</label>
+            <input type="date" id="paymentDateCalc">
+        </div>
         <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
         <div id="result" class="result-box">ผลการคำนวณ: 0.00 บาท</div>
         <hr style="margin: 20px 0; border: 1px solid #f8bbd0;">
         <p style="text-align:center; font-weight:bold; color:#155724;">ส่วนที่ 2: ตัดชำระหนี้</p>
-        <div class="input-group"><label for="paymentAmount">ระบุจำนวนเงินที่จะชำระ (ยอดเงินที่ได้รับจริง):</label><input type="number" id="paymentAmount" placeholder="กรอกยอดเงินที่ได้รับจริง"></div>
-        <div class="input-group"><label for="actualPaymentDate">วันที่จ่ายชำระจริง (สำหรับบันทึก):</label><input type="date" id="actualPaymentDate"></div>
+        <div class="input-group">
+            <label for="paymentAmount">ระบุจำนวนเงินที่จะชำระ (ยอดเงินที่ได้รับจริง):</label>
+            <input type="number" id="paymentAmount" placeholder="กรอกยอดเงินที่ได้รับจริง">
+        </div>
+        <div class="input-group">
+            <label for="actualPaymentDate">วันที่จ่ายชำระจริง (สำหรับบันทึก):</label>
+            <input type="date" id="actualPaymentDate">
+        </div>
         <button class="calc-button settle-button" onclick="settlePayment()">เริ่มตัดชำระหนี้ในตาราง</button>
     </div>
   </div>
@@ -239,7 +257,6 @@ function renderSummary() {
         totals.due.penalty += inst.penalty || 0;
         totals.due.oldDefaultInterest += inst.oldDefaultInterest || 0;
         totals.due.newDefaultInterest += inst.newDefaultInterest || 0;
-
         totals.received.principal += inst.receivedPrincipal || 0;
         totals.received.interest += inst.receivedInterest || 0;
         totals.received.penalty += inst.receivedPenalty || 0;
@@ -257,37 +274,30 @@ function renderSummary() {
         penalty: totals.due.penalty - totals.received.penalty,
         oldDefaultInterest: totals.due.oldDefaultInterest - totals.received.oldDefaultInterest,
         newDefaultInterest: totals.due.newDefaultInterest - totals.received.newDefaultInterest,
-        overpayment: 0 - totals.received.overpayment, // Remaining overpayment is negative debt
+        overpayment: 0 - totals.received.overpayment,
         total: totals.due.total - totals.received.total
     };
     
     tbody.innerHTML = `
-        <tr>
-            <td>กรอบวงเงิน</td>
-            ${Object.values(totals.due).map(val => `<td>${formatNumber(val)}</td>`).join('')}
-        </tr>
-        <tr>
-            <td>รับชำระ</td>
-            ${Object.values(totals.received).map(val => `<td>${formatNumber(val)}</td>`).join('')}
-        </tr>
-        <tr>
-            <td>คงเหลือ</td>
-            ${Object.values(remaining).map(val => `<td>${formatNumber(val)}</td>`).join('')}
-        </tr>
+        <tr><td>กรอบวงเงิน</td>${Object.values(totals.due).map(val => `<td>${formatNumber(val)}</td>`).join('')}</tr>
+        <tr><td>รับชำระ</td>${Object.values(totals.received).map(val => `<td>${formatNumber(val)}</td>`).join('')}</tr>
+        <tr><td>คงเหลือ</td>${Object.values(remaining).map(val => `<td>${formatNumber(val)}</td>`).join('')}</tr>
     `;
 }
 
 function calculateInterest() {
-    const principal = parseFloat(document.getElementById('principal').value);
+    const principalRaw = document.getElementById('principal').value.replace(/,/g, '');
+    const principal = parseFloat(principalRaw);
+    const rate = parseFloat(document.getElementById('rate').value);
     const dueDateStr = document.getElementById('dueDate').value;
     const paymentDateStr = document.getElementById('paymentDateCalc').value;
     const resultBox = document.getElementById('result');
-    if (!principal || !dueDateStr || !paymentDateStr) {
+    if (!principal || !rate || !dueDateStr || !paymentDateStr) {
         resultBox.innerHTML = "⚠️ โปรดกรอกข้อมูลสำหรับคำนวณให้ครบ"; return;
     }
     const dueDate = new Date(dueDateStr), paymentDate = new Date(paymentDateStr);
     const days = Math.max(0, Math.floor((paymentDate - dueDate) / (1000 * 60 * 60 * 24)));
-    const interest = (principal * (5 / 100) * days) / 365;
+    const interest = (principal * (rate / 100) * days) / 365;
     resultBox.innerHTML = `ผลการคำนวณ: ${interest.toFixed(2)} บาท (${days} วัน)`;
 }
 
@@ -311,23 +321,46 @@ function settlePayment() {
 
     for (let inst of dueInstallments) {
         if (paymentAmount <= 0) break;
-        const pay = (dueKey, receivedKey, categoryName) => {
-            if (paymentAmount > 0) {
-                const dueAmount = (inst[dueKey] || 0) - (inst[receivedKey] || 0);
-                if (dueAmount > 0) {
-                    const amountToPay = Math.min(paymentAmount, dueAmount);
-                    inst[receivedKey] = (inst[receivedKey] || 0) + amountToPay;
-                    paymentAmount -= amountToPay;
-                    historyEntry.breakdown.push({ sequence: inst.sequence, category: categoryName, amount: amountToPay });
-                    lastPaidInstallment = inst;
-                }
+
+        const pay = (dueAmount, receivedKey, categoryName) => {
+            if (paymentAmount > 0 && dueAmount > 0) {
+                const amountToPay = Math.min(paymentAmount, dueAmount);
+                inst[receivedKey] = (inst[receivedKey] || 0) + amountToPay;
+                paymentAmount -= amountToPay;
+                historyEntry.breakdown.push({ sequence: inst.sequence, category: categoryName, amount: amountToPay });
+                lastPaidInstallment = inst;
             }
         };
-        pay('oldDefaultInterest', 'receivedOldDefaultInterest', 'ด/บ ผิดนัดเดิม');
-        pay('newDefaultInterest', 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่');
-        pay('penalty', 'receivedPenalty', 'เบี้ยปรับ');
-        pay('interest', 'receivedInterest', 'ดอกเบี้ย');
-        pay('principal', 'receivedPrincipal', 'เงินต้น');
+        
+        // --- LOGIC การตัดหนี้ที่แก้ไขใหม่ ---
+        // 1. ตัด ด/บ ผิดนัดเดิม
+        let dueOldInterest = (inst.oldDefaultInterest || 0) - (inst.receivedOldDefaultInterest || 0);
+        pay(dueOldInterest, 'receivedOldDefaultInterest', 'ด/บ ผิดนัดเดิม');
+
+        // 2. คำนวณและตัด ด/บ ผิดนัดใหม่ ที่เกิดขึ้นจริง
+        const lastPayment = new Date(inst.lastPaymentDate || inst.dueDate);
+        const currentPaymentDate = new Date(actualPaymentDate);
+        const daysOverdue = Math.max(0, Math.floor((currentPaymentDate - lastPayment) / (1000 * 60 * 60 * 24)));
+        const remainingPrincipal = (inst.principal || 0) - (inst.receivedPrincipal || 0);
+        
+        let dueNewInterest = 0;
+        if (remainingPrincipal > 0 && daysOverdue > 0) {
+             dueNewInterest = (remainingPrincipal * (5 / 100) * daysOverdue) / 365;
+        }
+        pay(dueNewInterest, 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่ (คำนวณสด)');
+        inst.newDefaultInterest = (inst.newDefaultInterest || 0) + dueNewInterest; // อัปเดตยอดรวม ด/บ ใหม่
+        
+        // 3. ตัดเบี้ยปรับ
+        let duePenalty = (inst.penalty || 0) - (inst.receivedPenalty || 0);
+        pay(duePenalty, 'receivedPenalty', 'เบี้ยปรับ');
+
+        // 4. ตัดดอกเบี้ย
+        let dueInterest = (inst.interest || 0) - (inst.receivedInterest || 0);
+        pay(dueInterest, 'receivedInterest', 'ดอกเบี้ย');
+
+        // 5. ตัดเงินต้น
+        let duePrincipal = (inst.principal || 0) - (inst.receivedPrincipal || 0);
+        pay(duePrincipal, 'receivedPrincipal', 'เงินต้น');
     }
     
     if (paymentAmount > 0) {
@@ -337,10 +370,16 @@ function settlePayment() {
         } else {
             alert(`ตัดชำระหนี้ทั้งหมดแล้ว ยังมีเงินเหลือ: ${formatNumber(paymentAmount)} บาท`);
         }
-        paymentAmount = 0;
     }
     
-    if (historyEntry.breakdown.length > 0) paymentHistory.push(historyEntry);
+    if (historyEntry.breakdown.length > 0) {
+        paymentHistory.push(historyEntry);
+        // Set last payment date on all affected installments for future calculations
+        historyEntry.breakdown.forEach(item => {
+            const installment = allInstallments.find(i => i.sequence === item.sequence);
+            if (installment) installment.lastPaymentDate = historyEntry.date;
+        });
+    }
     renderAll();
     document.getElementById('paymentAmount').value = '';
 }
@@ -358,6 +397,12 @@ function formatNumber(num) { return (typeof num === 'number') ? num.toLocaleStri
 function formatDate(dateStr) {
     if (!dateStr || isNaN(new Date(dateStr).getTime())) return '';
     return new Date(dateStr).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+function formatNumberInput(input) {
+    let value = input.value.replace(/,/g, '');
+    if (!isNaN(value) && value.length > 0) {
+        input.value = parseFloat(value).toLocaleString('en-US');
+    }
 }
 </script>
 </body>
