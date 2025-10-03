@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>โปรแกรมคำนวณดอกเบี้ยผิดนัด</title>
+  <title>โปรแกรมคำนวณดอกเบี้ยผิดนัด (Interactive)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
   <style>
@@ -14,9 +14,9 @@
       background: 
         linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed;
       display: flex;
-      flex-direction: column; /* จัดเรียง container จากบนลงล่าง */
+      flex-direction: column;
       align-items: center;
-      gap: 30px; /* เพิ่มระยะห่างระหว่าง calculator และ table */
+      gap: 30px;
     }
 
     .container {
@@ -38,23 +38,9 @@
       gap: 10px;
     }
 
-    .header-text h1 {
-      font-size: 2rem;
-      font-weight: bold;
-      margin: 0;
-      color: navy;
-    }
-
-    .header-text h2 {
-      font-size: 1.2rem;
-      margin: 5px 0;
-      color: deeppink;
-    }
-
-    .logos img {
-      height: 60px;
-      margin-left: 5px;
-    }
+    .header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
+    .header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
+    .logos img { height: 60px; margin-left: 5px; }
 
     .calculator-card {
       background-color: #ffebf2;
@@ -74,397 +60,254 @@
       border-radius: 12px;
     }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 15px;
-    }
-
-    .input-group label {
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #333;
-    }
-
-    .input-group input {
-      padding: 12px;
-      border: 2px solid #f8bbd0;
-      border-radius: 12px;
-      font-size: 1rem;
-      transition: 0.3s ease;
-    }
-
-    .input-group input:focus {
-      outline: none;
-      border-color: #e91e63;
-      box-shadow: 0 0 8px rgba(233, 30, 99, 0.3);
-    }
+    .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+    .input-group label { font-weight: bold; margin-bottom: 6px; color: #333; }
+    .input-group input { padding: 12px; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 1rem; transition: 0.3s ease; }
+    .input-group input:focus { outline: none; border-color: #e91e63; box-shadow: 0 0 8px rgba(233, 30, 99, 0.3); }
 
     .calc-button {
-      width: 100%;
-      padding: 15px;
-      background-color: #e91e63;
-      color: white;
-      font-size: 1.3rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: 0.3s ease;
-      margin-top: 10px;
+      width: 100%; padding: 15px; background-color: #e91e63; color: white;
+      font-size: 1.3rem; font-weight: bold; border: none; border-radius: 15px;
+      cursor: pointer; transition: 0.3s ease; margin-top: 10px;
     }
-
-    .calc-button:hover {
-      background-color: #c2185b;
-      transform: translateY(-3px);
-    }
+    .calc-button:hover { background-color: #c2185b; transform: translateY(-3px); }
 
     .result-box {
-      margin-top: 20px;
-      padding: 20px;
-      border: 3px dashed #f06292;
-      border-radius: 15px;
-      background-color: #fff8fa;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #880e4f;
+      margin-top: 20px; padding: 20px; border: 3px dashed #f06292;
+      border-radius: 15px; background-color: #fff8fa; text-align: center;
+      font-size: 1.5rem; font-weight: bold; color: #880e4f;
     }
+    .small-text { text-align: right; font-size: 0.9rem; color: #555; margin-top: 3px; }
 
-    .small-text {
-      text-align: right;
-      font-size: 0.9rem;
-      color: #555;
-      margin-top: 3px;
-    }
-
-    /* --- START: NEW STYLES FOR TABLE --- */
+    /* --- STYLES FOR INTERACTIVE TABLE --- */
     .table-container {
-      border-radius: 25px;
-      padding: 30px;
-      box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3);
-      width: 100%;
-      max-width: 1200px; /* ขยายความกว้างสำหรับตาราง */
-      box-sizing: border-box;
-      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3);
+      width: 100%; max-width: 1200px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.95);
     }
-
-    .table-container h1 {
-        color: navy;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .table-wrapper {
-        overflow-x: auto; /* ทำให้ตารางเลื่อนซ้าย-ขวาได้บนจอเล็ก */
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.9rem;
-    }
-
-    th, td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: center;
-        white-space: nowrap; /* ป้องกันการตัดคำ */
-    }
-
-    thead th {
-        background-color: #002D62; /* Navy Blue */
-        color: white;
-        position: sticky;
-        top: 0;
-    }
-
-    tbody tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
+    .table-container h1 { color: navy; text-align: center; margin-bottom: 20px; }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; white-space: nowrap; }
+    thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 1; }
     
-    /* Conditional Formatting Classes */
-    .status-paid {
-        background-color: #d4edda !important; /* Green */
-        color: #155724;
-    }
-    .status-due {
-        background-color: #f8d7da !important; /* Red */
-        color: #721c24;
-    }
-    .status-future {
-        background-color: white !important; /* White */
-    }
-    /* --- END: NEW STYLES FOR TABLE --- */
+    /* Editable cells styling */
+    td[contenteditable="true"] { background-color: #fffde7; cursor: pointer; }
+    td[contenteditable="true"]:focus { background-color: #fff; outline: 2px solid #005196; }
 
+    /* Conditional Formatting Classes */
+    .status-paid { background-color: #d4edda !important; color: #155724; }
+    .status-due { background-color: #f8d7da !important; color: #721c24; }
+    .status-future { background-color: white !important; }
+    .status-paid td[contenteditable="true"], .status-due td[contenteditable="true"], .status-future td[contenteditable="true"] {
+        background-color: inherit; /* Make editable cells blend with row color */
+    }
+
+    .add-row-btn {
+        display: block; width: 200px; margin: 20px auto 0; padding: 12px;
+        background-color: #005196; color: white; font-size: 1rem; font-weight: bold;
+        border: none; border-radius: 10px; cursor: pointer; transition: 0.3s ease;
+    }
+    .add-row-btn:hover { background-color: #003b6f; transform: translateY(-2px); }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header-section">
-      <div class="header-text">
-        <h1>การคิดคำนวณดอกเบี้ยผิดนัด</h1>
-        <h2>โปรแกรมช่วยคำนวณ</h2>
-      </div>
+      <div class="header-text"><h1>การคิดคำนวณดอกเบี้ยผิดนัด</h1><h2>โปรแกรมช่วยคำนวณ</h2></div>
       <div class="logos">
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:AN9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
       </div>
     </div>
-
     <div class="calculator-card">
-        <p class="formula" style="line-height: 1.5;">
-        ดอกเบี้ยผิดนัด = (เงินต้นคงเหลือ x (อัตราดอกเบี้ย/ 100) / 365) x จำนวนวันที่ผิดนัด
-        </p>
-
-        <div class="input-group">
-        <label for="principal">เงินต้นค้างชำระ (บาท):</label>
-        <input type="number" id="principal" placeholder="เช่น 50000">
-        <p style="color: red; font-size: 0.9rem; margin-top: 5px;">
-            หมายเหตุ* ให้ดูยอดเงินต้นคงเหลือสุดท้ายของงวดที่ผิดนัด
-        </p>
-        </div>
-
-        <div class="input-group">
-        <label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label>
-        <input type="number" id="rate" value="5" readonly>
-        </div>
-
-        <div class="input-group">
-        <label for="dueDate">วันที่ครบกำหนดชำระ/วันที่จ่ายชำระครั้งสุดท้าย:</label>
-        <input type="date" id="dueDate">
-        </div>
-
-        <div class="input-group">
-        <label for="paymentDate">วันที่จ่ายชำระ:</label>
-        <input type="date" id="paymentDate">
-        </div>
-
+        <p class="formula">ดอกเบี้ยผิดนัด = (เงินต้นคงเหลือ x (อัตราดอกเบี้ย/ 100) / 365) x จำนวนวันที่ผิดนัด</p>
+        <div class="input-group"><label for="principal">เงินต้นค้างชำระ (บาท):</label><input type="number" id="principal" placeholder="เช่น 50000"></div>
+        <div class="input-group"><label for="rate">อัตราดอกเบี้ยผิดนัด (5% ต่อปี):</label><input type="number" id="rate" value="5" readonly></div>
+        <div class="input-group"><label for="dueDate">วันที่ครบกำหนดชำระ/จ่ายครั้งสุดท้าย:</label><input type="date" id="dueDate"></div>
+        <div class="input-group"><label for="paymentDate">วันที่จ่ายชำระ:</label><input type="date" id="paymentDate"></div>
         <div id="daysCount" class="small-text">จำนวนวันที่ผิดนัด: 0 วัน</div>
-
         <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
-
-        <div id="result" class="result-box">
-        ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท
-        </div>
+        <div id="result" class="result-box">ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท</div>
     </div>
   </div>
 
   <div class="table-container">
-    <h1>ตารางคำนวณและตัดชำระหนี้</h1>
+    <h1>ตารางคำนวณและตัดชำระหนี้ (Interactive)</h1>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>ลำดับ</th>
-                    <th>กำหนดวันชำระ</th>
-                    <th>เงินต้น</th>
-                    <th>ดอกเบี้ย</th>
-                    <th>เบี้ยปรับ</th>
-                    <th>ด/บ ผิดนัดเดิม</th>
-                    <th>ด/บ ผิดนัดใหม่</th>
-                    <th>รวม</th>
-                    <th>วันที่ชำระ</th>
-                    <th>เงินที่ชำระ</th>
-                    <th>รับคืน ด/บ ผิดนัดเดิม</th>
-                    <th>รับคืน ด/บ ผิดนัดใหม่</th>
-                    <th>รับคืนเบี้ยปรับ</th>
-                    <th>รับคืนดอกเบี้ย</th>
-                    <th>รับคืนเงินต้น</th>
-                    <th>รับคืนรวม</th>
-                    <th>หนี้คงเหลือ</th>
-                    <th>สถานะ</th>
-                </tr>
+                    <th>ลำดับ</th><th>กำหนดวันชำระ</th><th>เงินต้น</th><th>ดอกเบี้ย</th><th>เบี้ยปรับ</th><th>ด/บ ผิดนัดเดิม</th><th>ด/บ ผิดนัดใหม่</th><th>รวม</th><th>วันที่ชำระ</th><th>เงินที่ชำระ</th><th>รับคืน ด/บ ผิดนัดเดิม</th><th>รับคืน ด/บ ผิดนัดใหม่</th><th>รับคืนเบี้ยปรับ</th><th>รับคืนดอกเบี้ย</th><th>รับคืนเงินต้น</th><th>รับคืนรวม</th><th>หนี้คงเหลือ</th><th>สถานะ</th></tr>
             </thead>
             <tbody id="payment-table-body">
-                <tr data-status="ชำระครบแล้ว">
-                    <td>3</td>
-                    <td>2013-11-15</td>
-                    <td>2834</td>
-                    <td>5500</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>8334</td>
-                    <td>2013-11-15</td>
-                    <td>8334</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>5500</td>
-                    <td>2834</td>
-                    <td>8334</td>
-                    <td>0</td>
-                    <td>ชำระครบแล้ว</td>
-                </tr>
-                <tr data-status="ค้างชำระ">
-                    <td>59</td>
-                    <td>2025-07-15</td>
-                    <td>7750</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>2270</td>
-                    <td>117.84</td>
-                    <td>10137.84</td>
-                    <td>-</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>10137.84</td>
-                    <td>ค้างชำระ</td>
-                </tr>
-                 <tr data-status="ค้างชำระ">
-                    <td>60</td>
-                    <td>2025-08-15</td>
-                    <td>7750</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>2270</td>
-                    <td>84.93</td>
-                    <td>10104.93</td>
-                    <td>-</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>10104.93</td>
-                    <td>ค้างชำระ</td>
-                </tr>
-                 <tr data-status="ค้างชำระ">
-                    <td>61</td>
-                    <td>2025-09-15</td>
-                    <td>7750</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>2270</td>
-                    <td>50.96</td>
-                    <td>10070.96</td>
-                    <td>-</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>10070.96</td>
-                    <td>ค้างชำระ</td>
-                </tr>
-                <tr data-status="ยังไม่ถึงกำหนด">
-                    <td>62</td>
-                    <td>2025-10-15</td>
-                    <td>7750</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>2270</td>
-                    <td>0</td>
-                    <td>10020</td>
-                    <td>-</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>10020</td>
-                    <td>ยังไม่ถึงกำหนด</td>
-                </tr>
-                <tr data-status="ยังไม่ถึงกำหนด">
-                    <td>63</td>
-                    <td>2025-11-15</td>
-                    <td>7750</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>2270</td>
-                    <td>0</td>
-                    <td>10020</td>
-                    <td>-</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>10020</td>
-                    <td>ยังไม่ถึงกำหนด</td>
-                </tr>
-            </tbody>
+                </tbody>
         </table>
     </div>
+    <button class="add-row-btn" onclick="addNewRow()">+ เพิ่มงวดใหม่</button>
   </div>
+
   <script>
-    // --- ส่วนของ Script เดิมสำหรับเครื่องคิดเลข ---
+    // --- ส่วน Script เครื่องคิดเลขเดิม ---
     function calculateInterest() {
-      const principal = parseFloat(document.getElementById('principal').value);
-      const rate = parseFloat(document.getElementById('rate').value);
+      const principal = parseFloat(document.getElementById('principal').value) || 0;
+      const rate = parseFloat(document.getElementById('rate').value) || 0;
       const dueDateStr = document.getElementById('dueDate').value;
       const paymentDateStr = document.getElementById('paymentDate').value;
-      const resultBox = document.getElementById('result');
-      const daysCountElement = document.getElementById('daysCount');
-
       if (!principal || !rate || !dueDateStr || !paymentDateStr) {
-        resultBox.innerHTML = "⚠️ โปรดกรอกข้อมูลให้ครบถ้วน";
-        return;
+        document.getElementById('result').innerHTML = "⚠️ โปรดกรอกข้อมูลให้ครบถ้วน"; return;
       }
-
-      const dueDate = new Date(dueDateStr + 'T00:00:00');
-      const paymentDate = new Date(paymentDateStr + 'T00:00:00');
-      const diffTime = paymentDate - dueDate;
-      const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
+      const dueDate = new Date(dueDateStr); const paymentDate = new Date(paymentDateStr);
+      const days = Math.floor((paymentDate - dueDate) / (1000 * 60 * 60 * 24));
       if (days <= 0) {
-        daysCountElement.innerHTML = "ยังไม่ถึงวันผิดนัด";
-        resultBox.innerHTML = "ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท";
-        return;
+        document.getElementById('daysCount').innerHTML = "ยังไม่ถึงวันผิดนัด";
+        document.getElementById('result').innerHTML = "ดอกเบี้ยผิดนัดที่ต้องชำระ: 0.00 บาท"; return;
       }
-
-      daysCountElement.innerHTML = `จำนวนวันที่ผิดนัด: ${days} วัน`;
+      document.getElementById('daysCount').innerHTML = `จำนวนวันที่ผิดนัด: ${days} วัน`;
       const interest = (principal * (rate / 100) * days) / 365;
-      resultBox.innerHTML = `ดอกเบี้ยผิดนัดที่ต้องชำระ: ${interest.toFixed(2)} บาท`;
+      document.getElementById('result').innerHTML = `ดอกเบี้ยผิดนัดที่ต้องชำระ: ${interest.toFixed(2)} บาท`;
     }
 
-
-    // --- START: Script ใหม่สำหรับใส่สีให้ตาราง ---
-    function applyRowColors() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // ตั้งเวลาเป็นเที่ยงคืนเพื่อการเปรียบเทียบวันที่เท่านั้น
-
-        const rows = document.querySelectorAll("#payment-table-body tr");
-
-        rows.forEach(row => {
-            const dueDateCell = row.cells[1]; // คอลัมน์ "กำหนดวันชำระ"
-            const statusCell = row.cells[17]; // คอลัมน์ "สถานะ"
-
-            if (!dueDateCell || !statusCell) return;
-
-            const dueDate = new Date(dueDateCell.textContent + 'T00:00:00');
-            const status = statusCell.textContent.trim();
-
-            // ลบคลาสสีเก่าออกก่อน
-            row.classList.remove('status-paid', 'status-due', 'status-future');
-            
-            if (status === "ชำระครบแล้ว") {
-                row.classList.add('status-paid');
-            } else if (dueDate < today && status === "ค้างชำระ") {
-                row.classList.add('status-due');
-            } else if (dueDate >= today) {
-                row.classList.add('status-future');
-            }
-        });
-    }
-
-    // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
-    document.addEventListener('DOMContentLoaded', applyRowColors);
+    // --- Script ใหม่สำหรับตาราง Interactive ---
     
+    // ข้อมูลเริ่มต้นจากไฟล์ CSV ของคุณ
+    const initialData = [
+        {ลำดับ: 3, กำหนดวันชำระ: "2013-11-15", เงินต้น: 2834, ดอกเบี้ย: 5500, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 0, ดบผิดนัดใหม่: 0, วันที่ชำระ: "2013-11-15", เงินที่ชำระ: 8334},
+        {ลำดับ: 59, กำหนดวันชำระ: "2025-07-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 117.84, วันที่ชำระ: "", เงินที่ชำระ: 0},
+        {ลำดับ: 60, กำหนดวันชำระ: "2025-08-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 84.93, วันที่ชำระ: "", เงินที่ชำระ: 0},
+        {ลำดับ: 61, กำหนดวันชำระ: "2025-09-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 50.96, วันที่ชำระ: "", เงินที่ชำระ: 0},
+        {ลำดับ: 62, กำหนดวันชำระ: "2025-10-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 0, วันที่ชำระ: "", เงินที่ชำระ: 0},
+        {ลำดับ: 63, กำหนดวันชำระ: "2025-11-15", เงินต้น: 7750, ดอกเบี้ย: 0, เบี้ยปรับ: 0, ดบผิดนัดเดิม: 2270, ดบผิดนัดใหม่: 0, วันที่ชำระ: "", เงินที่ชำระ: 0}
+    ];
+
+    const tableBody = document.getElementById('payment-table-body');
+
+    function createRow(data) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td contenteditable="true">${data.ลำดับ || ''}</td>
+            <td contenteditable="true">${data.กำหนดวันชำระ || ''}</td>
+            <td contenteditable="true">${data.เงินต้น || 0}</td>
+            <td contenteditable="true">${data.ดอกเบี้ย || 0}</td>
+            <td contenteditable="true">${data.เบี้ยปรับ || 0}</td>
+            <td contenteditable="true">${data.ดบผิดนัดเดิม || 0}</td>
+            <td contenteditable="true">${data.ดบผิดนัดใหม่ || 0}</td>
+            <td class="col-sum">0</td>
+            <td contenteditable="true">${data.วันที่ชำระ || ''}</td>
+            <td contenteditable="true" class="col-payment-amount">${data.เงินที่ชำระ || 0}</td>
+            <td class="col-paid-old-default">0</td>
+            <td class="col-paid-new-default">0</td>
+            <td class="col-paid-penalty">0</td>
+            <td class="col-paid-interest">0</td>
+            <td class="col-paid-principal">0</td>
+            <td class="col-paid-sum">0</td>
+            <td class="col-remaining">0</td>
+            <td class="col-status"></td>
+        `;
+
+        // Add event listener to editable cells
+        row.querySelectorAll('td[contenteditable="true"]').forEach(cell => {
+            cell.addEventListener('input', () => calculateRow(row));
+        });
+
+        tableBody.appendChild(row);
+        calculateRow(row); // Initial calculation
+    }
+
+    function calculateRow(row) {
+        const cells = row.cells;
+        
+        // Helper to get number from cell
+        const getNum = (index) => parseFloat(cells[index].textContent.replace(/,/g, '')) || 0;
+
+        // Get values from input columns
+        const principal = getNum(2);
+        const interest = getNum(3);
+        const penalty = getNum(4);
+        const oldDefault = getNum(5);
+        const newDefault = getNum(6);
+        const paymentAmount = getNum(9);
+
+        // 1. Calculate sum
+        const sum = principal + interest + penalty + oldDefault + newDefault;
+        cells[7].textContent = sum.toFixed(2);
+
+        // 2. Settlement logic
+        let remainingPayment = paymentAmount;
+
+        const paidOldDefault = Math.min(oldDefault, remainingPayment);
+        remainingPayment -= paidOldDefault;
+        cells[10].textContent = paidOldDefault.toFixed(2);
+
+        const paidNewDefault = Math.min(newDefault, remainingPayment);
+        remainingPayment -= paidNewDefault;
+        cells[11].textContent = paidNewDefault.toFixed(2);
+
+        const paidPenalty = Math.min(penalty, remainingPayment);
+        remainingPayment -= paidPenalty;
+        cells[12].textContent = paidPenalty.toFixed(2);
+        
+        const paidInterest = Math.min(interest, remainingPayment);
+        remainingPayment -= paidInterest;
+        cells[13].textContent = paidInterest.toFixed(2);
+
+        const paidPrincipal = Math.min(principal, remainingPayment);
+        remainingPayment -= paidPrincipal;
+        cells[14].textContent = paidPrincipal.toFixed(2);
+
+        // 3. Calculate paid sum and remaining debt
+        const paidSum = paidOldDefault + paidNewDefault + paidPenalty + paidInterest + paidPrincipal;
+        cells[15].textContent = paidSum.toFixed(2);
+
+        const remainingDebt = sum - paidSum;
+        cells[16].textContent = remainingDebt.toFixed(2);
+
+        // 4. Update status and color
+        updateStatusAndColor(row);
+    }
+
+    function updateStatusAndColor(row) {
+        const dueDateStr = row.cells[1].textContent;
+        const remainingDebt = parseFloat(row.cells[16].textContent);
+        const statusCell = row.cells[17];
+
+        row.classList.remove('status-paid', 'status-due', 'status-future');
+
+        if (!dueDateStr) {
+            statusCell.textContent = 'ระบุวันที่';
+            row.classList.add('status-future');
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const dueDate = new Date(dueDateStr);
+        
+        if (remainingDebt <= 0.009) { // Using a small tolerance for floating point
+            statusCell.textContent = 'ชำระครบแล้ว';
+            row.classList.add('status-paid');
+        } else if (dueDate < today) {
+            statusCell.textContent = 'ค้างชำระ';
+            row.classList.add('status-due');
+        } else {
+            statusCell.textContent = 'ยังไม่ถึงกำหนด';
+            row.classList.add('status-future');
+        }
+    }
+
+    function addNewRow() {
+        const lastRow = tableBody.lastElementChild;
+        let newSeq = 1;
+        if (lastRow) {
+            newSeq = parseInt(lastRow.cells[0].textContent) + 1;
+        }
+        createRow({ ลำดับ: newSeq });
+    }
+
+    // Initial render of the table on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        initialData.forEach(data => createRow(data));
+    });
+
   </script>
 </body>
 </html>
