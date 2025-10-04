@@ -1,164 +1,3 @@
-<!-- ========================
-     🔒 PDPA Modal HTML
-======================== -->
-<!-- Main PDPA Modal -->
-<div id="mainModal" class="modal-overlay">
-    <div class="modal-content">
-        <h3>ข้อตกลง PDPA</h3>
-        <p>ก่อนเข้าถึงข้อมูลคุณต้องอ่านและยอมรับข้อตกลง PDPA ของเรา</p>
-        <ul>
-            <li>ข้อมูลนี้เป็นข้อมูลส่วนบุคคล ใช้เพื่อการวิเคราะห์เท่านั้น</li>
-            <li>ห้ามนำข้อมูลไปเผยแพร่โดยไม่ได้รับอนุญาต</li>
-            <li>คุณต้องยอมรับเงื่อนไขก่อนเข้าถึงข้อมูล</li>
-        </ul>
-        <div class="modal-buttons">
-            <button id="acceptBtn" class="accept-button">ยอมรับ</button>
-            <button id="readMoreBtn" class="read-more-button">อ่านเพิ่มเติม</button>
-        </div>
-    </div>
-</div>
-
-<!-- Read More Modal -->
-<div id="readMoreModal" class="modal-overlay read-more-modal">
-    <div class="modal-content">
-        <h4>รายละเอียดเพิ่มเติม PDPA</h4>
-        <p>ข้อมูลส่วนบุคคลจะถูกเก็บและใช้ตามกฎหมาย PDPA ทั้งหมด ซึ่งคุณสามารถตรวจสอบรายการข้อกำหนดเพิ่มเติมด้านล่าง</p>
-        <ul id="pdpaList">
-            <li>ข้อมูลนี้เป็นข้อมูลส่วนบุคคล ใช้เพื่อการวิเคราะห์เท่านั้น</li>
-            <li>ห้ามนำข้อมูลไปเผยแพร่โดยไม่ได้รับอนุญาต</li>
-            <li>คุณต้องยอมรับเงื่อนไขก่อนเข้าถึงข้อมูล</li>
-            <li>ข้อมูลจะถูกเก็บเป็นความลับและไม่เปิดเผยแก่บุคคลที่สาม</li>
-            <li>ผู้ใช้มีสิทธิ์ขอดูหรือแก้ไขข้อมูลส่วนบุคคลของตนได้ตามกฎหมาย</li>
-        </ul>
-        <div class="modal-buttons">
-            <button id="readMoreAcceptBtn" class="accept-button">ยอมรับและปิด</button>
-            <button id="readMoreCloseBtn" class="close-button">&times;</button>
-        </div>
-    </div>
-</div>
-
-<!-- ========================
-     🔧 PDPA JS Logic
-======================== -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script>
-$(document).ready(function(){
-    const mainModal = $('#mainModal');
-    const readMoreModal = $('#readMoreModal');
-    const acceptBtn = $('#acceptBtn');
-    const readMoreBtn = $('#readMoreBtn');
-    const readMoreAcceptBtn = $('#readMoreAcceptBtn');
-    const readMoreCloseBtn = $('#readMoreCloseBtn');
-
-    function showMainModal() {
-        mainModal.css('display', 'flex');
-        $('body').css('overflow', 'hidden');
-    }
-
-    function showReadMoreModal() {
-        mainModal.hide();
-        readMoreModal.css('display', 'flex');
-        $('body').css('overflow', 'hidden');
-    }
-
-    function closeAllModals() {
-        mainModal.hide();
-        readMoreModal.hide();
-        $('body').css('overflow', 'auto');
-        loadData(); // เรียกโหลดข้อมูลหลังยอมรับ
-    }
-
-    acceptBtn.on('click', closeAllModals);
-    readMoreBtn.on('click', showReadMoreModal);
-    readMoreAcceptBtn.on('click', closeAllModals);
-    readMoreCloseBtn.on('click', closeAllModals);
-
-    showMainModal(); // เรียก popup ตอนโหลด
-});
-</script>
-
-<!-- ========================
-     🔧 PDPA CSS
-======================== -->
-<style>
-.modal-overlay {
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(0,0,0,0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background:#fff;
-    padding:30px;
-    border-radius:10px;
-    width:90%;
-    max-width:600px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    animation: fadeIn 0.3s ease-in-out;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-}
-.modal-content h3, .modal-content h4 {
-    color: #e91e63;
-    text-align: center;
-}
-.modal-content p, .modal-content li {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #333;
-}
-.modal-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-}
-.modal-buttons button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.modal-buttons .accept-button {
-    background-color: #4caf50;
-    color: white;
-}
-.modal-buttons .read-more-button {
-    background-color: #2196f3;
-    color: white;
-}
-.modal-buttons button:hover {
-    filter: brightness(1.1);
-}
-.read-more-modal .close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    color: #aaa;
-    cursor: pointer;
-}
-.read-more-modal .close-button:hover {
-    color: #555;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
-</style>
-
-<!-- ========================
-     🔹 Dashboard HTML
-======================== -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -170,7 +9,9 @@ $(document).ready(function(){
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
 
     <style>
-        /* 💅 Global Styles */
+        /* ========================
+           💅 Global Styles
+           ======================== */
         body {
             font-family: 'Sarabun', sans-serif;
             margin: 0;
@@ -187,6 +28,7 @@ $(document).ready(function(){
             box-sizing: border-box;
         }
 
+        /* Header Section */
         .header {
             display: flex;
             justify-content: space-between;
@@ -194,21 +36,12 @@ $(document).ready(function(){
             flex-wrap: wrap;
         }
 
-        .header-text h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
+        .header-text h1 { margin:0; font-size:2.5rem; }
+        .header-text h2 { margin:0; font-size:1.5rem; }
 
-        .header-text h2 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
+        .logo-container img { height: 60px; margin-left: 10px; }
 
-        .logo-container img {
-            height: 60px;
-            margin-left: 10px;
-        }
-
+        /* Cards */
         .cards {
             display: flex;
             gap: 20px;
@@ -233,119 +66,259 @@ $(document).ready(function(){
             white-space: nowrap;
         }
 
-        .card.pink { background-color: #e91e63; flex: 0 0 auto; width: auto; }
+        .card.pink { background-color: #e91e63; flex:0 0 auto; width:auto; }
         .card.light-pink { background-color: #f8bbd0; }
         .card.orange { background-color: #ff9800; }
         .card.deep-pastel-pink { background-color: #f06292; }
 
-        table.dataTable { width: 100% !important; border-collapse: collapse; font-size: 0.85rem; color: black; }
-        table.dataTable th, table.dataTable td { border: 1px solid #ccc; padding: 4px 6px; text-align: center; vertical-align: middle; white-space: nowrap; }
-        table.dataTable thead th { background-color: #f06292; color: black; font-weight: bold; }
+        /* Tables */
+        table.dataTable { width:100% !important; border-collapse: collapse; font-size:0.85rem; color:black; }
+        table.dataTable th, table.dataTable td { border: 1px solid #ccc; padding: 4px 6px; text-align:center; vertical-align:middle; white-space:nowrap; }
+        table.dataTable thead th { background-color:#f06292; color:black; font-weight:bold; }
         table.dataTable.fixedHeader-floating { background-color: white; }
-        .filter-container { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 15px; padding: 15px; background-color: #f8bbd0; border-radius: 8px; margin-bottom: 10px; margin-top: 20px; }
-        .filter-item { display: flex; flex-direction: column; min-width: 160px; flex-grow: 1; }
-        .filter-item label { font-weight: bold; font-size: 0.8rem; margin-bottom: 4px; color: #333; }
-        .filter-item select { width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #aaa; border-radius: 4px; font-family: 'Sarabun', sans-serif; font-size: 0.85rem; height: 35px; }
-        .reset-button-container { flex-grow: 1; min-width: 160px; }
-        .reset-button-container button { width: 100%; padding: 6px 15px; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; border: none; border-radius: 4px; background-color: #d9534f; color: white; cursor: pointer; height: 35px; font-weight: bold; }
-        .reset-button-container button:hover { background-color: #c9302c; }
-        .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter { margin-bottom: 15px; }
+
+        .src-note { display:block; font-size:0.65rem; color:#555; margin-top:3px; }
+
+        /* Filters */
+        .filter-container {
+            display:flex; flex-wrap:wrap; align-items:flex-end; gap:15px;
+            padding:15px; background-color:#f8bbd0; border-radius:8px; margin-bottom:10px; margin-top:20px;
+        }
+
+        .filter-item { display:flex; flex-direction:column; min-width:160px; flex-grow:1; }
+        .filter-item label { font-weight:bold; font-size:0.8rem; margin-bottom:4px; color:#333; }
+        .filter-item select { width:100%; padding:6px; border:1px solid #aaa; border-radius:4px; font-family:'Sarabun', sans-serif; font-size:0.85rem; height:35px; }
+
+        .reset-button-container { flex-grow:1; min-width:160px; }
+        .reset-button-container button { width:100%; padding:6px 15px; font-family:'Sarabun', sans-serif; font-size:0.9rem; border:none; border-radius:4px; background-color:#d9534f; color:white; cursor:pointer; height:35px; font-weight:bold; }
+        .reset-button-container button:hover { background-color:#c9302c; }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter { margin-bottom:15px; }
     </style>
 </head>
 
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <div class="header-text">
-                <h1><span style="color: navy;">CD</span><span style="color: deeppink;">Women</span><span style="color: red;">POD</span></h1>
-                <h2><span style="color: black;">ฐานข้อมูล</span> <span style="color: red;" id="province-title">รายจังหวัด</span></h2>
-                <div style="color: navy; font-weight: bold; margin-top: 8px;">
-                    <span style="font-size: 1.2rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับจังหวัด</span><br />
-                    <p align="right"><span style="font-size: 2rem;" id="update-date">ข้อมูล ณ วันที่ 30 กันยายน 2568 </span></p>
-                </div>
-            </div>
-            <div class="logo-container">
-                <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140"/>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+<div class="dashboard-container">
+    <div class="header">
+        <div class="header-text">
+            <h1><span style="color:navy;">CD</span> <span style="color:deeppink;">Women</span> <span style="color:red;">POD</span></h1>
+            <h2><span style="color:black;">ฐานข้อมูล</span> <span style="color:red;" id="province-title">รายจังหวัด</span></h2>
+            <div style="color:navy; font-weight:bold; margin-top:8px;">
+                <span style="font-size:1.2rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับจังหวัด</span><br/>
+                <p align="right"><span style="font-size:2rem;" id="update-date">ข้อมูล ณ วันที่ 30 กันยายน 2568</span></p>
             </div>
         </div>
-
-        <div class="cards">
-            <div class="card pink">จำนวนโครงการ<div class="value" id="num-projects">-</div></div>
-            <div class="card light-pink">ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)<div class="value" id="debt-start">-</div>ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now">-</div></div>
-            <div class="card orange">หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue">-</div>ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue">-</div></div>
-            <div class="card deep-pastel-pink">เงินที่อนุมัติ<div class="value" id="approved-money">-</div></div>
-            <div class="card deep-pastel-pink">ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal">-</div></div>
+        <div class="logo-container">
+            <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo"/>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo"/>
         </div>
-
-        <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
-        <div id="filter-container" class="filter-container"></div>
-
-        <table id="districtDetails" class="display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>ลำดับ</th>
-                    <th>อำเภอ/เขต</th>
-                    <th>ตำบล</th>
-                    <th>ปีงบประมาณ</th>
-                    <th>เลขที่สัญญา</th>
-                    <th>ชื่อโครงการ</th>
-                    <th>ผู้เสนอโครงการ</th>
-                    <th>เงินอนุมัติ</th>
-                    <th>วันที่เริ่มต้นสัญญา</th>
-                    <th>วันที่สิ้นสุดสัญญา</th>
-                    <th>วันที่รับชำระล่าสุด</th>
-                    <th>งวดคงเหลือที่ต้องชำระ</th>
-                    <th>ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A) </th>
-                    <th>ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก) </th>
-                    <th>หนี้ยังไม่ถึงกำหนดชำระ (ข) </th>
-                    <th>การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)</th>
-                    <th>พนักงานอัยการรับเรื่อง(ง1)</th>
-                    <th>ศาลประทับรับฟ้อง(ง2)</th>
-                    <th>ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)</th>
-                    <th>ศาลมีคำพิพากษาตามยอม(ง4)</th>
-                    <th>ป.วิ แพ่ง มาตรา 20 ตรี(ง5)</th>
-                    <th>ดำเนินคดีอาญา(ง6)</th>
-                    <th>ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)</th>
-                    <th>จำนวนหนี้ที่เกินกำหนดชำระ (B)</th>
-                    <th>ร้อยละหนี้เกินกำหนดชำระ</th>
-                    <th>สถานะการชำระหนี้</th>
-                    <th>สถานะโครงการ</th>
-                    <th>หมายเหตุ</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
     </div>
 
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+    <div class="cards">
+        <div class="card pink">จำนวนโครงการ<div class="value" id="num-projects">-</div></div>
+        <div class="card light-pink">
+            ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)<div class="value" id="debt-start">-</div>
+            ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now">-</div>
+        </div>
+        <div class="card orange">
+            หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue">-</div>
+            ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue">-</div>
+        </div>
+        <div class="card deep-pastel-pink">เงินที่อนุมัติ<div class="value" id="approved-money">-</div></div>
+        <div class="card deep-pastel-pink">ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal">-</div></div>
+    </div>
 
-    <script>
-    // 🔧 JS Logic for Dashboard (เต็ม)
+    <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
+    <div id="filter-container" class="filter-container"></div>
+
+    <!-- Filter + Download -->
+    <div class="filter-container">
+        <div class="filter-item">
+            <label for="downloadType">ดาวน์โหลดเป็น:</label>
+            <select id="downloadType">
+                <option value="excel">Excel</option>
+                <option value="pdf">PDF</option>
+            </select>
+        </div>
+        <div class="reset-button-container">
+            <button id="btnDownload">ดาวน์โหลด</button>
+        </div>
+    </div>
+
+    <table id="districtDetails" class="display" style="width:100%">
+        <thead>
+        <tr>
+            <th>ลำดับ</th><th>อำเภอ/เขต</th><th>ตำบล</th><th>ปีงบประมาณ</th><th>เลขที่สัญญา</th>
+            <th>ชื่อโครงการ</th><th>ผู้เสนอโครงการ</th><th>เงินอนุมัติ</th><th>วันที่เริ่มต้นสัญญา</th>
+            <th>วันที่สิ้นสุดสัญญา</th><th>วันที่รับชำระล่าสุด</th><th>งวดคงเหลือที่ต้องชำระ</th>
+            <th>ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)</th><th>ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)</th>
+            <th>หนี้ยังไม่ถึงกำหนดชำระ (ข)</th><th>การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)</th>
+            <th>พนักงานอัยการรับเรื่อง(ง1)</th><th>ศาลประทับรับฟ้อง(ง2)</th><th>ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)</th>
+            <th>ศาลมีคำพิพากษาตามยอม(ง4)</th><th>ป.วิ แพ่ง มาตรา 20 ตรี(ง5)</th><th>ดำเนินคดีอาญา(ง6)</th>
+            <th>ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)</th><th>จำนวนหนี้ที่เกินกำหนดชำระ (B)</th><th>ร้อยละหนี้เกินกำหนดชำระ</th>
+            <th>สถานะการชำระหนี้</th><th>สถานะโครงการ</th><th>หมายเหตุ</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    const PDPA_ENABLED = true;
     const API_URL = "https://script.google.com/macros/s/AKfycbxZ1Mk7z9x7RAyYg4sNSgogwwQbUj8yes4m9IbfUlIqwYqBHvqshGhLrrhUJSXPyjEX/exec";
-    const KEY_MAP = { /* …same as provided… */ };
 
-    function findValue(rowObj, logicalKey) { /* …same… */ }
-    function safeNumberFormat(val) { /* …same… */ }
-    function safePercentFormat(val) { /* …same… */ }
-    function formatDateThai(dateStr) { /* …same… */ }
+    const KEY_MAP = {
+        no: ["no","ลำดับ"], district: ["district","อำเภอ/เขต"], subdistrict: ["subdistrict","ตำบล"],
+        fiscalYear:["fiscalYear","ปีงบประมาณ"], contractNo:["contractNo","เลขที่สัญญา"],
+        projectName:["projectName","ชื่อโครงการ"], proposer:["proposer","ผู้เสนอโครงการ"],
+        approvedMoney:["approvedMoney","เงินอนุมัติ"], startDate:["startDate","วันที่เริ่มต้นสัญญา"],
+        endDate:["endDate","วันที่สิ้นสุดสัญญา"], lastPaymentDate:["lastPaymentDate","วันที่รับชำระล่าสุด"],
+        remainingInstallments:["remainingInstallments","งวดคงเหลือที่ต้องชำระ"],
+        debtStart:["debtStart","ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)"], debtNow:["debtNow","ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"],
+        notDue:["notDue","หนี้ยังไม่ถึงกำหนดชำระ (ข)"], mediation:["mediation","การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)"],
+        prosecutor:["prosecutor","พนักงานอัยการรับเรื่อง(ง1)"], courtFiled:["courtFiled","ศาลประทับรับฟ้อง(ง2)"],
+        judgment:["judgment","ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)"], judgmentAgree:["judgmentAgree","ศาลมีคำพิพากษาตามยอม(ง4)"],
+        civil20tri:["civil20tri","ป.วิ แพ่ง มาตรา 20 ตรี(ง5)"], criminalCase:["criminalCase","ดำเนินคดีอาญา(ง6)"],
+        legalAction:["legalAction","ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"], overdue:["overdue","จำนวนหนี้ที่เกินกำหนดชำระ (B)"],
+        percentOverdue:["percentOverdue","ร้อยละหนี้เกินกำหนดชำระ"], paymentStatus:["paymentStatus","สถานะการชำระหนี้"],
+        projectStatus:["projectStatus","สถานะโครงการ"], note:["note","หมายเหตุ"]
+    };
 
-    let allData = [], dataTable;
+    let allData=[]; let dataTable;
 
-    async function loadData() { /* …same… */ }
+    function findValue(rowObj, logicalKey){
+        const candidates = KEY_MAP[logicalKey] || [logicalKey];
+        for(const k of candidates){
+            if(Object.prototype.hasOwnProperty.call(rowObj,k) && rowObj[k]!==null && rowObj[k]!=="") return rowObj[k];
+        }
+        return null;
+    }
 
-    function populateTable(data) { /* …same… */ }
+    function safeNumberFormat(val){ if(val==null || val==="") return "-"; const s=String(val).replace(/,/g,"").trim(); return isNaN(Number(s))?"-":Number(s).toLocaleString("th-TH",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+    function safePercentFormat(val){ if(val==null||val==="") return "-"; const s=String(val).replace(/,/g,"").trim(); return isNaN(Number(s))?"-":Number(s).toFixed(2)+"%"; }
+    function formatDateThai(dateStr){ if(!dateStr) return "-"; const s=String(dateStr).trim(); const parts=s.split("/"); if(parts.length===3){ const d=Number(parts[0]), m=Number(parts[1])-1, y=Number(parts[2]); const dt=new Date(y,m,d); if(!isNaN(dt)) return dt.toLocaleDateString("th-TH"); } const dd=new Date(s); if(!isNaN(dd)) return dd.toLocaleDateString("th-TH"); return s||"-"; }
 
-    function setupCustomFilters(table, data) { /* …same… */ }
+    async function loadData(){
+        const params=new URLSearchParams(window.location.search); const province=params.get("province")||""; if(!province){alert("กรุณาระบุ province ใน URL เช่น ?province=กำแพงเพชร"); return;}
+        document.getElementById("province-title").textContent=province;
+        try{
+            const res=await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
+            const json=await res.json();
+            if(json.error) throw new Error(json.error);
 
-    $(document).ready(loadData);
-    </script>
+            if(json.summary){
+                const s=json.summary;
+                document.getElementById("num-projects").textContent=s.totalProjects??"-";
+                document.getElementById("approved-money").textContent=safeNumberFormat(s.approvedMoney);
+                document.getElementById("debt-start").textContent=safeNumberFormat(s.debtStart);
+                document.getElementById("debt-now").textContent=safeNumberFormat(s.debtNow);
+                document.getElementById("overdue").textContent=safeNumberFormat(s.overdue);
+                document.getElementById("percent-overdue").textContent=safePercentFormat(s.percentOverdue);
+                document.getElementById("legal").textContent=safeNumberFormat(s.legal);
+                if(s.updateDate) document.getElementById("update-date").textContent="ข้อมูล ณ วันที่ "+s.updateDate;
+            }
+
+            allData=json.data||[];
+            if(PDPA_ENABLED){
+                allData=allData.map(row=>{ return {...row, projectName:"***", proposer:"***"} });
+            }
+            populateTable(allData);
+
+        }catch(err){ alert("ไม่สามารถโหลดข้อมูลได้: "+(err.message||err)); console.error(err);}
+    }
+
+    function populateTable(data){
+        if($.fn.dataTable.isDataTable("#districtDetails")) $("#districtDetails").DataTable().destroy();
+        const tbody=document.querySelector("#districtDetails tbody");
+        tbody.innerHTML="";
+        data.forEach((row,index)=>{
+            const tr=document.createElement("tr");
+            tr.innerHTML=`
+            <td>${findValue(row,"no")??(index+1)}</td>
+            <td>${findValue(row,"district")??"-"}</td>
+            <td>${findValue(row,"subdistrict")??"-"}</td>
+            <td>${findValue(row,"fiscalYear")??"-"}</td>
+            <td>${findValue(row,"contractNo")??"-"}</td>
+            <td>${findValue(row,"projectName")??"-"}</td>
+            <td>${findValue(row,"proposer")??"-"}</td>
+            <td>${safeNumberFormat(findValue(row,"approvedMoney"))}</td>
+            <td>${formatDateThai(findValue(row,"startDate"))}</td>
+            <td>${formatDateThai(findValue(row,"endDate"))}</td>
+            <td>${formatDateThai(findValue(row,"lastPaymentDate"))}</td>
+            <td>${findValue(row,"remainingInstallments")??"-"}</td>
+            <td>${safeNumberFormat(findValue(row,"debtStart"))}</td>
+            <td>${safeNumberFormat(findValue(row,"debtNow"))}</td>
+            <td>${safeNumberFormat(findValue(row,"notDue"))}</td>
+            <td>${safeNumberFormat(findValue(row,"mediation"))}</td>
+            <td>${safeNumberFormat(findValue(row,"prosecutor"))}</td>
+            <td>${safeNumberFormat(findValue(row,"courtFiled"))}</td>
+            <td>${safeNumberFormat(findValue(row,"judgment"))}</td>
+            <td>${safeNumberFormat(findValue(row,"judgmentAgree"))}</td>
+            <td>${safeNumberFormat(findValue(row,"civil20tri"))}</td>
+            <td>${safeNumberFormat(findValue(row,"criminalCase"))}</td>
+            <td>${safeNumberFormat(findValue(row,"legalAction"))}</td>
+            <td>${safeNumberFormat(findValue(row,"overdue"))}</td>
+            <td>${safePercentFormat(findValue(row,"percentOverdue"))}</td>
+            <td>${findValue(row,"paymentStatus")??"-"}</td>
+            <td>${findValue(row,"projectStatus")??"-"}</td>
+            <td>${findValue(row,"note")??"-"}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        dataTable=$("#districtDetails").DataTable({fixedHeader:true,scrollX:true,pageLength:100,
+            dom:'lfrtip',
+            language:{search:"ค้นหาในตาราง:", lengthMenu:"แสดง _MENU_ รายการ", info:"แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ", infoEmpty:"ไม่พบข้อมูล", zeroRecords:"ไม่พบข้อมูลที่ตรงกัน", paginate:{first:"หน้าแรก", last:"หน้าสุดท้าย", next:"ถัดไป", previous:"ก่อนหน้า"}}
+        });
+    }
+
+    // ================= PDPA Modal =================
+    const pdpaModal=document.createElement("div");
+    pdpaModal.id="pdpa-modal"; pdpaModal.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+    pdpaModal.innerHTML=`<div style="background:white;padding:30px;border-radius:12px;width:400px;text-align:center;">
+    <h3>ยินยอมการเก็บข้อมูล (PDPA)</h3>
+    <p>คุณต้องยืนยันการยินยอมก่อนดูข้อมูล</p>
+    <button id="pdpa-accept" style="margin-top:15px;padding:8px 20px;font-weight:bold;border-radius:6px;border:none;background-color:#e91e63;color:white;cursor:pointer;">ยอมรับ</button></div>`;
+    document.body.appendChild(pdpaModal);
+    document.getElementById("pdpa-accept").addEventListener("click",()=>{ pdpaModal.style.display="none"; loadData(); });
+
+    // ================= Download Excel / PDF =================
+    document.getElementById("btnDownload").addEventListener("click",()=>{
+        const type=document.getElementById("downloadType").value;
+        if(type==="excel") downloadExcel();
+        else if(type==="pdf") downloadPDF();
+    });
+
+    function downloadExcel(){
+        if(!allData || allData.length===0) { alert("ไม่มีข้อมูลสำหรับดาวน์โหลด"); return; }
+        const ws=XLSX.utils.json_to_sheet(allData.map(row=>{ const r={}; for(const key in row){ r[key]=row[key]; } return r; }));
+        const wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb,ws,"Dashboard");
+        XLSX.writeFile(wb,"Dashboard.xlsx");
+    }
+
+    function downloadPDF(){
+        if(!allData || allData.length===0) { alert("ไม่มีข้อมูลสำหรับดาวน์โหลด"); return; }
+        const {jsPDF}=window.jspdf;
+        const doc=new jsPDF('l','pt','a4');
+        const columns=Object.values(KEY_MAP).map(arr=>arr[1]);
+        const rows=allData.map(row=>columns.map(c=>{
+            for(const k in KEY_MAP){
+                if(KEY_MAP[k][1]===c) return row[k]??"-";
+            }
+            return "-";
+        }));
+        doc.autoTable({ head:[columns], body:rows, startY:20, styles:{fontSize:7}});
+        doc.save("Dashboard.pdf");
+    }
+</script>
 </body>
 </html>
-
-
-
-
-
-
