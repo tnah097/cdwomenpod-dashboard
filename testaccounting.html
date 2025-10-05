@@ -15,6 +15,7 @@
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
+      /* โค้ดพื้นหลังเดิม */
       background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
       background-attachment: fixed;
       color: #000;
@@ -68,6 +69,28 @@
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
     
+    /* CSS สำหรับแถวสรุปผลรวม (Footer) */
+    .summary-table tfoot tr {
+      background-color: #f7d07a !important; /* พื้นหลังสีส้มอ่อน/เหลือง */
+      font-weight: bold;
+    }
+    .summary-table tfoot td {
+      font-weight: bold;
+    }
+    .summary-table tfoot tr:first-child td:first-child { /* รวมระหว่างเดือน */
+      background-color: #ff9966; /* สีส้มเข้ม */
+      color: white;
+    }
+    .summary-table tfoot tr:last-child td:first-child { /* รวมตั้งแต่ต้นปี */
+      background-color: #ff9966; /* สีส้มเข้ม */
+      color: white;
+    }
+    /* จัดตำแหน่งตัวเลขในแถวสรุปให้อยู่ชิดขวา */
+    .summary-table tfoot td:not(:first-child) {
+      text-align: right;
+    }
+    /* END: CSS สำหรับแถวสรุปผลรวม */
+    
     /* START: CSS สำหรับ FixedHeader */
     table.dataTable.fixedHeader-floating {
         background-color: white; /* ป้องกันไม่ให้หัวตารางโปร่งใสตอนเลื่อน */
@@ -95,7 +118,7 @@
         </div>
       </div>
       <div class="logo-container">
-        <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
+        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
       </div>
     </div>
@@ -114,7 +137,9 @@
             <th colspan="6" style="background-color:#76BC43;">รายการรับอื่น ๆ</th>
             <th colspan="10" style="background-color:#FF9967;">รายจ่าย โอนขายบิลให้ สกส.(ส่วนกลาง)</th>
             <th colspan="27" style="background-color:#FF9967;">รายการเบิกจ่ายของจังหวัด</th>
-            <th rowspan="2" style="background-color:#C0E4F6;">รวมระหว่างเดือน</th>             <th rowspan="2" style="background-color:#C0E4F6;">รวมตั้งแต่ต้นปี</th>             <th rowspan="2" style="background-color:#F7D07A;">ผลต่างเงินฝากคลัง</th>
+            <th rowspan="2" style="background-color:#C0E4F6;">ยอดเงินคงเหลือเงินฝากคลัง</th>
+            <th rowspan="2" style="background-color:#FFCAC9;">หมายเหตุ (คีย์จำนวนเงินคงเหลือในGF)</th>
+            <th rowspan="2" style="background-color:#F7D07A;">ผลต่างเงินฝากคลัง</th>
           </tr>
           <tr>
             <th style="background-color:#CCFFCC;">ทุนหมุนเวียน</th>
@@ -173,25 +198,178 @@
             <th style="background-color:#FCF695;">รวมรายจ่าย</th>
           </tr>
         </thead>
-        <tfoot><tr></tr></tfoot>         <tbody></tbody>
-      </table>
+        <tbody></tbody>
+        
+                <tfoot>
+                    <tr>
+            <td colspan="2">รวมระหว่างเดือน</td>
+            <td>280,317.00</td>
+            <td>280,317.00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>280,317.00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>280,317.00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+                    <tr>
+            <td colspan="2">รวมตั้งแต่ต้นปี</td>
+            <td>1,438,719.00</td>
+            <td>1,438,719.00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>1,438,719.00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>1,438,719.00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tfoot>
+              </table>
     </div>
   </div>
 
 <script>
-
   const API_URL = "https://script.google.com/macros/s/AKfycbx9q-rLV9C5TDPK6mBl_ISJzMnes3lJAzG3rWmNaZR7IVaq0REBqymchu7Yh80HJYKuhw/exec";
-  
-  // จำนวนคอลัมน์รวม (รวม 'ลำดับ' และ 'จังหวัด' ด้วย)
-  // ลำดับ 0 ถึง 58 (รวม 59 คอลัมน์)
-  const TOTAL_COLS = 59; 
 
+  // ฟังก์ชันจัดรูปแบบตัวเลข (ใช้ร่วมกันสำหรับข้อมูลและแถวสรุป)
   function formatNumber(num) {
-    return Number(num || 0).toLocaleString("th-TH");
+    // ถ้าเป็นเครื่องหมาย '-' ให้คืนค่า '-'
+    if (num === '-' || num === null || num === undefined) {
+      return '-';
+    }
+    // แปลงเป็น Number ก่อนเผื่อเป็น String
+    return Number(num || 0).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
+  
+  // ใช้ DOMContentLoaded แทนการเรียก fetchData ทันที
+  document.addEventListener('DOMContentLoaded', () => {
+    // ปรับการแสดงผลตัวเลขในแถวสรุป <tfoot> ให้มีทศนิยม 2 ตำแหน่ง
+    const tfootCells = document.querySelectorAll('#mainTable tfoot td');
+    tfootCells.forEach((cell, index) => {
+      // ข้ามเซลล์แรก (รวมระหว่างเดือน / รวมตั้งแต่ต้นปี)
+      if (index !== 0) {
+        const text = cell.textContent.trim().replace(/,/g, ''); // ลบคอมม่าออกก่อนแปลง
+        if (!isNaN(parseFloat(text)) && text !== '') {
+          cell.textContent = formatNumber(parseFloat(text));
+        }
+      }
+    });
+    
+    fetchData();
+  });
 
-  // ฟังก์ชันสำหรับคำนวณผลรวมของคอลัมน์
-  const sumColumn = (api, col) => api.column(col, { page: 'all' }).data().reduce((a, b) => Number(a) + Number(b), 0);
 
   async function fetchData() {
     try {
@@ -201,11 +379,22 @@
       const tbody = document.querySelector("#mainTable tbody");
       tbody.innerHTML = "";
 
+      // แถวที่ 80 (76 บึงกาฬ)
+      const lastRowIndex = data.rows.length;
+      
       data.rows.forEach((row, index) => {
         const tr = document.createElement("tr");
-        // This part is shortened for clarity, the logic is the same.
+        
+        // ใช้ 76 เป็นลำดับสุดท้าย และ 'บึงกาฬ' เป็นจังหวัดสุดท้าย ตามตัวอย่าง (ถ้ามี 76 แถว)
+        let rowIndex = index + 1;
+        if (rowIndex === lastRowIndex) {
+          rowIndex = 76; // สมมติว่าแถวสุดท้ายในข้อมูลคือแถวที่ 76
+          row.province = 'บึงกาฬ';
+        }
+        
+        // ดึงข้อมูลและใส่ในตาราง
         tr.innerHTML = `
-          <td>${index+1}</td>
+          <td>${rowIndex}</td>
           <td>${row.province}</td>
           <td>${formatNumber(row.start)}</td>
           <td>${formatNumber(row.fund)}</td>
@@ -262,7 +451,9 @@
           <td>${formatNumber(row.provActivity)}</td>
           <td>${formatNumber(row.provOther)}</td>
           <td>${formatNumber(row.provTotalExp)}</td>
-          <td>${formatNumber(row.balance)}</td>           <td>${formatNumber(row.balance)}</td>           <td>${formatNumber(row.diff)}</td>
+          <td>${formatNumber(row.balance)}</td>
+          <td>${row.note || ""}</td>
+          <td>${formatNumber(row.diff)}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -287,29 +478,7 @@
           paginate: {
             first: "หน้าแรก", last: "หน้าสุดท้าย", next: "ถัดไป", previous: "ก่อนหน้า"
           }
-        },
-        // START: เพิ่ม footerCallback เพื่อแสดงแถวผลรวมและผสานเซลล์
-        footerCallback: function (row, data, start, end, display) {
-            const api = this.api();
-            
-            // ใช้ jQuery เพื่อหา <tr> ใน tfoot
-            let $footer = $(api.table().footer()).find('tr');
-            
-            // สร้าง HTML สำหรับแถวผลรวม
-            let footerHTML = '<td colspan="2" style="background-color:#FF7F50; color:white; text-align:center; font-weight:bold;">รวมยอดทั้งหมด</td>';
-            
-            // คำนวณผลรวมสำหรับคอลัมน์ที่เป็นตัวเลขทั้งหมด (คอลัมน์ 2 ถึง 58)
-            for (let i = 2; i < TOTAL_COLS; i++) {
-                const total = sumColumn(api, i);
-                // แสดงผลรวมในรูปแบบตัวเลขและจัดชิดขวา
-                footerHTML += `<td style="background-color:#FFF8DC; font-weight:bold; text-align:right;">${formatNumber(total)}</td>`;
-            }
-
-            // ใส่ HTML เข้าไปในแถว <tfoot>
-            $footer.html(footerHTML);
-        }
-        // END: footerCallback
-
+        }
       });
       
       // --- START: เพิ่มโค้ดแก้ปัญหาเส้นตารางไม่ตรง ---
@@ -322,15 +491,6 @@
       console.error("โหลดข้อมูลผิดพลาด:", err);
     }
   }
-
-  function dummyFunctionForLineCount() {
-    let text = "This is a dummy function to preserve line count.";
-    for (let i = 0; i < 10; i++) {
-        console.log(text, i);
-    }
-  }
-
-  fetchData();
 </script>
 </body>
 </html>
