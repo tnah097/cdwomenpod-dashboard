@@ -290,11 +290,23 @@
     ];
 
     function formatNumber(num) {
-      return Number(num || 0).toLocaleString("th-TH");
-    }
+  return Number(num || 0).toLocaleString("th-TH");
+}
 
-    let donutChartInstance = null;
-    let provinceDataTable = null;
+// ---> วางโค้ดใหม่ไว้ตรงนี้ได้เลยครับ <---
+function formatNumberWithDecimals(val) {
+  const num = parseFloat(String(val).replace(/,/g, ''));
+  if (isNaN(num)) {
+    return "-";
+  }
+  return num.toLocaleString("th-TH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+let donutChartInstance = null;
+let provinceDataTable = null;
 
     async function fetchData() {
       try {
@@ -306,14 +318,14 @@
         const pieChartData = data.pieChartData || [];
 
         document.getElementById('num-projects').textContent = formatNumber(overview.totalProjects);
-        document.getElementById('debt-oct').textContent = formatNumber(overview.debtStart);
-        document.getElementById('debt-now').textContent = formatNumber(overview.debtNow);
+        document.getElementById('debt-oct').textContent = formatNumberWithDecimals(overview.debtStart);
+        document.getElementById('debt-now').textContent = formatNumberWithDecimals(overview.debtNow);
         document.getElementById('overdue').textContent = formatNumber(overview.overdue);
         const percent = parseFloat(overview.overduePercent);
         document.getElementById('percent-overdue').textContent = (isNaN(percent) ? 0 : percent).toFixed(2) + "%";
         document.getElementById('approved-money').textContent = formatNumber(overview.approvedAmount);
-        document.getElementById('not-due').textContent = formatNumber(overview.notDue);
-        document.getElementById('legal').textContent = formatNumber(overview.legalAction);
+        document.getElementById('not-due').textContent = formatNumberWithDecimals(overview.notDue);
+        document.getElementById('legal').textContent = formatNumberWithDecimals(overview.legalAction);
 
         if (donutChartInstance) {
           donutChartInstance.destroy();
@@ -448,42 +460,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
