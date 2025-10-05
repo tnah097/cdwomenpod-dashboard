@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8" />
-    <title>CD Women POD Dashboard</title>
+    <title>CD Women POD Dashboard</title> 
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
@@ -50,14 +50,17 @@
                 <h2><span style="color:black;">ฐานข้อมูล</span> <span style="color:red;" id="province-title">รายจังหวัด</span></h2>
                 <div style="color:navy; font-weight:bold; margin-top:8px;">
                     <span style="font-size:1.2rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับจังหวัด</span><br />
-                    <p align="right"><span style="font-size:2rem;" id="update-date">ข้อมูล ณ วันที่</span></p>
+                
                 </div>
             </div>
             <div class="logo-container">
-                <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+               <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
             </div>
         </div>
+                    <div style="color: navy; font-weight: bold; text-align: right; font-size: 1.5rem; margin-top: 1rem;">
+  <span id="update-date">ข้อมูล ณ วันที่ 30 กันยายน 2568 </span>
+</div>
         <div class="cards">
             <div class="card pink">จำนวนโครงการ<div class="value" id="num-projects">-</div></div>
             <div class="card light-pink"> ลูกหนี้คงเหลือ ณ 1 ต.ค. 2567 (A)<div class="value" id="debt-start">-</div> ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now">-</div></div>
@@ -117,8 +120,7 @@
     <script>
         // ================== Config ==================
         const PDPA_ENABLED = true;
-        // ⭐ EDIT: You MUST paste the URL from your Apps Script deployment here.
-        const API_URL = "https://script.google.com/macros/s/AKfycbxTC_fcuGqBBTjrOng6GE2OAS6BK_-6LBwwS2_Otjk_mJEYUYbmxIhhWz-Y1V_bnSFf/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzlW-Yp6HBkQ8mc-3BEO9tgGVH-H7-6pPhKTm7_ZSligN4bco3WUjrQ7Fi9ZlOeXoiGEg/exec";
         
         let allData = [], dataTable;
 
@@ -158,7 +160,6 @@
             $("#btnDownload").on("click", downloadData);
         });
 
-        // ⭐ EDIT: Switched back to the fetch() method as requested
         async function initializeDashboard(pdpaAccepted = false) {
             const params = new URLSearchParams(window.location.search);
             const province = params.get("province");
@@ -218,9 +219,6 @@
             }
         }
 
-        // --- All other functions (populateTable, populateFilters, etc.) ---
-        // --- are the same as the previous correct version that uses English keys. ---
-
         function populateTable(data) {
             if ($.fn.DataTable.isDataTable("#detailsTable")) {
                 dataTable.clear().destroy();
@@ -232,6 +230,7 @@
             }
 
             data.forEach(row => {
+                // ⭐ START: This is the corrected section
                 const tr = `
                     <tr>
                         <td>${formatValue(row.no)}</td><td>${formatValue(row.district)}</td>
@@ -242,13 +241,18 @@
                         <td>${formatDate(row.lastPaymentDate)}</td><td>${formatValue(row.remainingInstallments)}</td>
                         <td>${formatNumber(row.debtStart)}</td><td>${formatNumber(row.debtNow)}</td>
                         <td>${formatNumber(row.notDue)}</td><td>${formatNumber(row.mediation)}</td>
-                        <td>${formatNumber(row.prosecutor)}</td><td>${formatNumber(row.courtFiled)}</td>
-                        <td>${formatNumber(row.judgment)}</td><td>${formatNumber(row.judgmentAgree)}</td>
-                        <td>${formatNumber(row.civil2tri)}</td><td>${formatNumber(row.criminalCase)}</td>
-                        <td>${formatNumber(row.legalAction)}</td><td>${formatNumber(row.overdue)}</td>
+                        <td>${formatNumber(row.ng1)}</td>
+                        <td>${formatNumber(row.ng2)}</td>
+                        <td>${formatNumber(row.ng3)}</td>
+                        <td>${formatNumber(row.ng4)}</td>
+                        <td>${formatNumber(row.ng5)}</td>
+                        <td>${formatNumber(row.ng6)}</td>
+                        <td>${formatNumber(row.legal)}</td>
+                        <td>${formatNumber(row.overdue)}</td>
                         <td>${formatPercent(row.percentOverdue)}</td><td>${formatValue(row.paymentStatus)}</td>
                         <td>${formatValue(row.projectStatus)}</td><td>${formatValue(row.note)}</td>
                     </tr>`;
+                // ⭐ END: Corrected section
                 tbody.append(tr);
             });
             
@@ -311,7 +315,7 @@
             $("#debt-start").text(formatNumber(summary.debtStart));
             $("#debt-now").text(formatNumber(summary.debtNow));
             $("#overdue").text(formatNumber(summary.overdue));
-            $("#legal").text(formatNumber(summary.legal) || formatNumber(summary.legalAction)); // Handles both summary types
+            $("#legal").text(formatNumber(summary.legal) || formatNumber(summary.legal)); // Handles both summary types
             $("#percent-overdue").text(formatPercent(summary.percentOverdue));
             if (summary.updateDate) {
                 $("#update-date").text("ข้อมูล ณ วันที่ " + summary.updateDate);
@@ -324,7 +328,7 @@
                 acc.debtStart += parseFloat(String(row.debtStart).replace(/,/g, '')) || 0;
                 acc.debtNow += parseFloat(String(row.debtNow).replace(/,/g, '')) || 0;
                 acc.overdue += parseFloat(String(row.overdue).replace(/,/g, '')) || 0;
-                acc.legal += parseFloat(String(row.legalAction).replace(/,/g, '')) || 0;
+                acc.legal += parseFloat(String(row.legal).replace(/,/g, '')) || 0;
                 return acc;
             }, { approvedMoney: 0, debtStart: 0, debtNow: 0, overdue: 0, legal: 0 });
             summary.totalProjects = data.length;
@@ -355,28 +359,11 @@
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "DashboardData");
                 XLSX.writeFile(wb, `${params.get("province")}_Dashboard.xlsx`);
-            } else {
-                alert("แนะนำให้ดาวน์โหลดเป็น Excel เพื่อความแม่นยำของข้อมูลภาษาไทย");
             }
+            // Note: PDF download functionality is not included in the original code, but this structure supports adding it.
         }
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
