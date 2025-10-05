@@ -117,7 +117,7 @@
     <script>
         // ================== Config ==================
         const PDPA_ENABLED = true;
-        const API_URL = "https://script.google.com/macros/s/AKfycbx_siMGydOoey3W5NjyL2vPZ5IgMNrraUd_rIr7g05N_CUcoNfAKbtOz02F0WOuitnBBg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbykDMZO_Euw2tQmYi2HuV6Bgxz3_nejCZPl_buIXgWCLKQ0txd8r4TgjT-p7UcKzBRbUA/exec";
         
         let allData = [], dataTable;
 
@@ -244,7 +244,7 @@
                         <td>${formatNumber(row.ng4)}</td>
                         <td>${formatNumber(row.ng5)}</td>
                         <td>${formatNumber(row.ng6)}</td>
-                        <td>${formatNumber(row.legalAction)}</td>
+                        <td>${formatNumber(row.legal)}</td>
                         <td>${formatNumber(row.overdue)}</td>
                         <td>${formatPercent(row.percentOverdue)}</td><td>${formatValue(row.paymentStatus)}</td>
                         <td>${formatValue(row.projectStatus)}</td><td>${formatValue(row.note)}</td>
@@ -312,7 +312,7 @@
             $("#debt-start").text(formatNumber(summary.debtStart));
             $("#debt-now").text(formatNumber(summary.debtNow));
             $("#overdue").text(formatNumber(summary.overdue));
-            $("#legal").text(formatNumber(summary.legal) || formatNumber(summary.legalAction)); // Handles both summary types
+            $("#legal").text(formatNumber(summary.legal) || formatNumber(summary.legal)); // Handles both summary types
             $("#percent-overdue").text(formatPercent(summary.percentOverdue));
             if (summary.updateDate) {
                 $("#update-date").text("ข้อมูล ณ วันที่ " + summary.updateDate);
@@ -325,7 +325,7 @@
                 acc.debtStart += parseFloat(String(row.debtStart).replace(/,/g, '')) || 0;
                 acc.debtNow += parseFloat(String(row.debtNow).replace(/,/g, '')) || 0;
                 acc.overdue += parseFloat(String(row.overdue).replace(/,/g, '')) || 0;
-                acc.legal += parseFloat(String(row.legalAction).replace(/,/g, '')) || 0;
+                acc.legal += parseFloat(String(row.legal).replace(/,/g, '')) || 0;
                 return acc;
             }, { approvedMoney: 0, debtStart: 0, debtNow: 0, overdue: 0, legal: 0 });
             summary.totalProjects = data.length;
@@ -362,6 +362,7 @@
     </script>
 </body>
 </html>
+
 
 
 
