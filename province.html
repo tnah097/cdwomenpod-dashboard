@@ -117,8 +117,7 @@
     <script>
         // ================== Config ==================
         const PDPA_ENABLED = true;
-        // ⭐ EDIT: You MUST paste the URL from your Apps Script deployment here.
-        const API_URL = "https://script.google.com/macros/s/AKfycbxhUMTpggQABEWWB7OANESwFeh8nhiTACMvEPunnRgu75EFMH2dSkhwWfTRRmCFrwnh/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbz56t9guBtEWNXN0qndiX1d_vxUYruOHyusvGsQbNTVKwC916ctBItX7tUBrCSmkSMR/exec";
         
         let allData = [], dataTable;
 
@@ -158,7 +157,6 @@
             $("#btnDownload").on("click", downloadData);
         });
 
-        // ⭐ EDIT: Switched back to the fetch() method as requested
         async function initializeDashboard(pdpaAccepted = false) {
             const params = new URLSearchParams(window.location.search);
             const province = params.get("province");
@@ -218,9 +216,6 @@
             }
         }
 
-        // --- All other functions (populateTable, populateFilters, etc.) ---
-        // --- are the same as the previous correct version that uses English keys. ---
-
         function populateTable(data) {
             if ($.fn.DataTable.isDataTable("#detailsTable")) {
                 dataTable.clear().destroy();
@@ -232,6 +227,7 @@
             }
 
             data.forEach(row => {
+                // ⭐ START: This is the corrected section
                 const tr = `
                     <tr>
                         <td>${formatValue(row.no)}</td><td>${formatValue(row.district)}</td>
@@ -242,13 +238,18 @@
                         <td>${formatDate(row.lastPaymentDate)}</td><td>${formatValue(row.remainingInstallments)}</td>
                         <td>${formatNumber(row.debtStart)}</td><td>${formatNumber(row.debtNow)}</td>
                         <td>${formatNumber(row.notDue)}</td><td>${formatNumber(row.mediation)}</td>
-                        <td>${formatNumber(row.prosecutor)}</td><td>${formatNumber(row.courtFiled)}</td>
-                        <td>${formatNumber(row.judgment)}</td><td>${formatNumber(row.judgmentAgree)}</td>
-                        <td>${formatNumber(row.civil2tri)}</td><td>${formatNumber(row.criminalCase)}</td>
-                       <td>${formatNumber(row.prosecutor)}</td><td>${formatNumber(row.overdue)}</td>
+                        <td>${formatNumber(row.ng1)}</td>
+                        <td>${formatNumber(row.ng2)}</td>
+                        <td>${formatNumber(row.ng3)}</td>
+                        <td>${formatNumber(row.ng4)}</td>
+                        <td>${formatNumber(row.ng5)}</td>
+                        <td>${formatNumber(row.ng6)}</td>
+                        <td>${formatNumber(row.legalAction)}</td>
+                        <td>${formatNumber(row.overdue)}</td>
                         <td>${formatPercent(row.percentOverdue)}</td><td>${formatValue(row.paymentStatus)}</td>
                         <td>${formatValue(row.projectStatus)}</td><td>${formatValue(row.note)}</td>
                     </tr>`;
+                // ⭐ END: Corrected section
                 tbody.append(tr);
             });
             
@@ -355,37 +356,9 @@
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "DashboardData");
                 XLSX.writeFile(wb, `${params.get("province")}_Dashboard.xlsx`);
-            } else {
-                alert("แนะนำให้ดาวน์โหลดเป็น Excel เพื่อความแม่นยำของข้อมูลภาษาไทย");
             }
+            // Note: PDF download functionality is not included in the original code, but this structure supports adding it.
         }
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
