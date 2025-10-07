@@ -9,6 +9,7 @@
   <style>
     body {
       font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing: border-box;
+      /* โค้ดพื้นหลังเดิมถูกนำกลับมาแล้ว */
       background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed;
       display: flex; flex-direction: column; align-items: center; gap: 30px;
     }
@@ -22,7 +23,7 @@
     }
     .header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
     .header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
-    .logos img { height: 60px; margin-left: 5px; }
+    .logos img { height: 60px; margin-left: 5px; } /* โลโก้ถูกนำกลับมาแล้ว */
     .calculator-card {
       background-color: #ffebf2; padding: 25px; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
     }
@@ -70,7 +71,7 @@
     .summary-table tr:last-child { font-weight: bold; background-color: #f8f9fa; }
     #history-table { margin-top: 15px; }
     #history-table th { background-color: #6c757d; color: white; }
-    /* เพิ่ม CSS สำหรับคอลัมน์ใหม่ในตารางประวัติ */
+    /* CSS สำหรับคอลัมน์ใหม่ในตารางประวัติ */
     #history-table td:nth-child(6), #history-table td:nth-child(7) { text-align: center; } 
     #history-table td:nth-child(5) { text-align: right; } /* จำนวนเงิน */
 
@@ -95,7 +96,7 @@
         <div class="input-group">
             <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
             <input type="number" id="rate" value="5" readonly>
-        </div>
+                    </div>
         <div class="input-group">
             <label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label>
             <input type="date" id="dueDate">
@@ -125,7 +126,7 @@
         <h2>ประวัติการตัดชำระ</h2>
         <div class="table-wrapper" style="max-height: 200px;">
             <table id="history-table">
-                <thead><tr><th>วันที่ชำระ</th><th>ยอดชำระ</th><th>งวดที่</th><th>รายการที่ตัด</th><th>จำนวนเงิน</th><th>วันที่ชำระก่อนหน้า</th><th>จำนวนวันผิดนัด</th></tr></thead>
+                                <thead><tr><th>วันที่ชำระ</th><th>ยอดชำระ</th><th>งวดที่</th><th>รายการที่ตัด</th><th>จำนวนเงิน</th><th>วันที่ชำระก่อนหน้า</th><th>จำนวนวันผิดนัด</th></tr></thead>
                 <tbody id="history-table-body"><tr><td colspan="7">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>
             </table>
         </div>
@@ -183,8 +184,7 @@ function handleFileSelect(event) {
                 const internalKey = excelHeaderMapping[excelHeader];
                 installment[internalKey] = row[excelHeader] || 0;
             }
-            // กำหนดค่าเริ่มต้นสำหรับ lastPaymentDate หากยังไม่มีการชำระ
-            // แปลง dueDate เป็น Date object ในการจัดเก็บ
+            // แปลง dueDate เป็น Date object
             installment.dueDate = new Date(installment.dueDate); 
             installment.lastPaymentDate = null; 
             return installment;
@@ -207,7 +207,7 @@ function renderTable() {
     thead.innerHTML = ''; tbody.innerHTML = '';
     const displayHeaders = [
         'ลำดับ', 'กำหนดวันชำระ', 'เงินต้น', 'ดอกเบี้ย', 'เบี้ยปรับ', 'ด/บ ผิดนัดเดิม', 'ด/บ ผิดนัดใหม่', 'รวมหนี้', 
-        'วันที่ชำระล่าสุด', 'วันที่ผิดนัดชำระ (วัน)', // <-- หัวข้อใหม่ในตารางรายละเอียดหนี้
+        'วันที่ชำระล่าสุด', 'วันที่ผิดนัดชำระ (วัน)',
         'รับคืน ด/บ ผิดนัดเดิม', 'รับคืน ด/บ ผิดนัดใหม่', 'รับคืนเบี้ยปรับ',
         'รับคืนดอกเบี้ย', 'รับคืนเงินต้น', 'รับคืนรวม', 'รับเงินเกิน', 'หนี้คงเหลือ', 'สถานะ'
     ];
@@ -217,17 +217,16 @@ function renderTable() {
         const totalDebt = (inst.principal||0) + (inst.interest||0) + (inst.penalty||0) + (inst.oldDefaultInterest||0) + (inst.newDefaultInterest||0);
         const totalPaid = (inst.receivedOldDefaultInterest||0) + (inst.receivedNewDefaultInterest||0) + (inst.receivedPenalty||0) + (inst.receivedInterest||0) + (inst.receivedPrincipal||0);
         const remainingDebt = totalDebt - totalPaid;
-        let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (inst.dueDate < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด'); // เปรียบเทียบ dueDate กับ วันที่ปัจจุบัน
+        let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (inst.dueDate < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
 
         // คำนวณ 'วันที่ผิดนัดชำระ (วัน)' สำหรับแสดงในตารางรายละเอียดหนี้
-        const dateForOverdueCalc = inst.lastPaymentDate || inst.dueDate; // ใช้ lastPaymentDate ถ้ามี หรือ dueDate
         const today = new Date();
-        const effectiveDueDate = new Date(inst.dueDate.getFullYear(), inst.dueDate.getMonth(), inst.dueDate.getDate()); // ตัดเวลาออก
-        const effectiveToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // ตัดเวลาออก
+        // ปรับวันที่ให้ไม่มีส่วนของเวลา เพื่อคำนวณวันให้แม่นยำ
+        const effectiveDueDate = new Date(inst.dueDate.getFullYear(), inst.dueDate.getMonth(), inst.dueDate.getDate());
+        const effectiveToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
         let daysOverdueDisplay = 0;
-        if (remainingDebt > 0.01 && effectiveDueDate < effectiveToday) { // ถ้ายังค้าง และเลยกำหนดแล้ว
-            // นับวันจาก dueDate ถึง วันนี้
+        if (remainingDebt > 0.01 && effectiveDueDate < effectiveToday) { 
             daysOverdueDisplay = Math.max(0, Math.floor((effectiveToday - effectiveDueDate) / (1000 * 60 * 60 * 24)));
         }
 
@@ -236,8 +235,8 @@ function renderTable() {
             inst.sequence, formatDate(inst.dueDate), formatNumber(inst.principal),
             formatNumber(inst.interest), formatNumber(inst.penalty), formatNumber(inst.oldDefaultInterest),
             formatNumber(inst.newDefaultInterest), formatNumber(totalDebt),
-            formatDate(inst.lastPaymentDate), // <--- วันที่ชำระล่าสุด
-            daysOverdueDisplay,               // <--- วันที่ผิดนัดชำระ (วัน)
+            formatDate(inst.lastPaymentDate), 
+            daysOverdueDisplay,               
             formatNumber(inst.receivedOldDefaultInterest), formatNumber(inst.receivedNewDefaultInterest),
             formatNumber(inst.receivedPenalty), formatNumber(inst.receivedInterest),
             formatNumber(inst.receivedPrincipal), formatNumber(totalPaid), formatNumber(inst.overpayment),
@@ -254,7 +253,7 @@ function renderHistoryTable() {
     const tbody = document.getElementById('history-table-body');
     tbody.innerHTML = '';
     
-    // อัปเดตหัวตาราง (Thead)
+    // อัปเดตหัวตาราง (Thead) เพื่อให้มั่นใจว่ามีคอลัมน์ใหม่
     thead.innerHTML = '<tr><th>วันที่ชำระ</th><th>ยอดชำระ</th><th>งวดที่</th><th>รายการที่ตัด</th><th>จำนวนเงิน</th><th>วันที่ชำระก่อนหน้า</th><th>จำนวนวันผิดนัด</th></tr>';
 
     if (paymentHistory.length === 0) {
@@ -265,7 +264,9 @@ function renderHistoryTable() {
     paymentHistory.forEach(entry => {
         let isFirstItemInEntry = true;
         entry.breakdown.forEach(item => {
+            // วันที่ใช้เป็นจุดเริ่มต้นการคำนวณ
             const dateUsed = item.lastPaymentDateUsed ? formatDate(item.lastPaymentDateUsed) : '';
+            // จำนวนวันที่ใช้คำนวณ
             const daysUsed = item.daysOverdueUsed || 0;
             
             tbody.innerHTML += `<tr>
@@ -364,16 +365,16 @@ function settlePayment() {
     if (dueInstallments.length === 0) { alert("ไม่พบหนี้ค้างชำระ"); return; }
     
     let historyEntry = { date: actualPaymentDate, totalAmount: paymentAmount, breakdown: [] };
-    let lastPaidInstallment = null;
+    let affectedSequences = new Set(); // บันทึกงวดที่มีการตัดชำระจริง
 
     for (let inst of dueInstallments) {
         if (paymentAmount <= 0) break;
 
-        // กำหนด lastPaymentDateForCalc เป็น Date object (dueDate เป็น Date object แล้ว)
+        // วันที่ใช้เป็นจุดเริ่มต้นการคำนวณ (dueDate หรือ lastPaymentDate)
         const lastPaymentDateForCalc = inst.lastPaymentDate || inst.dueDate; 
         const lastPayment = new Date(lastPaymentDateForCalc);
 
-        // คำนวณจำนวนวันผิดนัดสำหรับ ด/บ ผิดนัดใหม่
+        // คำนวณจำนวนวันผิดนัดสำหรับ ด/บ ผิดนัดใหม่ (5%)
         const daysOverdueNewInterest = Math.max(0, Math.floor((actualPaymentDate - lastPayment) / (1000 * 60 * 60 * 24)));
 
         const pay = (dueAmount, receivedKey, categoryName) => {
@@ -385,19 +386,20 @@ function settlePayment() {
                     sequence: inst.sequence, 
                     category: categoryName, 
                     amount: amountToPay,
+                    // บันทึกข้อมูลที่ใช้ในการคำนวณ
                     lastPaymentDateUsed: lastPaymentDateForCalc, 
-                    daysOverdueUsed: daysOverdueNewInterest // ใช้ค่านี้สำหรับบันทึกประวัติ
+                    daysOverdueUsed: daysOverdueNewInterest
                 }); 
-                lastPaidInstallment = inst;
+                affectedSequences.add(inst.sequence);
             }
         };
         
-        // --- LOGIC การตัดหนี้ ---
+        // --- ลำดับการตัดหนี้ ---
         // 1. ตัด ด/บ ผิดนัดเดิม
         let dueOldInterest = (inst.oldDefaultInterest || 0) - (inst.receivedOldDefaultInterest || 0);
         pay(dueOldInterest, 'receivedOldDefaultInterest', 'ด/บ ผิดนัดเดิม');
 
-        // 2. คำนวณและตัด ด/บ ผิดนัดใหม่ ที่เกิดขึ้นจริง
+        // 2. คำนวณและตัด ด/บ ผิดนัดใหม่ ที่เกิดขึ้นจริง (5%)
         const remainingPrincipal = (inst.principal || 0) - (inst.receivedPrincipal || 0);
         
         let dueNewInterest = 0;
@@ -406,7 +408,7 @@ function settlePayment() {
         }
         pay(dueNewInterest, 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่ (คำนวณสด)');
         inst.newDefaultInterest = (inst.newDefaultInterest || 0) + dueNewInterest; // อัปเดตยอดรวม ด/บ ใหม่
-        
+
         // 3. ตัดเบี้ยปรับ
         let duePenalty = (inst.penalty || 0) - (inst.receivedPenalty || 0);
         pay(duePenalty, 'receivedPenalty', 'เบี้ยปรับ');
@@ -420,33 +422,47 @@ function settlePayment() {
         pay(duePrincipal, 'receivedPrincipal', 'เงินต้น');
     }
     
+    // บันทึกเงินเกิน
     if (paymentAmount > 0) {
+        // หา installment ล่าสุดที่มีการตัดชำระจริงในธุรกรรมนี้
+        const lastPaidInstallment = allInstallments
+            .filter(inst => affectedSequences.has(inst.sequence))
+            .sort((a, b) => b.sequence - a.sequence)[0]; // เรียงลำดับงวดมากไปน้อย
+
         if(lastPaidInstallment) {
             lastPaidInstallment.overpayment = (lastPaidInstallment.overpayment || 0) + paymentAmount;
-            alert(`ตัดชำระหนี้ทั้งหมดแล้ว และบันทึกเงินเกินจำนวน ${formatNumber(paymentAmount)} บาท ในงวดล่าสุดที่ชำระ`);
+            // บันทึกเงินเกินในประวัติการตัดชำระ (เป็นรายการสุดท้ายของธุรกรรม)
+            historyEntry.breakdown.push({
+                sequence: lastPaidInstallment.sequence, 
+                category: 'รับเงินเกิน', 
+                amount: paymentAmount,
+                lastPaymentDateUsed: lastPaidInstallment.lastPaymentDate || lastPaidInstallment.dueDate, // ใช้ date เดิม
+                daysOverdueUsed: 0
+            });
+            alert(`ตัดชำระหนี้ทั้งหมดแล้ว และบันทึกเงินเกินจำนวน ${formatNumber(paymentAmount)} บาท ในงวดที่ ${lastPaidInstallment.sequence}`);
         } else {
-            // กรณีไม่มีหนี้ให้ตัดเลย เงินที่เหลือจะเป็นเงินเกินทั้งหมด (แต่เนื่องจากมีการ filter dueInstallments ไปแล้ว ส่วนนี้จะเกิดขึ้นได้ยาก)
-            alert(`ไม่มีหนี้ค้างชำระ เงินที่ได้รับคือ ${formatNumber(paymentAmount)} บาท`);
+            alert(`ไม่มีหนี้ค้างชำระ เงินที่ได้รับคือ ${formatNumber(paymentAmount)} บาท (ไม่ได้บันทึกเป็นเงินเกินในงวดใด)`);
         }
     }
     
+    // บันทึกประวัติและอัปเดตวันที่ชำระล่าสุด
     if (historyEntry.breakdown.length > 0) {
         paymentHistory.push(historyEntry);
         // อัปเดต lastPaymentDate ของทุกงวดที่มีการตัดชำระด้วยวันที่ชำระจริง
-        const affectedSequences = new Set(historyEntry.breakdown.map(item => item.sequence));
         allInstallments.forEach(inst => {
             if (affectedSequences.has(inst.sequence)) {
                 inst.lastPaymentDate = actualPaymentDate;
             }
         });
     }
+    
     renderAll();
     document.getElementById('paymentAmount').value = '';
 }
 
 function applyRowColors() {
     document.querySelectorAll("#payment-table-body tr").forEach(row => {
-        const status = row.cells[18]?.textContent.trim(); // เปลี่ยนเป็น 18 เพราะเพิ่ม 2 คอลัมน์ (9,10)
+        const status = row.cells[18]?.textContent.trim();
         row.className = '';
         if (status === "ชำระครบแล้ว") row.classList.add('status-paid');
         else if (status === "ค้างชำระ") row.classList.add('status-due');
@@ -454,7 +470,7 @@ function applyRowColors() {
 }
 
 function formatNumber(num) { return (typeof num === 'number') ? num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'; }
-function formatDate(dateObj) { // รับเป็น Date object แทน string
+function formatDate(dateObj) { 
     if (!dateObj instanceof Date || isNaN(dateObj.getTime())) return '';
     return dateObj.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
