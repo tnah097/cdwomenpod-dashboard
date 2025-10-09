@@ -343,11 +343,13 @@
   scrollX: true,
   scrollCollapse: true,
   language: { ... },
+  
   rowCallback: function(row, data, index) {
-    if(data.isSummary) { // แถวรวม
-      $(row).addClass('summary-row'); // ทำให้ filter ไม่เจอ
-      $(row).css('background-color', '#FFDDCC'); // สีสรุป
-    }
+  if(data.isSummary) { 
+    $(row).addClass('summary-row'); 
+    $(row).css('background-color', '#FFDDCC'); // สีสรุป
+  }
+}
   },
   columnDefs: [
     { targets: [0,1], searchable: false } // ล็อคไม่ให้ค้นหาตามคอลัมน์ลำดับ/รวม
