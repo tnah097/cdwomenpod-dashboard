@@ -258,7 +258,8 @@
             dataTable = $("#detailsTable").DataTable({
     fixedHeader: true, 
     scrollX: true, 
-    pageLength: 10,      // ⭐ ที่นี่ควรเป็นค่า 10
+    pageLength: 100,
+    lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ], // ✅ เพิ่ม dropdown ให้เลือกจำนวนแถว
     dom: 'lfrtip',
     language: { 
         search: "ค้นหาในตาราง:", 
@@ -374,6 +375,7 @@
     </script>
 </body>
 </html>
+
 
 
 
