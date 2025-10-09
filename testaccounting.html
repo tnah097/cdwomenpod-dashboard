@@ -182,10 +182,12 @@
 
 <script>
 
+  <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbwBFm3_3Z7D2Nay0V1ydX_T2JJX9G8MC8YycYdTFJoZ39ptdNfeybHHmqtjhnExboAuLw/exec";
 
   function formatNumber(num) {
-    return Number(num || 0).toLocaleString("th-TH");
+    if(!num) return "0";
+    return Number(num.toString().replace(/,/g,"")).toLocaleString("th-TH");
   }
 
   async function fetchData() {
@@ -196,187 +198,175 @@
       const tbody = document.querySelector("#mainTable tbody");
       tbody.innerHTML = "";
 
-      
       data.rows.forEach((row, index) => {
-  const tr = document.createElement("tr");
+        const tr = document.createElement("tr");
 
-  if(row.isSummary) { // แถวรวมระหว่างเดือน
-    tr.innerHTML = `
-     <td colspan="2" style="background-color:#FF8FAB; font-weight:bold; text-align:center;">${row.summaryLabel}</td>
+        if(row.isSummary) { // แถวรวมระหว่างเดือน
+          tr.innerHTML = `
+            <td colspan="2" style="background-color:#FF8FAB; font-weight:bold; text-align:center;">${row.summaryLabel}</td>
+            <td>${formatNumber(row.start)}</td>
+            <td>${formatNumber(row.fund)}</td>
+            <td>${formatNumber(row.subsidy)}</td>
+            <td>${formatNumber(row.admin)}</td>
+            <td>${formatNumber(row.returnDeposit)}</td>
+            <td>${formatNumber(row.principal)}</td>
+            <td>${formatNumber(row.interest)}</td>
+            <td>${formatNumber(row.penalty)}</td>
+            <td>${formatNumber(row.overdueInterest)}</td>
+            <td>${formatNumber(row.pending)}</td>
+            <td>${formatNumber(row.bankInterest)}</td>
+            <td>${formatNumber(row.extraDeposit)}</td>
+            <td>${formatNumber(row.returnFund)}</td>
+            <td>${formatNumber(row.returnSubsidy)}</td>
+            <td>${formatNumber(row.returnAdmin)}</td>
+            <td>${formatNumber(row.otherIncome)}</td>
+            <td>${formatNumber(row.mistakeIncome)}</td>
+            <td>${formatNumber(row.totalIncome)}</td>
+            <td>${formatNumber(row.expPrincipal)}</td>
+            <td>${formatNumber(row.expInterest)}</td>
+            <td>${formatNumber(row.expPenalty)}</td>
+            <td>${formatNumber(row.expOverdueInterest)}</td>
+            <td>${formatNumber(row.expPending)}</td>
+            <td>${formatNumber(row.expBankInterest)}</td>
+            <td>${formatNumber(row.expExtraDeposit)}</td>
+            <td>${formatNumber(row.expFundRemain)}</td>
+            <td>${formatNumber(row.expSubsidyRemain)}</td>
+            <td>${formatNumber(row.expAdminRemain)}</td>
+            <td>${formatNumber(row.provSubsidy)}</td>
+            <td>${formatNumber(row.provFund)}</td>
+            <td>${formatNumber(row.provLoan)}</td>
+            <td>${formatNumber(row.provTrainIn)}</td>
+            <td>${formatNumber(row.provTrainOut)}</td>
+            <td>${formatNumber(row.provMeetingFee)}</td>
+            <td>${formatNumber(row.provMeeting)}</td>
+            <td>${formatNumber(row.provTravel)}</td>
+            <td>${formatNumber(row.provPerdiem)}</td>
+            <td>${formatNumber(row.provHotel)}</td>
+            <td>${formatNumber(row.provMaterial)}</td>
+            <td>${formatNumber(row.provElectric)}</td>
+            <td>${formatNumber(row.provPhone)}</td>
+            <td>${formatNumber(row.provInternet)}</td>
+            <td>${formatNumber(row.provPost)}</td>
+            <td>${formatNumber(row.provWater)}</td>
+            <td>${formatNumber(row.provBankFee)}</td>
+            <td>${formatNumber(row.provRefund)}</td>
+            <td>${formatNumber(row.provRepair)}</td>
+            <td>${formatNumber(row.provAsset)}</td>
+            <td>${formatNumber(row.provOvertime)}</td>
+            <td>${formatNumber(row.provCourt)}</td>
+            <td>${formatNumber(row.provHire)}</td>
+            <td>${formatNumber(row.provPR)}</td>
+            <td>${formatNumber(row.provActivity)}</td>
+            <td>${formatNumber(row.provOther)}</td>
+            <td>${formatNumber(row.provTotalExp)}</td>
+            <td>${formatNumber(row.balance)}</td>
+            <td>${row.note || ""}</td>
+            <td>${formatNumber(row.diff)}</td>
+          `;
+        } else { // แถวปกติ
+          tr.innerHTML = `
+            <td>${index+1}</td>
+            <td>${row.province}</td>
+            <td>${formatNumber(row.start)}</td>
+            <td>${formatNumber(row.fund)}</td>
+            <td>${formatNumber(row.subsidy)}</td>
+            <td>${formatNumber(row.admin)}</td>
+            <td>${formatNumber(row.returnDeposit)}</td>
+            <td>${formatNumber(row.principal)}</td>
+            <td>${formatNumber(row.interest)}</td>
+            <td>${formatNumber(row.penalty)}</td>
+            <td>${formatNumber(row.overdueInterest)}</td>
+            <td>${formatNumber(row.pending)}</td>
+            <td>${formatNumber(row.bankInterest)}</td>
+            <td>${formatNumber(row.extraDeposit)}</td>
+            <td>${formatNumber(row.returnFund)}</td>
+            <td>${formatNumber(row.returnSubsidy)}</td>
+            <td>${formatNumber(row.returnAdmin)}</td>
+            <td>${formatNumber(row.otherIncome)}</td>
+            <td>${formatNumber(row.mistakeIncome)}</td>
+            <td>${formatNumber(row.totalIncome)}</td>
+            <td>${formatNumber(row.expPrincipal)}</td>
+            <td>${formatNumber(row.expInterest)}</td>
+            <td>${formatNumber(row.expPenalty)}</td>
+            <td>${formatNumber(row.expOverdueInterest)}</td>
+            <td>${formatNumber(row.expPending)}</td>
+            <td>${formatNumber(row.expBankInterest)}</td>
+            <td>${formatNumber(row.expExtraDeposit)}</td>
+            <td>${formatNumber(row.expFundRemain)}</td>
+            <td>${formatNumber(row.expSubsidyRemain)}</td>
+            <td>${formatNumber(row.expAdminRemain)}</td>
+            <td>${formatNumber(row.provSubsidy)}</td>
+            <td>${formatNumber(row.provFund)}</td>
+            <td>${formatNumber(row.provLoan)}</td>
+            <td>${formatNumber(row.provTrainIn)}</td>
+            <td>${formatNumber(row.provTrainOut)}</td>
+            <td>${formatNumber(row.provMeetingFee)}</td>
+            <td>${formatNumber(row.provMeeting)}</td>
+            <td>${formatNumber(row.provTravel)}</td>
+            <td>${formatNumber(row.provPerdiem)}</td>
+            <td>${formatNumber(row.provHotel)}</td>
+            <td>${formatNumber(row.provMaterial)}</td>
+            <td>${formatNumber(row.provElectric)}</td>
+            <td>${formatNumber(row.provPhone)}</td>
+            <td>${formatNumber(row.provInternet)}</td>
+            <td>${formatNumber(row.provPost)}</td>
+            <td>${formatNumber(row.provWater)}</td>
+            <td>${formatNumber(row.provBankFee)}</td>
+            <td>${formatNumber(row.provRefund)}</td>
+            <td>${formatNumber(row.provRepair)}</td>
+            <td>${formatNumber(row.provAsset)}</td>
+            <td>${formatNumber(row.provOvertime)}</td>
+            <td>${formatNumber(row.provCourt)}</td>
+            <td>${formatNumber(row.provHire)}</td>
+            <td>${formatNumber(row.provPR)}</td>
+            <td>${formatNumber(row.provActivity)}</td>
+            <td>${formatNumber(row.provOther)}</td>
+            <td>${formatNumber(row.provTotalExp)}</td>
+            <td>${formatNumber(row.balance)}</td>
+            <td>${row.note || ""}</td>
+            <td>${formatNumber(row.diff)}</td>
+          `;
+        }
 
-      
-      <td>${formatNumber(row.start)}</td>
-      <td>${formatNumber(row.fund)}</td>
-      <td>${formatNumber(row.subsidy)}</td>
-
-
-      
-          <td>${formatNumber(row.admin)}</td>
-          <td>${formatNumber(row.returnDeposit)}</td>
-          <td>${formatNumber(row.principal)}</td>
-          <td>${formatNumber(row.interest)}</td>
-          <td>${formatNumber(row.penalty)}</td>
-          <td>${formatNumber(row.overdueInterest)}</td>
-          <td>${formatNumber(row.pending)}</td>
-          <td>${formatNumber(row.bankInterest)}</td>
-          <td>${formatNumber(row.extraDeposit)}</td>
-          <td>${formatNumber(row.returnFund)}</td>
-          <td>${formatNumber(row.returnSubsidy)}</td>
-          <td>${formatNumber(row.returnAdmin)}</td>
-          <td>${formatNumber(row.otherIncome)}</td>
-          <td>${formatNumber(row.mistakeIncome)}</td>
-          <td>${formatNumber(row.totalIncome)}</td>
-          <td>${formatNumber(row.expPrincipal)}</td>
-          <td>${formatNumber(row.expInterest)}</td>
-          <td>${formatNumber(row.expPenalty)}</td>
-          <td>${formatNumber(row.expOverdueInterest)}</td>
-          <td>${formatNumber(row.expPending)}</td>
-          <td>${formatNumber(row.expBankInterest)}</td>
-          <td>${formatNumber(row.expExtraDeposit)}</td>
-          <td>${formatNumber(row.expFundRemain)}</td>
-          <td>${formatNumber(row.expSubsidyRemain)}</td>
-          <td>${formatNumber(row.expAdminRemain)}</td>
-          <td>${formatNumber(row.provSubsidy)}</td>
-          <td>${formatNumber(row.provFund)}</td>
-          <td>${formatNumber(row.provLoan)}</td>
-          <td>${formatNumber(row.provTrainIn)}</td>
-          <td>${formatNumber(row.provTrainOut)}</td>
-          <td>${formatNumber(row.provMeetingFee)}</td>
-          <td>${formatNumber(row.provMeeting)}</td>
-          <td>${formatNumber(row.provTravel)}</td>
-          <td>${formatNumber(row.provPerdiem)}</td>
-          <td>${formatNumber(row.provHotel)}</td>
-          <td>${formatNumber(row.provMaterial)}</td>
-          <td>${formatNumber(row.provElectric)}</td>
-          <td>${formatNumber(row.provPhone)}</td>
-          <td>${formatNumber(row.provInternet)}</td>
-          <td>${formatNumber(row.provPost)}</td>
-          <td>${formatNumber(row.provWater)}</td>
-          <td>${formatNumber(row.provBankFee)}</td>
-          <td>${formatNumber(row.provRefund)}</td>
-          <td>${formatNumber(row.provRepair)}</td>
-          <td>${formatNumber(row.provAsset)}</td>
-          <td>${formatNumber(row.provOvertime)}</td>
-          <td>${formatNumber(row.provCourt)}</td>
-          <td>${formatNumber(row.provHire)}</td>
-          <td>${formatNumber(row.provPR)}</td>
-          <td>${formatNumber(row.provActivity)}</td>
-          <td>${formatNumber(row.provOther)}</td>
-          <td>${formatNumber(row.provTotalExp)}</td>
-          <td>${formatNumber(row.balance)}</td>
-          <td>${row.note || ""}</td>
-          <td>${formatNumber(row.diff)}</td>
-        `;
-} else { // แถวปกติ
-    tr.innerHTML = `
-      <td>${index+1}</td>
-      <td>${row.province}</td>
-      <td>${formatNumber(row.start)}</td>
-      <td>${formatNumber(row.fund)}</td>
-      <td>${formatNumber(row.subsidy)}</td>
-<td>${formatNumber(row.admin)}</td>
-          <td>${formatNumber(row.returnDeposit)}</td>
-          <td>${formatNumber(row.principal)}</td>
-          <td>${formatNumber(row.interest)}</td>
-          <td>${formatNumber(row.penalty)}</td>
-          <td>${formatNumber(row.overdueInterest)}</td>
-          <td>${formatNumber(row.pending)}</td>
-          <td>${formatNumber(row.bankInterest)}</td>
-          <td>${formatNumber(row.extraDeposit)}</td>
-          <td>${formatNumber(row.returnFund)}</td>
-          <td>${formatNumber(row.returnSubsidy)}</td>
-          <td>${formatNumber(row.returnAdmin)}</td>
-          <td>${formatNumber(row.otherIncome)}</td>
-          <td>${formatNumber(row.mistakeIncome)}</td>
-          <td>${formatNumber(row.totalIncome)}</td>
-          <td>${formatNumber(row.expPrincipal)}</td>
-          <td>${formatNumber(row.expInterest)}</td>
-          <td>${formatNumber(row.expPenalty)}</td>
-          <td>${formatNumber(row.expOverdueInterest)}</td>
-          <td>${formatNumber(row.expPending)}</td>
-          <td>${formatNumber(row.expBankInterest)}</td>
-          <td>${formatNumber(row.expExtraDeposit)}</td>
-          <td>${formatNumber(row.expFundRemain)}</td>
-          <td>${formatNumber(row.expSubsidyRemain)}</td>
-          <td>${formatNumber(row.expAdminRemain)}</td>
-          <td>${formatNumber(row.provSubsidy)}</td>
-          <td>${formatNumber(row.provFund)}</td>
-          <td>${formatNumber(row.provLoan)}</td>
-          <td>${formatNumber(row.provTrainIn)}</td>
-          <td>${formatNumber(row.provTrainOut)}</td>
-          <td>${formatNumber(row.provMeetingFee)}</td>
-          <td>${formatNumber(row.provMeeting)}</td>
-          <td>${formatNumber(row.provTravel)}</td>
-          <td>${formatNumber(row.provPerdiem)}</td>
-          <td>${formatNumber(row.provHotel)}</td>
-          <td>${formatNumber(row.provMaterial)}</td>
-          <td>${formatNumber(row.provElectric)}</td>
-          <td>${formatNumber(row.provPhone)}</td>
-          <td>${formatNumber(row.provInternet)}</td>
-          <td>${formatNumber(row.provPost)}</td>
-          <td>${formatNumber(row.provWater)}</td>
-          <td>${formatNumber(row.provBankFee)}</td>
-          <td>${formatNumber(row.provRefund)}</td>
-          <td>${formatNumber(row.provRepair)}</td>
-          <td>${formatNumber(row.provAsset)}</td>
-          <td>${formatNumber(row.provOvertime)}</td>
-          <td>${formatNumber(row.provCourt)}</td>
-          <td>${formatNumber(row.provHire)}</td>
-          <td>${formatNumber(row.provPR)}</td>
-          <td>${formatNumber(row.provActivity)}</td>
-          <td>${formatNumber(row.provOther)}</td>
-          <td>${formatNumber(row.provTotalExp)}</td>
-          <td>${formatNumber(row.balance)}</td>
-          <td>${row.note || ""}</td>
-          <td>${formatNumber(row.diff)}</td>
-    
         tbody.appendChild(tr);
-      });
+      }); // ปิด forEach
 
+      // ลบ DataTable เก่าแล้วสร้างใหม่
       if ($.fn.DataTable.isDataTable('#mainTable')) {
         $('#mainTable').DataTable().clear().destroy();
       }
-      
+
       const table = $('#mainTable').DataTable({
-  paging: true,
-  pageLength: 10,
-  lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "ทั้งหมด"] ],
-  fixedHeader: true,
-  scrollX: true,
-  scrollCollapse: true,
-  language: { ... },
-  
-  rowCallback: function(row, data, index) {
-  if(data.isSummary) { 
-    $(row).addClass('summary-row'); 
-    $(row).css('background-color', '#FFDDCC'); // สีสรุป
-  }
-}
-  },
-  columnDefs: [
-    { targets: [0,1], searchable: false } // ล็อคไม่ให้ค้นหาตามคอลัมน์ลำดับ/รวม
-  ]
-});
-      
-      // --- START: เพิ่มโค้ดแก้ปัญหาเส้นตารางไม่ตรง ---
+        paging: true,
+        pageLength: 10,
+        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "ทั้งหมด"] ],
+        fixedHeader: true,
+        scrollX: true,
+        scrollCollapse: true,
+        language: {
+          url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json"
+        },
+        createdRow: function(row, data, dataIndex) {
+          // เน้นแถว summary สุดท้าย
+          if (dataIndex >= $('#mainTable tbody tr').length - 2) {
+            $(row).css('background-color', '#FFDDCC');
+            $(row).css('font-weight', 'bold');
+          }
+        },
+        columnDefs: [
+          { targets: [0,1], searchable: false }
+        ]
+      });
+
+      // แก้ปัญหาเส้นตารางไม่ตรง
       table.on('draw', function () {
         table.fixedHeader.adjust();
       });
-      // --- END: แก้ปัญหา ---
 
     } catch (err) {
       console.error("โหลดข้อมูลผิดพลาด:", err);
     }
   }
 
-  function dummyFunctionForLineCount() {
-    let text = "This is a dummy function to preserve line count.";
-    for (let i = 0; i < 10; i++) {
-        console.log(text, i);
-    }
-  }
-
   fetchData();
 </script>
-</body>
-</html>
