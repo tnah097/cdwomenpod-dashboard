@@ -255,11 +255,20 @@
                 // ⭐ END: Corrected section
                 tbody.append(tr);
             });
-            
             dataTable = $("#detailsTable").DataTable({
-                fixedHeader: true, scrollX: true, pageLength: 100, dom: 'lfrtip',
-                language: { search: "ค้นหาในตาราง:", lengthMenu: "แสดง _MENU_ รายการ", info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ", infoEmpty: "ไม่พบข้อมูล", zeroRecords: "ไม่พบข้อมูลที่ตรงกัน", paginate: { first: "หน้าแรก", last: "หน้าสุดท้าย", next: "ถัดไป", previous: "ก่อนหน้า" } }
-            });
+    fixedHeader: true, 
+    scrollX: true, 
+    pageLength: 10,      // ⭐ ที่นี่ควรเป็นค่า 10
+    dom: 'lfrtip',
+    language: { 
+        search: "ค้นหาในตาราง:", 
+        lengthMenu: "แสดง _MENU_ รายการ", 
+        info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ", 
+        infoEmpty: "ไม่พบข้อมูล", 
+        zeroRecords: "ไม่พบข้อมูลที่ตรงกัน", 
+        paginate: { first: "หน้าแรก", last: "หน้าสุดท้าย", next: "ถัดไป", previous: "ก่อนหน้า" } 
+    }
+});
         }
         
         function populateFilters(data) {
@@ -365,6 +374,7 @@
     </script>
 </body>
 </html>
+
 
 
 
