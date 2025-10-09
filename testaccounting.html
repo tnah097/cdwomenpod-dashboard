@@ -182,7 +182,7 @@
 
 <script>
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbxKba4uG2nhNlWzQh7I-OL1uT16UHboBS6wapcppxyWrnR7a1a29aQ2IPoJ1Gqeh8TA/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwBFm3_3Z7D2Nay0V1ydX_T2JJX9G8MC8YycYdTFJoZ39ptdNfeybHHmqtjhnExboAuLw/exec";
 
   function formatNumber(num) {
     return Number(num || 0).toLocaleString("th-TH");
@@ -202,7 +202,9 @@
 
   if(row.isSummary) { // แถวรวมระหว่างเดือน
     tr.innerHTML = `
-      <td colspan="2" style="background-color:#FF8FAB; font-weight:bold; text-align:center;">${row.summaryLabel}</td>
+     <td colspan="2" style="background-color:#FF8FAB; font-weight:bold; text-align:center;">${row.summaryLabel}</td>
+
+      
       <td>${formatNumber(row.start)}</td>
       <td>${formatNumber(row.fund)}</td>
       <td>${formatNumber(row.subsidy)}</td>
