@@ -382,16 +382,16 @@ let provinceDataTable = null;
           $('#provinceTable').DataTable().clear().destroy();
         }
         
-        provinceDataTable = $('#provinceTable').DataTable({
-  paging: true,               // ✅ เปิดการแบ่งหน้า
-  lengthChange: true,         // ✅ เปิด dropdown เลือกจำนวนรายการ
-  pageLength: 10,            // ✅ ค่าเริ่มต้นให้แสดง 10 รายการ
-  lengthMenu: [10, 25, 50, 100, 200, 500],
+       provinceDataTable = $('#provinceTable').DataTable({
+  paging: true,               // เปิดการแบ่งหน้า
+  lengthChange: true,         // เปิด dropdown เลือกจำนวนรายการ
+  pageLength: 10,             // ✅ เริ่มต้นที่ 10 รายการ
+  lengthMenu: [10, 25, 50, 100, 200, 500], // เลือกได้หลายขนาด
   scrollY: '400px',
   scrollCollapse: true,
   language: {
     search: "ค้นหา:",
-    lengthMenu: "แสดง _MENU_ รายการ",   // ✅ เพิ่มข้อความตรง dropdown
+    lengthMenu: "แสดง _MENU_ รายการ",   
     info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
     infoEmpty: "ไม่มีข้อมูล",
     zeroRecords: "ไม่พบข้อมูล"
@@ -467,5 +467,6 @@ let provinceDataTable = null;
   </script>
 </body>
 </html>
+
 
 
