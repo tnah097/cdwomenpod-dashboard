@@ -417,19 +417,6 @@ let provinceDataTable = null;
           `;
           tbody.appendChild(tr);
         });
-
-        if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
-          $('#studyCenterTable').DataTable().clear().destroy();
-        }
-        $('#studyCenterTable').DataTable({
-          paging: false,
-          scrollY: '300px',
-          scrollCollapse: true,
-          searching: true,
-          language: {
-            
-          }
-        });
         
         const studyCenterTableBody = $('#studyCenterTable tbody');
         
