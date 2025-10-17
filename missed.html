@@ -155,6 +155,13 @@ function handleFileSelect(event) {
         const internalKey = excelHeaderMapping[excelHeader];
         installment[internalKey] = row[excelHeader] || 0;
       }
+      // ปรับปรุงวันที่ให้อยู่ในรูปแบบที่ถูกต้องเพื่อใช้ในการคำนวณ/แสดงผล
+      if (installment.dueDate instanceof Date) {
+          installment.dueDate = formatDateForInput(installment.dueDate);
+      } else if (typeof installment.dueDate === 'number') {
+          // รองรับการแปลงจาก Excel Serial Date Number
+          installment.dueDate = formatDateForInput(excelSerialDateToJSDate(installment.dueDate));
+      }
       return installment;
     });
     paymentHistory = [];
@@ -163,19 +170,50 @@ function handleFileSelect(event) {
   reader.readAsArrayBuffer(file);
 }
 
+// Helper function สำหรับแปลง Excel Serial Date Number เป็น Date object
+function excelSerialDateToJSDate(serial) {
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    // Excel dates start on 1900-01-01 (serial 1). JS date starts on 1970-01-01.
+    // Excel's 1900 leap year bug is ignored here for simplicity in most modern use cases.
+    const date = new Date(Date.UTC(0, 0, serial - 1)); // -1 เพราะ Excel เริ่ม 1900-01-00 (0)
+    return date;
+}
+// Helper function สำหรับแปลง Date object เป็น string YYYY-MM-DD
+function formatDateForInput(date) {
+    if (!(date instanceof Date) || isNaN(date)) return '';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+
 function renderAll() { renderTable(); renderHistoryTable(); renderSummary(); }
 
 function getDaysOverdue(dueDate, lastPaymentDate) {
+    // Note: DueDate/lastPaymentDate must be in Date object or YYYY-MM-DD string format
     const due = new Date(dueDate);
+    // ใช้ lastPaymentDate ถ้ามีการชำระแล้ว ไม่งั้นใช้ dueDate
     const lastPaid = lastPaymentDate ? new Date(lastPaymentDate) : due;
     const now = new Date();
     
-    if (lastPaid.getTime() < now.getTime()) {
-        const diffTime = Math.abs(now.getTime() - lastPaid.getTime());
-        const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-        return diffDays;
+    // ตั้งเวลาเป็นเที่ยงคืนเพื่อให้การคำนวณวันที่ถูกต้อง
+    due.setHours(0,0,0,0);
+    lastPaid.setHours(0,0,0,0);
+    now.setHours(0,0,0,0);
+    
+    // ถ้าวันครบกำหนด/วันจ่ายล่าสุดยังไม่ถึงวันนี้ ก็ถือว่ายังไม่ผิดนัด
+    if (lastPaid.getTime() >= now.getTime()) {
+        return 0;
     }
-    return 0; // ยังไม่ถึงกำหนด
+    
+    // นับจากวันหลังจากวันครบกำหนด/วันจ่ายล่าสุด
+    const startCountDate = new Date(lastPaid);
+    startCountDate.setDate(lastPaid.getDate() + 1);
+    
+    const diffTime = Math.abs(now.getTime() - startCountDate.getTime());
+    const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+    return diffDays;
 }
 
 
@@ -193,12 +231,13 @@ function renderTable() {
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
     const remainingDebtBeforeOverpay = totalDebt - totalPaid;
     const finalRemainingDebt = remainingDebtBeforeOverpay - (inst.overpayment||0);
+    
+    // กำหนดสถานะ
     let status = (finalRemainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
     
-    // **แก้ไขจุดที่ 2:** คำนวณวันผิดนัด
+    // คำนวณวันผิดนัด ณ วันที่แสดงผล
     let daysOverdueDisplay = 0;
     if (status !== 'ชำระครบแล้ว') {
-        // คำนวณวันผิดนัดจากวันที่ต้องชำระหรือวันชำระล่าสุด จนถึงปัจจุบัน
         const baseDate = inst.lastPaymentDate || inst.dueDate;
         if (baseDate) {
             daysOverdueDisplay = getDaysOverdue(baseDate, inst.lastPaymentDate);
@@ -238,17 +277,30 @@ function renderHistoryTable() {
     tbody.innerHTML = '<tr><td colspan="5">ยังไม่มีประวัติการชำระเงิน</td></tr>';
     return;
   }
+  // จัดกลุ่มรายการตาม วันที่ชำระ และ ยอดชำระ
+  const groupedHistory = {};
   paymentHistory.forEach(entry => {
-    entry.breakdown.forEach(item => {
+    const key = `${formatDate(entry.date)}|${formatNumber(entry.totalAmount)}`;
+    if (!groupedHistory[key]) groupedHistory[key] = [];
+    groupedHistory[key].push(...entry.breakdown.map(item => ({
+        date: entry.date,
+        totalAmount: entry.totalAmount,
+        ...item
+    })));
+  });
+
+  for (const key in groupedHistory) {
+    const group = groupedHistory[key];
+    group.forEach((item, index) => {
       tbody.innerHTML += `<tr>
-      <td>${formatDate(entry.date)}</td>
-      <td style="text-align:right;">${formatNumber(entry.totalAmount)}</td>
+      <td>${formatDate(item.date)}</td>
+      <td style="text-align:right;">${formatNumber(item.totalAmount)}</td>
       <td>${item.sequence}</td>
       <td>${item.category}</td>
       <td style="text-align:right;">${formatNumber(item.amount)}</td>
       </tr>`;
     });
-  });
+  }
 }
 
 function renderSummary() {
@@ -313,6 +365,11 @@ function calculateInterest() {
     return;
   }
   const dueDate = new Date(dueDateStr), paymentDate = new Date(paymentDateStr);
+  
+  dueDate.setHours(0,0,0,0);
+  paymentDate.setHours(0,0,0,0);
+  
+  // นับวันผิดนัด: วันที่จ่าย - วันครบกำหนด
   const days = Math.max(0, Math.floor((paymentDate - dueDate)/(1000*60*60*24)));
   const interest = (principal*(rate/100)*days)/365;
   resultBox.innerHTML = `ผลการคำนวณ: ${interest.toFixed(2)} บาท (${days} วัน)`;
@@ -334,7 +391,9 @@ function settlePayment() {
   if(dueInstallments.length===0){ alert("ไม่พบหนี้ค้างชำระ"); return; }
 
   let historyEntry = { date: new Date(actualPaymentDate), totalAmount: paymentAmount, breakdown: [] };
-  let lastPaidInstallment = null;
+  
+  // ต้องกำหนด lastPaidInstallment เพื่อใช้ในการบันทึกเงินเกิน
+  let lastPaidInstallment = null; 
 
   for(let inst of dueInstallments){
     if(paymentAmount<=0) break;
@@ -344,7 +403,8 @@ function settlePayment() {
         inst[receivedKey] = Math.round(((inst[receivedKey]||0)+amountToPay)*100)/100;
         paymentAmount = Math.round((paymentAmount - amountToPay)*100)/100;
         historyEntry.breakdown.push({ sequence: inst.sequence, category: categoryName, amount: amountToPay });
-        lastPaidInstallment = inst;
+        // อัพเดทงวดล่าสุดที่มีการตัดชำระ
+        lastPaidInstallment = inst; 
       }
     };
     
@@ -354,21 +414,29 @@ function settlePayment() {
 
     // --- 2. คำนวณและตัดชำระ ด/บ ผิดนัดใหม่ (ปรับปรุง Logic) ---
     const rate = 5; // อัตราดอกเบี้ยผิดนัด % ต่อปี
-    const lastPayment = new Date(inst.lastPaymentDate||inst.dueDate);
+    // จุดเริ่มต้นในการนับวันผิดนัดใหม่
+    const startCountingDate = inst.lastPaymentDate || inst.dueDate; 
     const currentPaymentDate = new Date(actualPaymentDate);
-    const daysOverdue = Math.max(0, Math.floor((currentPaymentDate-lastPayment)/(1000*60*60*24)));
-    const remainingPrincipal = (inst.principal||0)-(inst.receivedPrincipal||0);
     
+    const startDate = new Date(startCountingDate);
+    startDate.setHours(0,0,0,0);
+    currentPaymentDate.setHours(0,0,0,0);
+    
+    // นับจำนวนวันผิดนัด: วันที่จ่ายจริง - วันเริ่มต้นนับ
+    const daysOverdue = Math.max(0, Math.floor((currentPaymentDate - startDate)/(1000*60*60*24)));
+
+    const remainingPrincipal = (inst.principal||0)-(inst.receivedPrincipal||0);
+    
     let dueNewInterestInPeriod = 0;
     if(remainingPrincipal>0 && daysOverdue>0){ 
       dueNewInterestInPeriod = (remainingPrincipal*(rate/100)*daysOverdue)/365;
       dueNewInterestInPeriod = Math.round(dueNewInterestInPeriod * 100) / 100;
     }
-    
-    // เพิ่มยอดดอกเบี้ยผิดนัดใหม่ที่เกิดขึ้นในช่วงนี้ เข้าไปในยอดหนี้รวม
+    
+    // เพิ่มยอดดอกเบี้ยผิดนัดใหม่ที่เกิดขึ้นในช่วงนี้ เข้าไปในยอดหนี้รวม
     inst.newDefaultInterest = Math.round(((inst.newDefaultInterest||0)+dueNewInterestInPeriod)*100)/100;
-    
-    // คำนวณยอดคงเหลือของ ด/บ ผิดนัดใหม่ทั้งหมดเพื่อนำไปตัดชำระ
+    
+    // คำนวณยอดคงเหลือของ ด/บ ผิดนัดใหม่ทั้งหมดเพื่อนำไปตัดชำระ
     let dueTotalNewInterest = (inst.newDefaultInterest||0) - (inst.receivedNewDefaultInterest||0);
     pay(dueTotalNewInterest,'receivedNewDefaultInterest','ด/บ ผิดนัดใหม่');
 
@@ -396,9 +464,11 @@ function settlePayment() {
 
   if(historyEntry.breakdown.length>0){
     paymentHistory.push(historyEntry);
+    // บันทึกวันที่ชำระล่าสุดในทุกงวดที่มีการตัดชำระ
     historyEntry.breakdown.map(item=>item.sequence).filter((value, index, self) => self.indexOf(value) === index).forEach(seq => {
       const installment = allInstallments.find(i=>i.sequence===seq);
-      if(installment) installment.lastPaymentDate = historyEntry.date;
+      // บันทึกวันที่ชำระจริง
+      if(installment) installment.lastPaymentDate = actualPaymentDate;
     });
   }
 
