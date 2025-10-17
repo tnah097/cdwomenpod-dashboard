@@ -166,24 +166,16 @@ function handleFileSelect(event) {
 function renderAll() { renderTable(); renderHistoryTable(); renderSummary(); }
 
 function getDaysOverdue(dueDate, lastPaymentDate) {
-    const due = new Date(dueDate);
-    const lastPaid = lastPaymentDate ? new Date(lastPaymentDate) : due;
-    const now = new Date();
-    // หากชำระครบแล้ว หรือยังไม่ถึงกำหนด (นับจาก dueDate) ให้นับวันถึงวันนี้
-    let endDate = now;
-
-    // ถ้ายอดเงินต้นยังไม่หมด (inst.receivedPrincipal < inst.principal)
-    // และมีการจ่ายไปแล้ว (lastPaymentDate ถูก set) ให้เริ่มนับจากวันจ่ายล่าสุด
-    // แต่เพื่อความง่ายและรักษา Logic เดิม ให้ใช้ (inst.lastPaymentDate || inst.dueDate)
-    
-    // สำหรับการแสดงผลในตาราง: คำนวณวันผิดนัดจากวันครบกำหนด หรือ วันจ่ายล่าสุด จนถึงวันนี้ 
-    // ถ้าเกินวันครบกำหนดมาแล้ว (ใช้ lastPaid เพื่อรวมผลของการชำระล่าสุด)
-    if (lastPaid.getTime() < now.getTime()) {
-        const diffTime = Math.abs(now.getTime() - lastPaid.getTime());
-        const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-        return diffDays;
-    }
-    return 0; // ยังไม่ถึงกำหนด
+    const due = new Date(dueDate);
+    const lastPaid = lastPaymentDate ? new Date(lastPaymentDate) : due;
+    const now = new Date();
+    
+    if (lastPaid.getTime() < now.getTime()) {
+        const diffTime = Math.abs(now.getTime() - lastPaid.getTime());
+        const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+        return diffDays;
+    }
+    return 0; // ยังไม่ถึงกำหนด
 }
 
 
@@ -195,24 +187,24 @@ function renderTable() {
   // **แก้ไขจุดที่ 1:** เพิ่ม 'คำนวณวันผิดนัด' ในส่วนหัวตาราง
   const displayHeaders = [ 'ลำดับ','กำหนดวันชำระ','เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รวมหนี้','คำนวณวันผิดนัด','รับคืน ด/บ ผิดนัดเดิม','รับคืน ด/บ ผิดนัดใหม่','รับคืนเบี้ยปรับ','รับคืนดอกเบี้ย','รับคืนเงินต้น','รับคืนรวม','รับเงินเกิน','หนี้คงเหลือ','สถานะ' ];
   thead.innerHTML = `<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
-  
+  
   allInstallments.forEach(inst => {
     const totalDebt = (inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
     const remainingDebtBeforeOverpay = totalDebt - totalPaid;
     const finalRemainingDebt = remainingDebtBeforeOverpay - (inst.overpayment||0);
     let status = (finalRemainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
-    
-    // **แก้ไขจุดที่ 2:** คำนวณวันผิดนัด
-    let daysOverdueDisplay = 0;
-    if (status !== 'ชำระครบแล้ว') {
-        // คำนวณวันผิดนัดจากวันที่ต้องชำระหรือวันชำระล่าสุด จนถึงปัจจุบัน
-        const baseDate = inst.lastPaymentDate || inst.dueDate;
-        if (baseDate) {
-            daysOverdueDisplay = getDaysOverdue(baseDate, inst.lastPaymentDate);
-        }
-    }
-    
+    
+    // **แก้ไขจุดที่ 2:** คำนวณวันผิดนัด
+    let daysOverdueDisplay = 0;
+    if (status !== 'ชำระครบแล้ว') {
+        // คำนวณวันผิดนัดจากวันที่ต้องชำระหรือวันชำระล่าสุด จนถึงปัจจุบัน
+        const baseDate = inst.lastPaymentDate || inst.dueDate;
+        if (baseDate) {
+            daysOverdueDisplay = getDaysOverdue(baseDate, inst.lastPaymentDate);
+        }
+    }
+    
     const cells = [
       inst.sequence,
       formatDate(inst.dueDate),
@@ -222,8 +214,8 @@ function renderTable() {
       formatNumber(inst.oldDefaultInterest),
       formatNumber(inst.newDefaultInterest),
       formatNumber(totalDebt),
-      // **แก้ไขจุดที่ 3:** เพิ่มค่า 'คำนวณวันผิดนัด'
-      daysOverdueDisplay, 
+      // **แก้ไขจุดที่ 3:** เพิ่มค่า 'คำนวณวันผิดนัด'
+      daysOverdueDisplay, 
       formatNumber(inst.receivedOldDefaultInterest),
       formatNumber(inst.receivedNewDefaultInterest),
       formatNumber(inst.receivedPenalty),
@@ -356,29 +348,39 @@ function settlePayment() {
       }
     };
     
+    // 1. ตัดชำระ ด/บ ผิดนัดเดิม
     let dueOldInterest = (inst.oldDefaultInterest||0) - (inst.receivedOldDefaultInterest||0);
     pay(dueOldInterest,'receivedOldDefaultInterest','ด/บ ผิดนัดเดิม');
 
-    // --- ปรับคำนวณด/บ ผิดนัดใหม่ จากวันที่จ่ายล่าสุด ---
+    // --- 2. คำนวณและตัดชำระ ด/บ ผิดนัดใหม่ (ปรับปรุง Logic) ---
+    const rate = 5; // อัตราดอกเบี้ยผิดนัด % ต่อปี
     const lastPayment = new Date(inst.lastPaymentDate||inst.dueDate);
     const currentPaymentDate = new Date(actualPaymentDate);
     const daysOverdue = Math.max(0, Math.floor((currentPaymentDate-lastPayment)/(1000*60*60*24)));
     const remainingPrincipal = (inst.principal||0)-(inst.receivedPrincipal||0);
-    let dueNewInterest = 0;
+    
+    let dueNewInterestInPeriod = 0;
     if(remainingPrincipal>0 && daysOverdue>0){ 
-      dueNewInterest=(remainingPrincipal*(5/100)*daysOverdue)/365;
-      dueNewInterest = Math.round(dueNewInterest * 100) / 100;
+      dueNewInterestInPeriod = (remainingPrincipal*(rate/100)*daysOverdue)/365;
+      dueNewInterestInPeriod = Math.round(dueNewInterestInPeriod * 100) / 100;
     }
-    inst.newDefaultInterest = Math.round(((inst.newDefaultInterest||0)+dueNewInterest)*100)/100;
+    
+    // เพิ่มยอดดอกเบี้ยผิดนัดใหม่ที่เกิดขึ้นในช่วงนี้ เข้าไปในยอดหนี้รวม
+    inst.newDefaultInterest = Math.round(((inst.newDefaultInterest||0)+dueNewInterestInPeriod)*100)/100;
+    
+    // คำนวณยอดคงเหลือของ ด/บ ผิดนัดใหม่ทั้งหมดเพื่อนำไปตัดชำระ
     let dueTotalNewInterest = (inst.newDefaultInterest||0) - (inst.receivedNewDefaultInterest||0);
     pay(dueTotalNewInterest,'receivedNewDefaultInterest','ด/บ ผิดนัดใหม่');
 
+    // 3. ตัดชำระเบี้ยปรับ
     let duePenalty = (inst.penalty||0) - (inst.receivedPenalty||0);
     pay(duePenalty,'receivedPenalty','เบี้ยปรับ');
 
+    // 4. ตัดชำระดอกเบี้ย
     let dueInterest = (inst.interest||0) - (inst.receivedInterest||0);
     pay(dueInterest,'receivedInterest','ดอกเบี้ย');
 
+    // 5. ตัดชำระเงินต้น
     let duePrincipal = (inst.principal||0) - (inst.receivedPrincipal||0);
     pay(duePrincipal,'receivedPrincipal','เงินต้น');
   }
