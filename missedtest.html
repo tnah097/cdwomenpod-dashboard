@@ -173,7 +173,7 @@ function handleFileSelect(event) {
                 const internalKey = excelHeaderMapping[excelHeader];
                 installment[internalKey] = row[excelHeader] || 0;
             }
-            installment.overpayment = installment.overpayment || 0; // เริ่มต้นเงินเกินเป็น 0
+            installment.overpayment = installment.overpayment || 0;
             return installment;
         });
         paymentHistory = [];
@@ -270,23 +270,16 @@ function renderSummary() {
     totals.due.total = totals.due.principal + totals.due.interest + totals.due.penalty + totals.due.oldDefaultInterest + totals.due.newDefaultInterest;
     totals.received.total = totals.received.principal + totals.received.interest + totals.received.penalty + totals.received.oldDefaultInterest + totals.received.newDefaultInterest + totals.received.overpayment;
 
-    const remaining = {
-        principal: Math.max(0, totals.due.principal - totals.received.principal),
-        interest: Math.max(0, totals.due.interest - totals.received.interest),
-        penalty: Math.max(0, totals.due.penalty - totals.received.penalty),
-        oldDefaultInterest: Math.max(0, totals.due.oldDefaultInterest - totals.received.oldDefaultInterest),
-        newDefaultInterest: Math.max(0, totals.due.newDefaultInterest - totals.received.newDefaultInterest),
-        overpayment: 0,
-        total: Math.max(0, totals.due.total - (totals.received.total - totals.received.overpayment))
-    };
+    const overpaymentTotal = Math.max(0, totals.received.total - totals.due.total);
     
     tbody.innerHTML = `
-        <tr><td>กรอบวงเงิน</td>${Object.values(totals.due).map(val => `<td>${formatNumber(val)}</td>`).join('')}</tr>
-        <tr><td>รับชำระ</td>${Object.values(totals.received).map(val => `<td>${formatNumber(val)}</td>`).join('')}</tr>
-        <tr><td>คงเหลือ</td>${Object.values(remaining).map(val => `<td>${formatNumber(val)}</td>`).join('')}</tr>
+        <tr><td>กรอบวงเงิน</td>${formatNumber(totals.due.principal)}<td>${formatNumber(totals.due.interest)}</td><td>${formatNumber(totals.due.penalty)}</td><td>${formatNumber(totals.due.oldDefaultInterest)}</td><td>${formatNumber(totals.due.newDefaultInterest)}</td><td>0.00</td><td>${formatNumber(totals.due.total)}</td></tr>
+        <tr><td>รับชำระ</td>${formatNumber(totals.received.principal)}<td>${formatNumber(totals.received.interest)}</td><td>${formatNumber(totals.received.penalty)}</td><td>${formatNumber(totals.received.oldDefaultInterest)}</td><td>${formatNumber(totals.received.newDefaultInterest)}</td><td>${formatNumber(overpaymentTotal)}</td><td>${formatNumber(totals.received.total)}</td></tr>
+        <tr><td>คงเหลือ</td>${formatNumber(Math.max(0, totals.due.principal - totals.received.principal))}<td>${formatNumber(Math.max(0, totals.due.interest - totals.received.interest))}</td><td>${formatNumber(Math.max(0, totals.due.penalty - totals.received.penalty))}</td><td>${formatNumber(Math.max(0, totals.due.oldDefaultInterest - totals.received.oldDefaultInterest))}</td><td>${formatNumber(Math.max(0, totals.due.newDefaultInterest - totals.received.newDefaultInterest))}</td><td>0.00</td><td>${formatNumber(Math.max(0, totals.due.total - totals.received.total + overpaymentTotal))}</td></tr>
     `;
 }
 
+// ฟังก์ชันอื่น ๆ เหมือนเดิม
 function calculateInterest() {
     const principalRaw = document.getElementById('principal').value.replace(/,/g, '');
     const principal = parseFloat(principalRaw);
