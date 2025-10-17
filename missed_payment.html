@@ -325,7 +325,7 @@ function settlePayment() {
         const pay = (dueAmount, receivedKey, categoryName) => {
             if (paymentAmount > 0 && dueAmount > 0) {
                 const amountToPay = Math.min(paymentAmount, dueAmount);
-                inst[receivedKey] = (inst[receivedKey] || 0) + amountToPay;
+                inst[receivedKey] = Math.floor(((inst[receivedKey] || 0) + amountToPay) * 100) / 100;
                 paymentAmount -= amountToPay;
                 historyEntry.breakdown.push({ sequence: inst.sequence, category: categoryName, amount: amountToPay });
                 lastPaidInstallment = inst;
