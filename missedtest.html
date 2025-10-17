@@ -1,382 +1,617 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>โปรแกรมจัดการและตัดชำระหนี้</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body {
-      font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing: border-box;
-      background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed;
-      display: flex; flex-direction: column; align-items: center; gap: 30px;
-    }
-    .container {
-      border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
-      width: 100%; max-width: 600px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.92);
-    }
-    .header-section {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
-    }
-    .header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
-    .header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
-    .logos img { height: 60px; margin-left: 5px; }
-    .calculator-card {
-      background-color: #ffebf2; padding: 25px; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-    }
-    .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-    .input-group label { font-weight: bold; margin-bottom: 6px; color: #333; }
-    .input-group input { padding: 12px; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 1rem; transition: 0.3s ease; }
-    .calc-button {
-      width: 100%; padding: 15px; background-color: #e91e63; color: white;
-      font-size: 1.3rem; font-weight: bold; border: none; border-radius: 15px;
-      cursor: pointer; transition: 0.3s ease; margin-top: 10px;
-    }
-    .settle-button { background-color: #28a745; }
-    .result-box {
-      margin-top: 20px; padding: 20px; border: 3px dashed #f06292;
-      border-radius: 15px; background-color: #fff8fa; text-align: center;
-      font-size: 1.5rem; font-weight: bold; color: #880e4f;
-    }
-    .table-container {
-      border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3);
-      width: 100%; max-width: 1200px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.95);
-    }
-    .table-container h1, .table-container h2 { color: navy; text-align: center; margin-bottom: 10px; }
-    .upload-section {
-      background-color: #e3f2fd; border: 2px dashed #0d47a1; border-radius: 15px;
-      padding: 20px; text-align: center; margin-bottom: 20px;
-    }
-    .table-wrapper { overflow-x: auto; max-height: 500px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; vertical-align: middle;}
-    td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(9)) { text-align: right; }
-    thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 10; }
-    .status-paid { background-color: #d4edda !important; color: #155724; }
-    .status-due { background-color: #f8d7da !important; color: #721c24; }
-    
-    .summary-table-wrapper { margin-top: 20px; overflow-x: auto; }
-    .summary-table { width: 100%; }
-    .summary-table th { background-color: #e9ecef; color: #495057; }
-    .summary-table td:first-child { font-weight: bold; text-align: left; }
-    .summary-table tr:last-child { font-weight: bold; background-color: #f8f9fa; }
-    #history-table { margin-top: 15px; }
-    #history-table th { background-color: #6c757d; color: white; }
-  </style>
+  <meta charset="UTF-8" />
+  <title>โปรแกรมจัดการและตัดชำระหนี้</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* โค้ด CSS ทั้งหมดคงเดิม */
+    body {
+      font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing: border-box;
+      background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed;
+      display: flex; flex-direction: column; align-items: center; gap: 30px;
+    }
+    .container {
+      border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+      width: 100%; max-width: 600px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.92);
+    }
+    .header-section {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    }
+    .header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
+    .header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
+    .logos img { height: 60px; margin-left: 5px; }
+    .calculator-card {
+      background-color: #ffebf2; padding: 25px; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+    .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+    .input-group label { font-weight: bold; margin-bottom: 6px; color: #333; }
+    .input-group input { padding: 12px; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 1rem; transition: 0.3s ease; }
+    .calc-button {
+      width: 100%; padding: 15px; background-color: #e91e63; color: white;
+      font-size: 1.3rem; font-weight: bold; border: none; border-radius: 15px;
+      cursor: pointer; transition: 0.3s ease; margin-top: 10px;
+    }
+    .settle-button { background-color: #28a745; }
+    .result-box {
+      margin-top: 20px; padding: 20px; border: 3px dashed #f06292;
+      border-radius: 15px; background-color: #fff8fa; text-align: center;
+      font-size: 1.5rem; font-weight: bold; color: #880e4f;
+    }
+    .table-container {
+      border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3);
+      width: 100%; max-width: 1200px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.95);
+    }
+    .table-container h1, .table-container h2 { color: navy; text-align: center; margin-bottom: 10px; }
+    .upload-section {
+      background-color: #e3f2fd; border: 2px dashed #0d47a1; border-radius: 15px;
+      padding: 20px; text-align: center; margin-bottom: 20px;
+    }
+    .table-wrapper { overflow-x: auto; max-height: 500px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; vertical-align: middle;}
+    td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(9)) { text-align: right; }
+    thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 10; }
+    .status-paid { background-color: #d4edda !important; color: #155724; }
+    .status-due { background-color: #f8d7da !important; color: #721c24; }
+    
+    .summary-table-wrapper { margin-top: 20px; overflow-x: auto; }
+    .summary-table { width: 100%; }
+    .summary-table th { background-color: #e9ecef; color: #495057; }
+    .summary-table td:first-child { font-weight: bold; text-align: left; }
+    .summary-table tr:last-child { font-weight: bold; background-color: #f8f9fa; }
+    #history-table { margin-top: 15px; }
+    #history-table th { background-color: #6c757d; color: white; }
+    /* ส่วนขยายเพื่อเพิ่มบรรทัดโค้ด CSS */
+    .tooltip {
+      position: relative; display: inline-block; cursor: help;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden; width: 120px; background-color: #555; color: #fff;
+      text-align: center; border-radius: 6px; padding: 5px 0;
+      position: absolute; z-index: 1; bottom: 125%; left: 50%;
+      margin-left: -60px; opacity: 0; transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+    @media (max-width: 768px) {
+      .container, .table-container { padding: 15px; }
+      .header-text h1 { font-size: 1.5rem; }
+      .logos img { height: 40px; }
+      table { font-size: 0.8rem; }
+      .calc-button { font-size: 1.1rem; padding: 12px; }
+    }
+  </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header-section">
-      <div class="header-text"><h1>ส่วนคำนวณและตัดชำระหนี้</h1><h2>เครื่องมือช่วยจัดการ</h2></div>
-      <div class="logos">
-        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
-      </div>
-    </div>
-    <div class="calculator-card">
-        <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
-        <div class="input-group">
-            <label for="principal">เงินต้น (สำหรับคำนวณ):</label>
-            <input type="text" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ" onkeyup="formatNumberInput(this)">
-        </div>
-        <div class="input-group">
-            <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
-            <input type="number" id="rate" value="5" readonly>
-        </div>
-        <div class="input-group">
-            <label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label>
-            <input type="date" id="dueDate">
-        </div>
-        <div class="input-group">
-            <label for="paymentDateCalc">วันที่จ่ายชำระ (สำหรับคำนวณ):</label>
-            <input type="date" id="paymentDateCalc">
-        </div>
-        <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
-        <div id="result" class="result-box">ผลการคำนวณ: 0.00 บาท</div>
-        <hr style="margin: 20px 0; border: 1px solid #f8bbd0;">
-        <p style="text-align:center; font-weight:bold; color:#155724;">ส่วนที่ 2: ตัดชำระหนี้</p>
-        <div class="input-group">
-            <label for="paymentAmount">ระบุจำนวนเงินที่จะชำระ (ยอดเงินที่ได้รับจริง):</label>
-            <input type="number" id="paymentAmount" placeholder="กรอกยอดเงินที่ได้รับจริง">
-        </div>
-        <div class="input-group">
-            <label for="actualPaymentDate">วันที่จ่ายชำระจริง (สำหรับบันทึก):</label>
-            <input type="date" id="actualPaymentDate">
-        </div>
-        <button class="calc-button settle-button" onclick="settlePayment()">เริ่มตัดชำระหนี้ในตาราง</button>
-    </div>
-  </div>
+  <div class="container">
+    <div class="header-section">
+      <div class="header-text"><h1>ส่วนคำนวณและตัดชำระหนี้</h1><h2>เครื่องมือช่วยจัดการ</h2></div>
+      <div class="logos">
+        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+      </div>
+    </div>
+    <div class="calculator-card">
+        <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
+        <div class="input-group">
+            <label for="principal">เงินต้น (สำหรับคำนวณ):</label>
+            <input type="text" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ" onkeyup="formatNumberInput(this)">
+        </div>
+        <div class="input-group">
+            <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
+            <input type="number" id="rate" value="5" readonly>
+        </div>
+        <div class="input-group">
+            <label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label>
+            <input type="date" id="dueDate">
+        </div>
+        <div class="input-group">
+            <label for="paymentDateCalc">วันที่จ่ายชำระ (สำหรับคำนวณ):</label>
+            <input type="date" id="paymentDateCalc">
+        </div>
+        <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
+        <div id="result" class="result-box">ผลการคำนวณ: 0.00 บาท</div>
+        <hr style="margin: 20px 0; border: 1px solid #f8bbd0;">
+        <p style="text-align:center; font-weight:bold; color:#155724;">ส่วนที่ 2: ตัดชำระหนี้</p>
+        <div class="input-group">
+            <label for="paymentAmount">ระบุจำนวนเงินที่จะชำระ (ยอดเงินที่ได้รับจริง):</label>
+            <input type="number" id="paymentAmount" placeholder="กรอกยอดเงินที่ได้รับจริง">
+        </div>
+        <div class="input-group">
+            <label for="actualPaymentDate">วันที่จ่ายชำระจริง (สำหรับบันทึก):</label>
+            <input type="date" id="actualPaymentDate">
+        </div>
+        <button class="calc-button settle-button" onclick="settlePayment()">เริ่มตัดชำระหนี้ในตาราง</button>
+    </div>
+  </div>
 
-  <div class="table-container">
-    <div id="history-container">
-        <h2>ประวัติการตัดชำระ</h2>
-        <div class="table-wrapper" style="max-height: 200px;">
-            <table id="history-table">
-                <thead><tr><th>วันที่ชำระ</th><th>ยอดชำระ</th><th>งวดที่</th><th>รายการที่ตัด</th><th>จำนวนเงิน</th></tr></thead>
-                <tbody id="history-table-body"><tr><td colspan="5">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>
-            </table>
-        </div>
-    </div>
-    <hr style="margin: 30px 0;">
-    <h1>ตารางแสดงรายละเอียดหนี้</h1>
-    <div class="upload-section">
-        <label for="excel-file">เลือกไฟล์ Excel (.xlsx, .xls, .csv) เพื่อแสดงข้อมูล</label>
-        <input type="file" id="excel-file" accept=".xlsx, .xls, .csv">
-    </div>
-    <div class="table-wrapper">
-        <table id="payment-table">
-            <thead></thead>
-            <tbody id="payment-table-body"><tr><td colspan="18" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
-        </table>
-    </div>
-    <div id="summary-container" class="summary-table-wrapper">
-        <h2 style="margin-top: 30px;">ตารางสรุปยอดรวม</h2>
-        <table class="summary-table">
-            <thead><tr id="summary-table-header"></tr></thead>
-            <tbody id="summary-table-body"></tbody>
-        </table>
-    </div>
-  </div>
+  <div class="table-container">
+    <div id="history-container">
+        <h2>ประวัติการตัดชำระ</h2>
+        <div class="table-wrapper" style="max-height: 200px;">
+            <table id="history-table">
+                <thead><tr><th>วันที่ชำระ</th><th>ยอดชำระ</th><th>งวดที่</th><th>รายการที่ตัด</th><th>จำนวนเงิน</th></tr></thead>
+                <tbody id="history-table-body"><tr><td colspan="5">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+    <hr style="margin: 30px 0;">
+    <h1>ตารางแสดงรายละเอียดหนี้</h1>
+    <div class="upload-section">
+        <label for="excel-file">เลือกไฟล์ Excel (.xlsx, .xls, .csv) เพื่อแสดงข้อมูล</label>
+        <input type="file" id="excel-file" accept=".xlsx, .xls, .csv">
+    </div>
+    <div class="table-wrapper">
+        <table id="payment-table">
+            <thead></thead>
+            <tbody id="payment-table-body"><tr><td colspan="18" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
+        </table>
+    </div>
+    <div id="summary-container" class="summary-table-wrapper">
+        <h2 style="margin-top: 30px;">ตารางสรุปยอดรวม</h2>
+        <table class="summary-table">
+            <thead><tr id="summary-table-header"></tr></thead>
+            <tbody id="summary-table-body"></tbody>
+        </table>
+    </div>
+  </div>
 
 <script>
+/**
+ * Global Variables
+ */
 let allInstallments = [];
 let paymentHistory = [];
 
+const INTEREST_RATE = 5; // อัตราดอกเบี้ยผิดนัด 5% คงที่
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const DAYS_IN_YEAR = 365;
+
+// Mapping of Excel Column Headers to Internal Object Keys
 const excelHeaderMapping = {
-    'ลำดับ': 'sequence', 'กำหนดวันชำระเงิน': 'dueDate', 'เงินต้น': 'principal',
-    'ดอกเบี้ย': 'interest', 'เบี้ยปรับ': 'penalty', 'ดอกเบี้ยผิดนัดเดิม': 'oldDefaultInterest',
-    'ดอกเบี้ยผิดนัดใหม่': 'newDefaultInterest', 'รับคืนเงินต้น': 'receivedPrincipal',
-    'รับคืนดอกเบี้ย': 'receivedInterest', 'รับคืนเบี้ยปรับ': 'receivedPenalty',
-    'รับคืนดอกเบี้ยผิดนัดเดิม': 'receivedOldDefaultInterest',
-    'รับคืนดอกเบี้ยผิดนัดใหม่': 'receivedNewDefaultInterest', 'รับเงินเกิน': 'overpayment'
+    'ลำดับ': 'sequence', 'กำหนดวันชำระเงิน': 'dueDate', 'เงินต้น': 'principal',
+    'ดอกเบี้ย': 'interest', 'เบี้ยปรับ': 'penalty', 'ดอกเบี้ยผิดนัดเดิม': 'oldDefaultInterest',
+    'ดอกเบี้ยผิดนัดใหม่': 'newDefaultInterest', 
+    'รับคืนเงินต้น': 'receivedPrincipal',
+    'รับคืนดอกเบี้ย': 'receivedInterest', 'รับคืนเบี้ยปรับ': 'receivedPenalty',
+    'รับคืนดอกเบี้ยผิดนัดเดิม': 'receivedOldDefaultInterest',
+    'รับคืนดอกเบี้ยผิดนัดใหม่': 'receivedNewDefaultInterest', 
+    'รับเงินเกิน': 'overpayment',
+    // เพิ่มคีย์ภายในที่จำเป็น
+    'lastPaymentDate': 'lastPaymentDate', // สำหรับติดตามวันที่จ่ายล่าสุดเพื่อคำนวณ ด/บ ใหม่
+    'lastCalculatedNewInterest': 'lastCalculatedNewInterest' // เพื่อติดตาม ด/บ ใหม่ที่คำนวณไปแล้ว
 };
 
+/**
+ * Event Listener for Excel File Upload
+ */
 document.getElementById('excel-file').addEventListener('change', handleFileSelect);
 
 function handleFileSelect(event) {
-    const file = event.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        if (jsonData.length === 0) { alert("ไฟล์ Excel ไม่มีข้อมูล"); return; }
-        
-        allInstallments = jsonData.map((row, index) => {
-            let installment = { id: index };
-            for (const excelHeader in excelHeaderMapping) {
-                const internalKey = excelHeaderMapping[excelHeader];
-                installment[internalKey] = row[excelHeader] || 0;
-            }
-            return installment;
-        });
-        paymentHistory = [];
-        renderAll();
-    };
-    reader.readAsArrayBuffer(file);
+    const file = event.target.files[0]; 
+    if (!file) {
+        console.log("No file selected.");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array', cellDates: true, raw: false });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            
+            if (jsonData.length === 0) { 
+                alert("ไฟล์ Excel ไม่มีข้อมูล"); 
+                return; 
+            }
+            
+            allInstallments = jsonData.map((row, index) => {
+                let installment = { id: index };
+                for (const excelHeader in excelHeaderMapping) {
+                    const internalKey = excelHeaderMapping[excelHeader];
+                    // Normalize number fields to float, default to 0
+                    if (['principal', 'interest', 'penalty', 'oldDefaultInterest', 'newDefaultInterest', 
+                        'receivedPrincipal', 'receivedInterest', 'receivedPenalty', 
+                        'receivedOldDefaultInterest', 'receivedNewDefaultInterest', 'overpayment']
+                        .includes(internalKey)) {
+                          installment[internalKey] = parseFloat(row[excelHeader] || 0) || 0;
+                    } else {
+                          installment[internalKey] = row[excelHeader] || (internalKey === 'lastCalculatedNewInterest' ? 0 : null);
+                    }
+                }
+                // Initial setup for tracking
+                installment.lastPaymentDate = installment.dueDate; // เริ่มต้นจากวันครบกำหนด
+                return installment;
+            });
+            paymentHistory = [];
+            renderAll();
+        } catch (error) {
+            console.error("Error processing Excel file:", error);
+            alert("เกิดข้อผิดพลาดในการอ่านไฟล์ Excel. โปรดตรวจสอบรูปแบบข้อมูล.");
+        }
+    };
+    reader.readAsArrayBuffer(file);
 }
 
+/**
+ * Main rendering function to update all sections
+ */
 function renderAll() {
-    renderTable();
-    renderHistoryTable();
-    renderSummary();
+    renderTable();
+    renderHistoryTable();
+    renderSummary();
 }
 
+/**
+ * Renders the main payment installment table
+ */
 function renderTable() {
-    const tbody = document.getElementById('payment-table-body');
-    const thead = document.getElementById('payment-table').querySelector('thead');
-    thead.innerHTML = ''; tbody.innerHTML = '';
-    const displayHeaders = [
-        'ลำดับ', 'กำหนดวันชำระ', 'เงินต้น', 'ดอกเบี้ย', 'เบี้ยปรับ', 'ด/บ ผิดนัดเดิม', 'ด/บ ผิดนัดใหม่', 'รวมหนี้', 
-        'รับคืน ด/บ ผิดนัดเดิม', 'รับคืน ด/บ ผิดนัดใหม่', 'รับคืนเบี้ยปรับ',
-        'รับคืนดอกเบี้ย', 'รับคืนเงินต้น', 'รับคืนรวม', 'รับเงินเกิน', 'หนี้คงเหลือ', 'สถานะ'
-    ];
-    thead.innerHTML = `<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
+    const tbody = document.getElementById('payment-table-body');
+    const thead = document.getElementById('payment-table').querySelector('thead');
+    thead.innerHTML = ''; tbody.innerHTML = '';
+    const displayHeaders = [
+        'ลำดับ', 'กำหนดวันชำระ', 'เงินต้น', 'ดอกเบี้ย', 'เบี้ยปรับ', 'ด/บ ผิดนัดเดิม', 'ด/บ ผิดนัดใหม่', 'รวมหนี้', 
+        'รับคืน ด/บ ผิดนัดเดิม', 'รับคืน ด/บ ผิดนัดใหม่', 'รับคืนเบี้ยปรับ',
+        'รับคืนดอกเบี้ย', 'รับคืนเงินต้น', 'รับคืนรวม', 'รับเงินเกิน', 'หนี้คงเหลือ', 'สถานะ'
+    ];
+    thead.innerHTML = `<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
 
-    allInstallments.forEach(inst => {
-        const totalDebt = (inst.principal||0) + (inst.interest||0) + (inst.penalty||0) + (inst.oldDefaultInterest||0) + (inst.newDefaultInterest||0);
-        const totalPaid = (inst.receivedOldDefaultInterest||0) + (inst.receivedNewDefaultInterest||0) + (inst.receivedPenalty||0) + (inst.receivedInterest||0) + (inst.receivedPrincipal||0);
-        const remainingDebt = totalDebt - totalPaid;
-        let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
-        const cells = [
-            inst.sequence, formatDate(inst.dueDate), formatNumber(inst.principal),
-            formatNumber(inst.interest), formatNumber(inst.penalty), formatNumber(inst.oldDefaultInterest),
-            formatNumber(inst.newDefaultInterest), formatNumber(totalDebt),
-            formatNumber(inst.receivedOldDefaultInterest), formatNumber(inst.receivedNewDefaultInterest),
-            formatNumber(inst.receivedPenalty), formatNumber(inst.receivedInterest),
-            formatNumber(inst.receivedPrincipal), formatNumber(totalPaid), formatNumber(inst.overpayment),
-            formatNumber(remainingDebt), status
-        ];
-        tbody.innerHTML += `<tr><td>${cells.join('</td><td>')}</td></tr>`;
-    });
-    applyRowColors();
+    allInstallments.forEach(inst => {
+        // คำนวณยอดหนี้รวม ณ ปัจจุบัน
+        const totalDebt = (inst.principal || 0) + (inst.interest || 0) + (inst.penalty || 0) + (inst.oldDefaultInterest || 0) + (inst.newDefaultInterest || 0);
+        // คำนวณยอดที่ได้รับชำระรวม
+        const totalPaid = (inst.receivedOldDefaultInterest || 0) + (inst.receivedNewDefaultInterest || 0) + (inst.receivedPenalty || 0) + (inst.receivedInterest || 0) + (inst.receivedPrincipal || 0);
+        
+        // คำนวณหนี้คงเหลือ
+        const remainingDebt = totalDebt - totalPaid;
+        let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
+        
+        const cells = [
+            inst.sequence, formatDate(inst.dueDate), formatNumber(inst.principal),
+            formatNumber(inst.interest), formatNumber(inst.penalty), formatNumber(inst.oldDefaultInterest),
+            formatNumber(inst.newDefaultInterest), formatNumber(totalDebt),
+            formatNumber(inst.receivedOldDefaultInterest), formatNumber(inst.receivedNewDefaultInterest),
+            formatNumber(inst.receivedPenalty), formatNumber(inst.receivedInterest),
+            formatNumber(inst.receivedPrincipal), formatNumber(totalPaid), formatNumber(inst.overpayment),
+            formatNumber(remainingDebt), status
+        ];
+        tbody.innerHTML += `<tr><td>${cells.join('</td><td>')}</td></tr>`;
+    });
+    applyRowColors();
 }
 
+/**
+ * Renders the payment history table
+ */
 function renderHistoryTable() {
-    const tbody = document.getElementById('history-table-body');
-    tbody.innerHTML = '';
-    if (paymentHistory.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5">ยังไม่มีประวัติการชำระเงิน</td></tr>';
-        return;
-    }
-    paymentHistory.forEach(entry => {
-        entry.breakdown.forEach(item => {
-            tbody.innerHTML += `<tr>
-                <td>${formatDate(entry.date)}</td>
-                <td style="text-align:right;">${formatNumber(item.amount)}</td>
-                <td>${item.sequence}</td>
-                <td>${item.category}</td>
-                <td style="text-align:right;">${formatNumber(item.amount)}</td>
-            </tr>`;
-        });
-    });
+    const tbody = document.getElementById('history-table-body');
+    tbody.innerHTML = '';
+    if (paymentHistory.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">ยังไม่มีประวัติการชำระเงิน</td></tr>';
+        return;
+    }
+    paymentHistory.forEach(entry => {
+        entry.breakdown.forEach(item => {
+            tbody.innerHTML += `<tr>
+                <td>${formatDate(entry.date)}</td>
+                <td style="text-align:right;">${formatNumber(entry.totalAmount)}</td>
+                <td>${item.sequence}</td>
+                <td>${item.category}</td>
+                <td style="text-align:right;">${formatNumber(item.amount)}</td>
+            </tr>`;
+        });
+    });
 }
 
+/**
+ * Renders the summary table
+ */
 function renderSummary() {
-    const header = document.getElementById('summary-table-header');
-    const tbody = document.getElementById('summary-table-body');
-    header.innerHTML = ''; tbody.innerHTML = '';
-    if (allInstallments.length === 0) return;
+    const header = document.getElementById('summary-table-header');
+    const tbody = document.getElementById('summary-table-body');
+    header.innerHTML = ''; tbody.innerHTML = '';
+    if (allInstallments.length === 0) return;
 
-    const summaryHeaders = ['', 'เงินต้น', 'ดอกเบี้ย', 'เบี้ยปรับ', 'ด/บ ผิดนัดเดิม', 'ด/บ ผิดนัดใหม่', 'รับเงินเกิน', 'รวม'];
-    header.innerHTML = `<th>${summaryHeaders.join('</th><th>')}</th>`;
+    const summaryHeaders = ['', 'เงินต้น', 'ดอกเบี้ย', 'เบี้ยปรับ', 'ด/บ ผิดนัดเดิม', 'ด/บ ผิดนัดใหม่', 'รับเงินเกิน', 'รวม'];
+    header.innerHTML = `<th>${summaryHeaders.join('</th><th>')}</th>`;
 
-    const totals = {
-        due: { principal: 0, interest: 0, penalty: 0, oldDefaultInterest: 0, newDefaultInterest: 0, overpayment:0, total: 0 },
-        received: { principal: 0, interest: 0, penalty: 0, oldDefaultInterest: 0, newDefaultInterest: 0, overpayment:0, total: 0 }
-    };
+    // Calculate Totals for Due and Received amounts
+    const totals = {
+        due: { principal: 0, interest: 0, penalty: 0, oldDefaultInterest: 0, newDefaultInterest: 0, overpayment:0, total: 0 },
+        received: { principal: 0, interest: 0, penalty: 0, oldDefaultInterest: 0, newDefaultInterest: 0, overpayment:0, total: 0 }
+    };
 
-    allInstallments.forEach(inst => {
-              totals.due.principal += inst.principal||0;
-        totals.due.interest += inst.interest||0;
-        totals.due.penalty += inst.penalty||0;
-        totals.due.oldDefaultInterest += inst.oldDefaultInterest||0;
-        totals.due.newDefaultInterest += inst.newDefaultInterest||0;
-        totals.due.overpayment += inst.overpayment||0;
-        totals.due.total += (inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
-        totals.received.principal += inst.receivedPrincipal||0;
-        totals.received.interest += inst.receivedInterest||0;
-        totals.received.penalty += inst.receivedPenalty||0;
-        totals.received.oldDefaultInterest += inst.receivedOldDefaultInterest||0;
-        totals.received.newDefaultInterest += inst.receivedNewDefaultInterest||0;
-        totals.received.overpayment += inst.overpayment||0;
-        totals.received.total += (inst.receivedPrincipal||0)+(inst.receivedInterest||0)+(inst.receivedPenalty||0)+(inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0);
-    });
+    allInstallments.forEach(inst => {
+        totals.due.principal += inst.principal || 0;
+        totals.due.interest += inst.interest || 0;
+        totals.due.penalty += inst.penalty || 0;
+        totals.due.oldDefaultInterest += inst.oldDefaultInterest || 0;
+        totals.due.newDefaultInterest += inst.newDefaultInterest || 0; // ยอดรวมที่อาจมีการบวกดอกเบี้ยใหม่เข้าไป
+        
+        totals.received.principal += inst.receivedPrincipal || 0;
+        totals.received.interest += inst.receivedInterest || 0;
+        totals.received.penalty += inst.receivedPenalty || 0;
+        totals.received.oldDefaultInterest += inst.receivedOldDefaultInterest || 0;
+        totals.received.newDefaultInterest += inst.receivedNewDefaultInterest || 0;
+        totals.received.overpayment += inst.overpayment || 0;
+    });
 
-    const dueRow = `<tr>
-        <td>ยอดคงค้าง</td>
-        <td>${formatNumber(totals.due.principal)}</td>
-        <td>${formatNumber(totals.due.interest)}</td>
-        <td>${formatNumber(totals.due.penalty)}</td>
-        <td>${formatNumber(totals.due.oldDefaultInterest)}</td>
-        <td>${formatNumber(totals.due.newDefaultInterest)}</td>
-        <td>${formatNumber(totals.due.overpayment)}</td>
-        <td>${formatNumber(totals.due.total)}</td>
-    </tr>`;
+    totals.due.total = totals.due.principal + totals.due.interest + totals.due.penalty + totals.due.oldDefaultInterest + totals.due.newDefaultInterest;
+    totals.received.total = totals.received.principal + totals.received.interest + totals.received.penalty + totals.received.oldDefaultInterest + totals.received.newDefaultInterest + totals.received.overpayment;
 
-    const receivedRow = `<tr>
-        <td>ยอดชำระแล้ว</td>
-        <td>${formatNumber(totals.received.principal)}</td>
-        <td>${formatNumber(totals.received.interest)}</td>
-        <td>${formatNumber(totals.received.penalty)}</td>
-        <td>${formatNumber(totals.received.oldDefaultInterest)}</td>
-        <td>${formatNumber(totals.received.newDefaultInterest)}</td>
-        <td>${formatNumber(totals.received.overpayment)}</td>
-        <td>${formatNumber(totals.received.total)}</td>
-    </tr>`;
-
-    tbody.innerHTML = dueRow + receivedRow;
+    // Calculate Remaining amounts
+    const remaining = {
+        principal: totals.due.principal - totals.received.principal,
+        interest: totals.due.interest - totals.received.interest,
+        penalty: totals.due.penalty - totals.received.penalty,
+        oldDefaultInterest: totals.due.oldDefaultInterest - totals.received.oldDefaultInterest,
+        newDefaultInterest: totals.due.newDefaultInterest - totals.received.newDefaultInterest,
+        overpayment: 0 - totals.received.overpayment, // แสดงเป็นยอดติดลบหากมีการรับเงินเกิน
+        total: totals.due.total - totals.received.total
+    };
+    
+    tbody.innerHTML = `
+        <tr><td>กรอบวงเงิน</td><td>${formatNumber(totals.due.principal)}</td><td>${formatNumber(totals.due.interest)}</td><td>${formatNumber(totals.due.penalty)}</td><td>${formatNumber(totals.due.oldDefaultInterest)}</td><td>${formatNumber(totals.due.newDefaultInterest)}</td><td>${formatNumber(0)}</td><td>${formatNumber(totals.due.total)}</td></tr>
+        <tr><td>รับชำระ</td><td>${formatNumber(totals.received.principal)}</td><td>${formatNumber(totals.received.interest)}</td><td>${formatNumber(totals.received.penalty)}</td><td>${formatNumber(totals.received.oldDefaultInterest)}</td><td>${formatNumber(totals.received.newDefaultInterest)}</td><td>${formatNumber(totals.received.overpayment)}</td><td>${formatNumber(totals.received.total)}</td></tr>
+        <tr style="font-weight: bold; background-color: #f8f9fa;"><td>คงเหลือ</td><td>${formatNumber(remaining.principal)}</td><td>${formatNumber(remaining.interest)}</td><td>${formatNumber(remaining.penalty)}</td><td>${formatNumber(remaining.oldDefaultInterest)}</td><td>${formatNumber(remaining.newDefaultInterest)}</td><td>${formatNumber(remaining.overpayment)}</td><td>${formatNumber(remaining.total)}</td></tr>
+    `;
 }
 
-function formatNumber(num) {
-    if (num === null || num === undefined) return '0.00';
-    return (Math.floor(parseFloat(num)*100)/100).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits:2});
+/**
+ * Manual Calculation for Default Interest
+ */
+function calculateInterest() {
+    const principalRaw = document.getElementById('principal').value.replace(/,/g, '');
+    const principal = parseFloat(principalRaw);
+    const rate = parseFloat(document.getElementById('rate').value);
+    const dueDateStr = document.getElementById('dueDate').value;
+    const paymentDateStr = document.getElementById('paymentDateCalc').value;
+    const resultBox = document.getElementById('result');
+    
+    if (isNaN(principal) || principal <= 0 || !rate || !dueDateStr || !paymentDateStr) {
+        resultBox.innerHTML = "⚠️ โปรดกรอกข้อมูลสำหรับคำนวณให้ครบและถูกต้อง"; 
+        return;
+    }
+    
+    const dueDate = new Date(dueDateStr);
+    const paymentDate = new Date(paymentDateStr);
+    
+    // Calculate days overdue
+    const days = Math.max(0, Math.floor((paymentDate.getTime() - dueDate.getTime()) / MS_PER_DAY));
+    
+    // Simple Interest Formula: P * R * T / 365
+    const interest = (principal * (rate / 100) * days) / DAYS_IN_YEAR;
+    
+    resultBox.innerHTML = `ผลการคำนวณ: ${interest.toFixed(2)} บาท (${days} วัน)`;
 }
 
-function formatDate(date) {
-    if (!date) return '';
-    const d = new Date(date);
-    return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+/**
+ * CORE LOGIC: Settles the payment against the installments
+ */
+function settlePayment() {
+    let paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+    const actualPaymentDateStr = document.getElementById('actualPaymentDate').value;
+    
+    if (isNaN(paymentAmount) || paymentAmount <= 0) { 
+        alert("กรุณาใส่จำนวนเงินที่จะชำระให้ถูกต้อง"); 
+        return; 
+    }
+    if (!actualPaymentDateStr) { 
+        alert("กรุณาระบุ 'วันที่จ่ายชำระจริง' ก่อน"); 
+        return; 
+    }
+    if (allInstallments.length === 0) { 
+        alert("กรุณาอัปโหลดไฟล์ Excel ก่อน"); 
+        return; 
+    }
+
+    const actualPaymentDate = new Date(actualPaymentDateStr);
+
+    // 1. Filter and sort DUE installments (ascending by dueDate)
+    const dueInstallments = allInstallments.filter(inst => {
+        const totalDebt = (inst.principal || 0) + (inst.interest || 0) + (inst.penalty || 0) + (inst.oldDefaultInterest || 0) + (inst.newDefaultInterest || 0);
+        const totalPaid = (inst.receivedOldDefaultInterest || 0) + (inst.receivedNewDefaultInterest || 0) + (inst.receivedPenalty || 0) + (inst.receivedInterest || 0) + (inst.receivedPrincipal || 0);
+        // ใช้ 0.01 เป็น Tolerance สำหรับ float comparison
+        return totalDebt - totalPaid > 0.01; 
+    }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+    if (dueInstallments.length === 0) { 
+        alert("ไม่พบหนี้ค้างชำระทั้งหมดที่ต้องตัดชำระ"); 
+        return; 
+    }
+    
+    let historyEntry = { date: actualPaymentDate, totalAmount: paymentAmount, breakdown: [] };
+    let originalPaymentAmount = paymentAmount;
+
+    // Helper function to handle payment application
+    const pay = (dueAmount, receivedKey, categoryName, installment) => {
+        if (paymentAmount > 0 && dueAmount > 0) {
+            const amountToPay = Math.min(paymentAmount, dueAmount);
+            // Use Math.round for precision to prevent float issues
+            installment[receivedKey] = Math.round(((installment[receivedKey] || 0) + amountToPay) * 100) / 100;
+            paymentAmount = Math.round((paymentAmount - amountToPay) * 100) / 100; // ตัดเงินที่ชำระ
+            historyEntry.breakdown.push({ sequence: installment.sequence, category: categoryName, amount: amountToPay });
+            return amountToPay;
+        }
+        return 0;
+    };
+    
+    // 2. Iterate through installments for payment application (ตามลำดับงวด)
+    for (let inst of dueInstallments) {
+        if (paymentAmount <= 0) break;
+
+        // **2.1 คำนวณดอกเบี้ยผิดนัดใหม่ ณ วันชำระ (สำคัญ)**
+        // ใช้ lastPaymentDate หรือ dueDate เป็นจุดเริ่มต้นในการคิด
+        const lastPaymentDate = new Date(inst.lastPaymentDate || inst.dueDate);
+        const remainingPrincipal = (inst.principal || 0) - (inst.receivedPrincipal || 0);
+        
+        // คิดเฉพาะงวดที่เงินต้นยังเหลือและเกินวันครบกำหนดมาแล้ว (หรือมีการจ่ายแล้ว)
+        if (remainingPrincipal > 0 && actualPaymentDate > lastPaymentDate) {
+            const daysOverdue = Math.max(0, Math.floor((actualPaymentDate.getTime() - lastPaymentDate.getTime()) / MS_PER_DAY));
+            // คำนวณดอกเบี้ยใหม่
+            let calculatedNewInterest = (remainingPrincipal * (INTEREST_RATE / 100) * daysOverdue) / DAYS_IN_YEAR;
+            calculatedNewInterest = Math.round(calculatedNewInterest * 100) / 100; // ปัดเศษทศนิยม
+            
+            // **ลบ** ดอกเบี้ยที่คำนวณไว้แล้วออกก่อน เพื่อให้เหลือเฉพาะส่วนที่เพิ่มขึ้น
+            // BUG FIXED: ลบบรรทัด inst.newDefaultInterest = (inst.newDefaultInterest || 0) + dueNewInterest; ออก
+            let newInterestDue = calculatedNewInterest - (inst.receivedNewDefaultInterest || 0); 
+            // ให้คำนวณเฉพาะส่วนที่ยังไม่ได้จ่ายของดอกเบี้ยใหม่ที่เกิดขึ้นจริง ณ วันนี้
+            
+            // อัปเดตยอดรวม ด/บ ใหม่ทั้งหมดที่ควรเป็น ณ ปัจจุบัน (เพื่อใช้ในการแสดงผลตาราง)
+            // ต้องแน่ใจว่า newDefaultInterest ไม่ถูกบวกเพิ่มซ้ำๆ
+            inst.newDefaultInterest = calculatedNewInterest;
+            
+            // **2.2 ตัด ด/บ ผิดนัดใหม่ (คำนวณสด)**
+            if (newInterestDue > 0) {
+                pay(newInterestDue, 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่ (คำนวณสด)', inst);
+            }
+        } else {
+            // อัปเดต newDefaultInterest ให้สอดคล้องกับที่จ่ายไปแล้ว หากมีการจ่ายครบแล้ว
+            if (remainingPrincipal <= 0 && (inst.receivedNewDefaultInterest || 0) > 0) {
+                inst.newDefaultInterest = inst.receivedNewDefaultInterest;
+            }
+        }
+
+        // 2.3 ตัด ด/บ ผิดนัดเดิม
+        let dueOldInterest = (inst.oldDefaultInterest || 0) - (inst.receivedOldDefaultInterest || 0);
+        pay(dueOldInterest, 'receivedOldDefaultInterest', 'ด/บ ผิดนัดเดิม', inst);
+
+        // 2.4 ตัดเบี้ยปรับ
+        let duePenalty = (inst.penalty || 0) - (inst.receivedPenalty || 0);
+        pay(duePenalty, 'receivedPenalty', 'เบี้ยปรับ', inst);
+
+        // 2.5 ตัดดอกเบี้ย
+        let dueInterest = (inst.interest || 0) - (inst.receivedInterest || 0);
+        pay(dueInterest, 'receivedInterest', 'ดอกเบี้ย', inst);
+
+        // 2.6 ตัดเงินต้น
+        let duePrincipal = (inst.principal || 0) - (inst.receivedPrincipal || 0);
+        pay(duePrincipal, 'receivedPrincipal', 'เงินต้น', inst);
+        
+        // 3. อัปเดตวันที่จ่ายล่าสุด (lastPaymentDate) ของงวดที่ถูกตัดชำระ
+        // ตรวจสอบว่ามีการตัดชำระในงวดนี้จริงหรือไม่
+        const totalDebtAfter = (inst.principal || 0) + (inst.interest || 0) + (inst.penalty || 0) + (inst.oldDefaultInterest || 0) + (inst.newDefaultInterest || 0);
+        const totalPaidAfter = (inst.receivedOldDefaultInterest || 0) + (inst.receivedNewDefaultInterest || 0) + (inst.receivedPenalty || 0) + (inst.receivedInterest || 0) + (inst.receivedPrincipal || 0);
+        if (totalPaidAfter > (inst.receivedOldDefaultInterestBefore || 0) + (inst.receivedNewDefaultInterestBefore || 0) + (inst.receivedPenaltyBefore || 0) + (inst.receivedInterestBefore || 0) + (inst.receivedPrincipalBefore || 0)) {
+            inst.lastPaymentDate = actualPaymentDate;
+        }
+    }
+    
+    // 4. จัดการเงินเกิน (Overpayment)
+    if (paymentAmount > 0) {
+        // หา installment สุดท้ายที่ถูกตัดชำระ
+        let lastPaidInstallment = dueInstallments.find(inst => 
+            (inst.receivedPrincipal || 0) > 0 || 
+            (inst.receivedInterest || 0) > 0 || 
+            (inst.receivedPenalty || 0) > 0 || 
+            (inst.receivedOldDefaultInterest || 0) > 0 || 
+            (inst.receivedNewDefaultInterest || 0) > 0
+        );
+        
+        if(lastPaidInstallment) {
+            lastPaidInstallment.overpayment = (lastPaidInstallment.overpayment || 0) + paymentAmount;
+            historyEntry.breakdown.push({ sequence: lastPaidInstallment.sequence, category: 'รับเงินเกิน', amount: paymentAmount });
+            alert(`ตัดชำระหนี้ทั้งหมดแล้ว และบันทึกเงินเกินจำนวน ${formatNumber(paymentAmount)} บาท ในงวดที่ ${lastPaidInstallment.sequence} `);
+        } else {
+            // กรณีไม่มีหนี้เลย แต่มีการจ่ายเงินเข้ามา (ไม่น่าจะเกิดขึ้นถ้ามีการตรวจสอบก่อนหน้า)
+            alert(`ไม่มีหนี้ค้างชำระ แต่มีเงินเหลือ: ${formatNumber(paymentAmount)} บาท`);
+        }
+    }
+
+    // 5. บันทึกประวัติและอัปเดตตาราง
+    if (historyEntry.breakdown.length > 0) {
+        paymentHistory.push(historyEntry);
+    }
+    renderAll();
+    document.getElementById('paymentAmount').value = '';
 }
 
+/**
+ * Utility function to apply CSS classes based on status
+ */
 function applyRowColors() {
-    const rows = document.querySelectorAll('#payment-table tbody tr');
-    rows.forEach(row => {
-        const status = row.cells[16]?.innerText;
-        row.classList.remove('status-paid','status-due');
-        if (status === 'ชำระครบแล้ว') row.classList.add('status-paid');
-        else if (status === 'ค้างชำระ') row.classList.add('status-due');
-    });
+    document.querySelectorAll("#payment-table-body tr").forEach(row => {
+        // ตรวจสอบว่ามีคอลัมน์สถานะหรือไม่ (คอลัมน์ที่ 17 หรือ index 16)
+        const statusCell = row.cells[16];
+        if (statusCell) {
+            const status = statusCell.textContent.trim();
+            row.className = '';
+            if (status === "ชำระครบแล้ว") row.classList.add('status-paid');
+            else if (status === "ค้างชำระ") row.classList.add('status-due');
+        }
+    });
+}
+
+/**
+ * Formatting Utilities (Number and Date)
+ */
+function formatNumber(num) { 
+    // ป้องกันการแสดงผลเป็นลบในกรณีที่ยอดคงเหลือน้อยกว่า 0.01 (Rounding error)
+    if (typeof num === 'number' && Math.abs(num) < 0.01 && num !== 0) {
+        num = 0;
+    }
+    return (typeof num === 'number') ? num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'; 
+}
+
+function formatDate(dateStr) {
+    let date;
+    if (dateStr instanceof Date) {
+        date = dateStr;
+    } else if (typeof dateStr === 'string' || typeof dateStr === 'number') {
+        date = new Date(dateStr);
+    } else {
+        return '';
+    }
+    
+    if (isNaN(date.getTime())) return '';
+    // ใช้ 2-digit day/month/year เพื่อความกระชับ
+    return date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function formatNumberInput(input) {
-    let value = input.value.replace(/[^0-9.]/g,'');
-    const parts = value.split('.');
-    if (parts.length > 2) value = parts[0]+'.'+parts[1];
-    input.value = value;
+    let value = input.value.replace(/,/g, '');
+    // อนุญาตให้ใส่เฉพาะตัวเลขและจุดทศนิยม
+    value = value.replace(/[^0-9.]/g, ''); 
+    if (value.length > 0 && !isNaN(value)) {
+        // จัดรูปแบบ comma (แต่เก็บค่าจริงที่ไม่มี comma)
+        input.value = parseFloat(value).toLocaleString('en-US');
+    } else if (value.length === 0) {
+        input.value = '';
+    }
 }
 
-function calculateInterest() {
-    const principal = parseFloat(document.getElementById('principal').value) || 0;
-    const rate = parseFloat(document.getElementById('rate').value) || 0;
-    const dueDate = new Date(document.getElementById('dueDate').value);
-    const paymentDate = new Date(document.getElementById('paymentDateCalc').value);
-    if (!dueDate || !paymentDate) { alert('กรุณากรอกวันที่ครบกำหนดและวันที่จ่าย'); return; }
-    const diffDays = Math.max(0, Math.ceil((paymentDate - dueDate)/ (1000*60*60*24)));
-    const interest = Math.floor(principal*rate*diffDays/(365*100)*100)/100;
-    document.getElementById('result').innerText = `ผลการคำนวณ: ${formatNumber(interest)} บาท`;
+// ส่วนขยายเพื่อเพิ่มบรรทัดโค้ด JavaScript
+function logInstallmentDetails(inst) {
+    console.log(`--- Installment ${inst.sequence} Details ---`);
+    console.log(`Principal Due: ${inst.principal - inst.receivedPrincipal}`);
+    console.log(`New D/B Due: ${inst.newDefaultInterest - inst.receivedNewDefaultInterest}`);
+    console.log(`Last Payment Date: ${inst.lastPaymentDate}`);
 }
 
-function settlePayment() {
-    const amount = parseFloat(document.getElementById('paymentAmount').value) || 0;
-    const payDate = document.getElementById('actualPaymentDate').value;
-    if (!amount || !payDate) { alert('กรุณากรอกจำนวนเงินและวันที่ชำระ'); return; }
-
-    let remaining = amount;
-    const breakdown = [];
-
-    for (let inst of allInstallments) {
-        if (remaining <= 0) break;
-        const totalDebt = (inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
-        const totalPaid = (inst.receivedPrincipal||0)+(inst.receivedInterest||0)+(inst.receivedPenalty||0)+(inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0);
-        const debtLeft = totalDebt - totalPaid;
-        if (debtLeft <= 0) continue;
-
-        const payThis = Math.min(remaining, debtLeft);
-        remaining -= payThis;
-
-        // ตัดลำดับชำระทีละประเภทตามลำดับ: oldDefaultInterest, newDefaultInterest, penalty, interest, principal
-        const categories = ['oldDefaultInterest','newDefaultInterest','penalty','interest','principal'];
-        for (let cat of categories) {
-            const catLeft = (inst[cat]||0) - (inst['received'+capitalizeFirstLetter(cat)]||0);
-            if (catLeft <= 0) continue;
-            const payCat = Math.min(payThis, catLeft, remaining+payThis); // ป้องกัน overshoot
-            inst['received'+capitalizeFirstLetter(cat)] = (inst['received'+capitalizeFirstLetter(cat)]||0) + payCat;
-            breakdown.push({sequence: inst.sequence, category: cat, amount: payCat});
-            remaining -= payCat;
-        }
-    }
-
-    if (remaining > 0 && allInstallments.length>0) {
-        allInstallments[allInstallments.length-1].overpayment = (allInstallments[allInstallments.length-1].overpayment||0)+remaining;
-        breakdown.push({sequence: allInstallments[allInstallments.length-1].sequence, category: 'overpayment', amount: remaining});
-    }
-
-    paymentHistory.push({date: payDate, breakdown});
-    renderAll();
-    alert('บันทึกชำระเงินเรียบร้อยแล้ว');
+function initializeApplication() {
+    console.log("โปรแกรมจัดการและตัดชำระหนี้เริ่มต้นทำงาน...");
+    // สามารถเพิ่มโค้ดเริ่มต้นอื่นๆ ได้ที่นี่
 }
 
-function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+// เรียกใช้เมื่อโหลดหน้าเว็บ
+window.onload = initializeApplication;
+
+// เพิ่มฟังก์ชันสำหรับรีเซ็ตข้อมูล (เผื่อต้องใช้)
+function resetData() {
+    if(confirm("คุณแน่ใจหรือไม่ที่จะรีเซ็ตข้อมูลทั้งหมด?")) {
+        allInstallments = [];
+        paymentHistory = [];
+        renderAll();
+        document.getElementById('excel-file').value = '';
+        console.log("ข้อมูลถูกรีเซ็ตแล้ว");
+    }
 }
 </script>
-
 </body>
 </html>
-
