@@ -177,6 +177,7 @@ function renderTable() {
     const remainingDebt = totalDebt - totalPaid;
     // --- แก้ไขเฉพาะการพิจารณา overpayment ---
     const totalRemaining = remainingDebt - (inst.overpayment||0);
+    // แก้ไขให้สถานะชำระครบถ้วนเมื่อรวมเงินเกินแล้ว
     let status = (totalRemaining <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
 
     const cells = [
