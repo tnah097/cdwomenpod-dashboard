@@ -173,6 +173,7 @@ function handleFileSelect(event) {
                 const internalKey = excelHeaderMapping[excelHeader];
                 installment[internalKey] = row[excelHeader] || 0;
             }
+            installment.overpayment = installment.overpayment || 0; // เริ่มต้นเงินเกินเป็น 0
             return installment;
         });
         paymentHistory = [];
@@ -200,16 +201,17 @@ function renderTable() {
 
     allInstallments.forEach(inst => {
         const totalDebt = (inst.principal||0) + (inst.interest||0) + (inst.penalty||0) + (inst.oldDefaultInterest||0) + (inst.newDefaultInterest||0);
-        const totalPaid = (inst.receivedOldDefaultInterest||0) + (inst.receivedNewDefaultInterest||0) + (inst.receivedPenalty||0) + (inst.receivedInterest||0) + (inst.receivedPrincipal||0) + (inst.overpayment||0);
-        const remainingDebt = totalDebt - totalPaid;
+        const totalPaid = (inst.receivedOldDefaultInterest||0) + (inst.receivedNewDefaultInterest||0) + (inst.receivedPenalty||0) + (inst.receivedInterest||0) + (inst.receivedPrincipal||0);
+        const remainingDebt = Math.max(0, totalDebt - totalPaid);
         let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
+        const totalReceived = totalPaid + (inst.overpayment||0);
         const cells = [
             inst.sequence, formatDate(inst.dueDate), formatNumber(inst.principal),
             formatNumber(inst.interest), formatNumber(inst.penalty), formatNumber(inst.oldDefaultInterest),
             formatNumber(inst.newDefaultInterest), formatNumber(totalDebt),
             formatNumber(inst.receivedOldDefaultInterest), formatNumber(inst.receivedNewDefaultInterest),
             formatNumber(inst.receivedPenalty), formatNumber(inst.receivedInterest),
-            formatNumber(inst.receivedPrincipal), formatNumber(totalPaid), formatNumber(inst.overpayment),
+            formatNumber(inst.receivedPrincipal), formatNumber(totalReceived), formatNumber(inst.overpayment),
             formatNumber(remainingDebt), status
         ];
         tbody.innerHTML += `<tr><td>${cells.join('</td><td>')}</td></tr>`;
@@ -275,7 +277,7 @@ function renderSummary() {
         oldDefaultInterest: Math.max(0, totals.due.oldDefaultInterest - totals.received.oldDefaultInterest),
         newDefaultInterest: Math.max(0, totals.due.newDefaultInterest - totals.received.newDefaultInterest),
         overpayment: 0,
-        total: Math.max(0, totals.due.total - totals.received.total)
+        total: Math.max(0, totals.due.total - (totals.received.total - totals.received.overpayment))
     };
     
     tbody.innerHTML = `
@@ -347,7 +349,7 @@ function settlePayment() {
              dueNewInterest = (remainingPrincipal * (5 / 100) * daysOverdue) / 365;
         }
         inst.newDefaultInterest = (inst.newDefaultInterest || 0) + dueNewInterest;
-        pay(Math.min(dueNewInterest, remainingPrincipal > 0 ? dueNewInterest : 0), 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่');
+        pay(dueNewInterest, 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่');
 
         // ตัดเบี้ยปรับ
         let duePenalty = (inst.penalty || 0) - (inst.receivedPenalty || 0);
