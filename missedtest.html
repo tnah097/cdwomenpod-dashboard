@@ -27,7 +27,7 @@ body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing:
 .table-wrapper { overflow-x: auto; max-height: 500px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; vertical-align: middle;}
-td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(9)) { text-align: right; }
+td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(10)) { text-align: right; }
 thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 10; }
 .status-paid { background-color: #d4edda !important; color: #155724; }
 .status-due { background-color: #f8d7da !important; color: #721c24; }
@@ -103,7 +103,7 @@ thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-
 <div class="table-wrapper">
 <table id="payment-table">
 <thead></thead>
-<tbody id="payment-table-body"><tr><td colspan="18" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
+<tbody id="payment-table-body"><tr><td colspan="19" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
 </table>
 </div>
 
@@ -169,14 +169,16 @@ function renderTable() {
   const thead = document.getElementById('payment-table').querySelector('thead');
   thead.innerHTML = '';
   tbody.innerHTML = '';
-  const displayHeaders = [ 'ลำดับ','กำหนดวันชำระ','เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รวมหนี้','รับคืน ด/บ ผิดนัดเดิม','รับคืน ด/บ ผิดนัดใหม่','รับคืนเบี้ยปรับ','รับคืนดอกเบี้ย','รับคืนเงินต้น','รับคืนรวม','รับเงินเกิน','หนี้คงเหลือ','สถานะ' ];
+  const displayHeaders = [ 'ลำดับ','กำหนดวันชำระ','เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รวมหนี้','รับคืน ด/บ ผิดนัดเดิม','รับคืน ด/บ ผิดนัดใหม่','รับคืนเบี้ยปรับ','รับคืนดอกเบี้ย','รับคืนเงินต้น','รับคืนรวม','รับเงินเกิน','หนี้คงเหลือ','สถานะ','วันผิดนัด' ];
   thead.innerHTML = `<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
+  
   allInstallments.forEach(inst => {
     const totalDebt = (inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
     const remainingDebtBeforeOverpay = totalDebt - totalPaid;
     const finalRemainingDebt = remainingDebtBeforeOverpay - (inst.overpayment||0);
     let status = (finalRemainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
+    const daysOverdue = (status === 'ค้างชำระ') ? Math.max(0, Math.floor((new Date()-new Date(inst.dueDate))/(1000*60*60*24))) : 0;
 
     const cells = [
       inst.sequence,
@@ -195,7 +197,8 @@ function renderTable() {
       formatNumber(totalPaid),
       formatNumber(inst.overpayment),
       formatNumber(remainingDebtBeforeOverpay),
-      status
+      status,
+      daysOverdue
     ];
     tbody.innerHTML += `<tr data-remaining="${finalRemainingDebt}"><td>${cells.join('</td><td>')}</td></tr>`;
   });
@@ -322,7 +325,6 @@ function settlePayment() {
     let dueOldInterest = (inst.oldDefaultInterest||0) - (inst.receivedOldDefaultInterest||0);
     pay(dueOldInterest,'receivedOldDefaultInterest','ด/บ ผิดนัดเดิม');
 
-    // --- ปรับคำนวณด/บ ผิดนัดใหม่ จากวันที่จ่ายล่าสุด ---
     const lastPayment = new Date(inst.lastPaymentDate||inst.dueDate);
     const currentPaymentDate = new Date(actualPaymentDate);
     const daysOverdue = Math.max(0, Math.floor((currentPaymentDate-lastPayment)/(1000*60*60*24)));
