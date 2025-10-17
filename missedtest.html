@@ -200,7 +200,7 @@ function renderTable() {
 
     allInstallments.forEach(inst => {
         const totalDebt = (inst.principal||0) + (inst.interest||0) + (inst.penalty||0) + (inst.oldDefaultInterest||0) + (inst.newDefaultInterest||0);
-        const totalPaid = (inst.receivedOldDefaultInterest||0) + (inst.receivedNewDefaultInterest||0) + (inst.receivedPenalty||0) + (inst.receivedInterest||0) + (inst.receivedPrincipal||0);
+        const totalPaid = (inst.receivedOldDefaultInterest||0) + (inst.receivedNewDefaultInterest||0) + (inst.receivedPenalty||0) + (inst.receivedInterest||0) + (inst.receivedPrincipal||0) + (inst.overpayment||0);
         const remainingDebt = totalDebt - totalPaid;
         let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
         const cells = [
@@ -310,7 +310,7 @@ function settlePayment() {
 
     const dueInstallments = allInstallments.filter(inst => {
         const totalDebt = (inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
-        const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
+        const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0)+(inst.overpayment||0);
         return totalDebt - totalPaid > 0.01;
     }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
