@@ -175,7 +175,10 @@ function renderTable() {
     const totalDebt = (inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
     const remainingDebt = totalDebt - totalPaid;
-    let status = (remainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
+    // --- แก้ไขเฉพาะการพิจารณา overpayment ---
+    const totalRemaining = remainingDebt - (inst.overpayment||0);
+    let status = (totalRemaining <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
+
     const cells = [
       inst.sequence,
       formatDate(inst.dueDate),
@@ -296,7 +299,6 @@ function settlePayment() {
         lastPaidInstallment = inst;
       }
     };
-    // --- ลำดับการตัดหนี้คงเดิม ---
     let dueOldInterest = (inst.oldDefaultInterest||0) - (inst.receivedOldDefaultInterest||0);
     pay(dueOldInterest,'receivedOldDefaultInterest','ด/บ ผิดนัดเดิม');
 
