@@ -147,8 +147,8 @@ let paymentHistory = [];
 
 const excelHeaderMapping = {
     'ลำดับ': 'sequence', 'กำหนดวันชำระเงิน': 'dueDate', 'เงินต้น': 'principal',
-    'ดอกเบี้ย': 'interest', 'เบี้ยปรับ': 'penalty', 'ดอกเบี้ยผิดนัดเดิม': 'oldDefaultInterest',
-    'ดอกเบี้ยผิดนัดใหม่': 'newDefaultInterest', 'รับคืนเงินต้น': 'receivedPrincipal',
+    'ดอกเบี้ย': 'interest', 'เบี้ยปรับ': 'penalty', 'ด/บ ผิดนัดเดิม': 'oldDefaultInterest',
+    'ด/บ ผิดนัดใหม่': 'newDefaultInterest', 'รับคืนเงินต้น': 'receivedPrincipal',
     'รับคืนดอกเบี้ย': 'receivedInterest', 'รับคืนเบี้ยปรับ': 'receivedPenalty',
     'รับคืนดอกเบี้ยผิดนัดเดิม': 'receivedOldDefaultInterest',
     'รับคืนดอกเบี้ยผิดนัดใหม่': 'receivedNewDefaultInterest', 'รับเงินเกิน': 'overpayment'
@@ -269,13 +269,13 @@ function renderSummary() {
     totals.received.total = totals.received.principal + totals.received.interest + totals.received.penalty + totals.received.oldDefaultInterest + totals.received.newDefaultInterest + totals.received.overpayment;
 
     const remaining = {
-        principal: totals.due.principal - totals.received.principal,
-        interest: totals.due.interest - totals.received.interest,
-        penalty: totals.due.penalty - totals.received.penalty,
-        oldDefaultInterest: totals.due.oldDefaultInterest - totals.received.oldDefaultInterest,
-        newDefaultInterest: totals.due.newDefaultInterest - totals.received.newDefaultInterest,
-        overpayment: 0 - totals.received.overpayment,
-        total: totals.due.total - totals.received.total
+        principal: Math.max(0, totals.due.principal - totals.received.principal),
+        interest: Math.max(0, totals.due.interest - totals.received.interest),
+        penalty: Math.max(0, totals.due.penalty - totals.received.penalty),
+        oldDefaultInterest: Math.max(0, totals.due.oldDefaultInterest - totals.received.oldDefaultInterest),
+        newDefaultInterest: Math.max(0, totals.due.newDefaultInterest - totals.received.newDefaultInterest),
+        overpayment: 0,
+        total: Math.max(0, totals.due.total - totals.received.total)
     };
     
     tbody.innerHTML = `
@@ -332,11 +332,11 @@ function settlePayment() {
             }
         };
         
-        // 1. ตัด ด/บ ผิดนัดเดิม
+        // ตัด ด/บ ผิดนัดเดิม
         let dueOldInterest = (inst.oldDefaultInterest || 0) - (inst.receivedOldDefaultInterest || 0);
         pay(dueOldInterest, 'receivedOldDefaultInterest', 'ด/บ ผิดนัดเดิม');
 
-        // 2. คำนวณ ด/บ ผิดนัดใหม่ สด ๆ ตามวันล่าสุด
+        // คำนวณ ด/บ ผิดนัดใหม่ สด ๆ
         const lastPayment = new Date(inst.lastPaymentDate || inst.dueDate);
         const currentPaymentDate = new Date(actualPaymentDate);
         const daysOverdue = Math.max(0, Math.floor((currentPaymentDate - lastPayment) / (1000 * 60 * 60 * 24)));
@@ -346,18 +346,18 @@ function settlePayment() {
         if (remainingPrincipal > 0 && daysOverdue > 0) {
              dueNewInterest = (remainingPrincipal * (5 / 100) * daysOverdue) / 365;
         }
-        pay(dueNewInterest, 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่');
         inst.newDefaultInterest = (inst.newDefaultInterest || 0) + dueNewInterest;
+        pay(Math.min(dueNewInterest, remainingPrincipal > 0 ? dueNewInterest : 0), 'receivedNewDefaultInterest', 'ด/บ ผิดนัดใหม่');
 
-        // 3. ตัดเบี้ยปรับ
+        // ตัดเบี้ยปรับ
         let duePenalty = (inst.penalty || 0) - (inst.receivedPenalty || 0);
         pay(duePenalty, 'receivedPenalty', 'เบี้ยปรับ');
 
-        // 4. ตัดดอกเบี้ย
+        // ตัดดอกเบี้ย
         let dueInterest = (inst.interest || 0) - (inst.receivedInterest || 0);
         pay(dueInterest, 'receivedInterest', 'ดอกเบี้ย');
 
-        // 5. ตัดเงินต้น
+        // ตัดเงินต้น
         let duePrincipal = (inst.principal || 0) - (inst.receivedPrincipal || 0);
         pay(duePrincipal, 'receivedPrincipal', 'เงินต้น');
     }
