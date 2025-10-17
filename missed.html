@@ -27,8 +27,8 @@ body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing:
 .table-wrapper { overflow-x: auto; max-height: 500px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; vertical-align: middle;}
-/* ปรับปรุงการจัดขวาให้ไม่รวมคอลัมน์ใหม่ (ลำดับที่ 3) */
-td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(10)) { text-align: right; }
+/* ปรับปรุงการจัดขวาให้ไม่รวมคอลัมน์ที่ 1, 2, 3 (ลำดับ, กำหนดวันชำระ, รวมหนี้, คำนวณวันผิดนัด, สถานะ) */
+td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(8)):not(:nth-child(9)):not(:nth-child(19)) { text-align: right; }
 thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 10; }
 .status-paid { background-color: #d4edda !important; color: #155724; }
 .status-due { background-color: #f8d7da !important; color: #721c24; }
@@ -104,7 +104,7 @@ thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-
 <div class="table-wrapper">
 <table id="payment-table">
 <thead></thead>
-<tbody id="payment-table-body"><tr><td colspan="19" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
+<tbody id="payment-table-body"><tr><td colspan="20" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
 </table>
 </div>
 
@@ -155,6 +155,11 @@ function handleFileSelect(event) {
         const internalKey = excelHeaderMapping[excelHeader];
         installment[internalKey] = row[excelHeader] || 0;
       }
+      
+      // *** การแก้ไขที่สำคัญ: ล้างยอด ด/บ ผิดนัดใหม่ (newDefaultInterest) ที่มาจาก Excel เพื่อบังคับใช้เฉพาะยอดคำนวณใหม่ตามวันจริง ***
+      installment.newDefaultInterest = 0; 
+      installment.lastPaymentDate = null; // เพิ่มตัวแปรสำหรับบันทึกวันที่ชำระล่าสุด
+      
       // ปรับปรุงวันที่ให้อยู่ในรูปแบบที่ถูกต้องเพื่อใช้ในการคำนวณ/แสดงผล
       if (installment.dueDate instanceof Date) {
           installment.dueDate = formatDateForInput(installment.dueDate);
@@ -172,47 +177,65 @@ function handleFileSelect(event) {
 
 // Helper function สำหรับแปลง Excel Serial Date Number เป็น Date object
 function excelSerialDateToJSDate(serial) {
-    const MS_PER_DAY = 24 * 60 * 60 * 1000;
-    // Excel dates start on 1900-01-01 (serial 1). JS date starts on 1970-01-01.
-    // Excel's 1900 leap year bug is ignored here for simplicity in most modern use cases.
-    const date = new Date(Date.UTC(0, 0, serial - 1)); // -1 เพราะ Excel เริ่ม 1900-01-00 (0)
-    return date;
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    // Excel dates start on 1900-01-01 (serial 1). JS date starts on 1970-01-01.
+    // Excel's 1900 leap year bug is ignored here for simplicity in most modern use cases.
+    const date = new Date(Date.UTC(0, 0, serial - 1)); // -1 เพราะ Excel เริ่ม 1900-01-00 (0)
+    return date;
 }
 // Helper function สำหรับแปลง Date object เป็น string YYYY-MM-DD
 function formatDateForInput(date) {
-    if (!(date instanceof Date) || isNaN(date)) return '';
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+    if (!(date instanceof Date) || isNaN(date)) return '';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
 
 
 function renderAll() { renderTable(); renderHistoryTable(); renderSummary(); }
 
-function getDaysOverdue(dueDate, lastPaymentDate) {
-    // Note: DueDate/lastPaymentDate must be in Date object or YYYY-MM-DD string format
-    const due = new Date(dueDate);
-    // ใช้ lastPaymentDate ถ้ามีการชำระแล้ว ไม่งั้นใช้ dueDate
-    const lastPaid = lastPaymentDate ? new Date(lastPaymentDate) : due;
-    const now = new Date();
+/**
+ * คำนวณจำนวนวันผิดนัด
+ * ถ้ามีการชำระครบแล้ว จะคืนจำนวนวันทั้งหมดที่ผิดนัดจนถึงวันชำระล่าสุด
+ * ถ้ายังค้างชำระ จะคืนจำนวนวันผิดนัดจากวันชำระล่าสุด/วันครบกำหนด จนถึงวันนี้
+ */
+function getDaysOverdue(inst, forDisplay = true) {
+    const DUE_DATE = new Date(inst.dueDate);
+    const LAST_PAID_DATE = inst.lastPaymentDate ? new Date(inst.lastPaymentDate) : null;
+    const remainingPrincipal = (inst.principal||0) - (inst.receivedPrincipal||0);
+    const IS_PAID = remainingPrincipal <= 0.01 && (inst.receivedInterest >= (inst.interest||0)); 
+    const NOW = new Date();
     
-    // ตั้งเวลาเป็นเที่ยงคืนเพื่อให้การคำนวณวันที่ถูกต้อง
-    due.setHours(0,0,0,0);
-    lastPaid.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
+    DUE_DATE.setHours(0,0,0,0);
+    NOW.setHours(0,0,0,0);
+
+    // ถ้าสถานะ 'ชำระครบแล้ว' และมีการชำระล่าสุด: คำนวณวันผิดนัดย้อนหลัง (วันชำระล่าสุด - วันครบกำหนด)
+    if (IS_PAID && LAST_PAID_DATE && forDisplay) {
+        LAST_PAID_DATE.setHours(0,0,0,0);
+        // นับจากวันหลังจากวันครบกำหนดจนถึงวันชำระล่าสุด (รวมวันชำระ)
+        const startCountDate = new Date(DUE_DATE);
+        startCountDate.setDate(DUE_DATE.getDate() + 1);
+        
+        const diffTime = Math.abs(LAST_PAID_DATE.getTime() - startCountDate.getTime());
+        return Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1);
+    }
+
+    // ถ้ายังค้างชำระ: คำนวณวันผิดนัดจนถึงวันนี้
+    const startCountingDate = LAST_PAID_DATE || DUE_DATE;
+    startCountingDate.setHours(0,0,0,0);
     
-    // ถ้าวันครบกำหนด/วันจ่ายล่าสุดยังไม่ถึงวันนี้ ก็ถือว่ายังไม่ผิดนัด
-    if (lastPaid.getTime() >= now.getTime()) {
-        return 0;
+    // วันเริ่มต้นนับคือวันถัดจากวันครบกำหนด/วันชำระล่าสุด
+    const startCount = new Date(startCountingDate);
+    startCount.setDate(startCountingDate.getDate() + 1);
+
+    if (startCount.getTime() > NOW.getTime()) {
+        return 0; // ยังไม่ผิดนัด
     }
     
-    // นับจากวันหลังจากวันครบกำหนด/วันจ่ายล่าสุด
-    const startCountDate = new Date(lastPaid);
-    startCountDate.setDate(lastPaid.getDate() + 1);
-    
-    const diffTime = Math.abs(now.getTime() - startCountDate.getTime());
-    const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+    // นับจำนวนวันผิดนัด: วันนี้ - วันเริ่มต้นนับ
+    const diffTime = Math.abs(NOW.getTime() - startCount.getTime());
+    const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1); // +1 นับวันปัจจุบันด้วย
     return diffDays;
 }
 
@@ -222,8 +245,28 @@ function renderTable() {
   const thead = document.getElementById('payment-table').querySelector('thead');
   thead.innerHTML = '';
   tbody.innerHTML = '';
-  // **แก้ไขจุดที่ 1:** เพิ่ม 'คำนวณวันผิดนัด' ในส่วนหัวตาราง
-  const displayHeaders = [ 'ลำดับ','กำหนดวันชำระ','เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รวมหนี้','คำนวณวันผิดนัด','รับคืน ด/บ ผิดนัดเดิม','รับคืน ด/บ ผิดนัดใหม่','รับคืนเบี้ยปรับ','รับคืนดอกเบี้ย','รับคืนเงินต้น','รับคืนรวม','รับเงินเกิน','หนี้คงเหลือ','สถานะ' ];
+  // **แก้ไขจุดที่ 1: เพิ่มคอลัมน์ใหม่**
+  const displayHeaders = [ 
+      'ลำดับ',
+      'กำหนดวันชำระ',
+      'เงินต้น',
+      'ดอกเบี้ย',
+      'เบี้ยปรับ',
+      'ด/บ ผิดนัดเดิม',
+      'ด/บ ผิดนัดใหม่', // ยอดคงเหลือที่ต้องจ่ายจริง
+      'รวมหนี้',
+      'คำนวณวันผิดนัด', // วันผิดนัดที่คำนวณ
+      'ด/บ ผิดนัดสะสม (ตัดชำระแล้ว)', // **คอลัมน์ใหม่ที่เพิ่ม**
+      'รับคืน ด/บ ผิดนัดเดิม',
+      'รับคืน ด/บ ผิดนัดใหม่',
+      'รับคืนเบี้ยปรับ',
+      'รับคืนดอกเบี้ย',
+      'รับคืนเงินต้น',
+      'รับคืนรวม',
+      'รับเงินเกิน',
+      'หนี้คงเหลือ',
+      'สถานะ' 
+  ];
   thead.innerHTML = `<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
   
   allInstallments.forEach(inst => {
@@ -231,18 +274,15 @@ function renderTable() {
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
     const remainingDebtBeforeOverpay = totalDebt - totalPaid;
     const finalRemainingDebt = remainingDebtBeforeOverpay - (inst.overpayment||0);
-    
+    
     // กำหนดสถานะ
     let status = (finalRemainingDebt <= 0.01) ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด');
     
     // คำนวณวันผิดนัด ณ วันที่แสดงผล
-    let daysOverdueDisplay = 0;
-    if (status !== 'ชำระครบแล้ว') {
-        const baseDate = inst.lastPaymentDate || inst.dueDate;
-        if (baseDate) {
-            daysOverdueDisplay = getDaysOverdue(baseDate, inst.lastPaymentDate);
-        }
-    }
+    let daysOverdueDisplay = getDaysOverdue(inst, true); // ใช้ true เพื่อให้คำนวณวันในอดีตได้
+    
+    // ยอด ด/บ ผิดนัดสะสม (ตัดชำระแล้ว)
+    const actualDefaultInterestPaid = inst.receivedNewDefaultInterest || 0;
     
     const cells = [
       inst.sequence,
@@ -251,10 +291,10 @@ function renderTable() {
       formatNumber(inst.interest),
       formatNumber(inst.penalty),
       formatNumber(inst.oldDefaultInterest),
-      formatNumber(inst.newDefaultInterest),
+      formatNumber(inst.newDefaultInterest), // ยอด ด/บ ผิดนัดใหม่คงเหลือที่ยังไม่ได้รับคืน
       formatNumber(totalDebt),
-      // **แก้ไขจุดที่ 3:** เพิ่มค่า 'คำนวณวันผิดนัด'
-      daysOverdueDisplay, 
+      daysOverdueDisplay, // แสดงจำนวนวัน
+      formatNumber(actualDefaultInterestPaid), // **คอลัมน์ใหม่: ยอด ด/บ ผิดนัดใหม่ที่รับคืนแล้ว**
       formatNumber(inst.receivedOldDefaultInterest),
       formatNumber(inst.receivedNewDefaultInterest),
       formatNumber(inst.receivedPenalty),
@@ -283,10 +323,10 @@ function renderHistoryTable() {
     const key = `${formatDate(entry.date)}|${formatNumber(entry.totalAmount)}`;
     if (!groupedHistory[key]) groupedHistory[key] = [];
     groupedHistory[key].push(...entry.breakdown.map(item => ({
-        date: entry.date,
-        totalAmount: entry.totalAmount,
-        ...item
-    })));
+        date: entry.date,
+        totalAmount: entry.totalAmount,
+        ...item
+    })));
   });
 
   for (const key in groupedHistory) {
@@ -365,10 +405,10 @@ function calculateInterest() {
     return;
   }
   const dueDate = new Date(dueDateStr), paymentDate = new Date(paymentDateStr);
-  
+  
   dueDate.setHours(0,0,0,0);
   paymentDate.setHours(0,0,0,0);
-  
+  
   // นับวันผิดนัด: วันที่จ่าย - วันครบกำหนด
   const days = Math.max(0, Math.floor((paymentDate - dueDate)/(1000*60*60*24)));
   const interest = (principal*(rate/100)*days)/365;
@@ -391,9 +431,9 @@ function settlePayment() {
   if(dueInstallments.length===0){ alert("ไม่พบหนี้ค้างชำระ"); return; }
 
   let historyEntry = { date: new Date(actualPaymentDate), totalAmount: paymentAmount, breakdown: [] };
-  
+  
   // ต้องกำหนด lastPaidInstallment เพื่อใช้ในการบันทึกเงินเกิน
-  let lastPaidInstallment = null; 
+  let lastPaidInstallment = null; 
 
   for(let inst of dueInstallments){
     if(paymentAmount<=0) break;
@@ -404,7 +444,7 @@ function settlePayment() {
         paymentAmount = Math.round((paymentAmount - amountToPay)*100)/100;
         historyEntry.breakdown.push({ sequence: inst.sequence, category: categoryName, amount: amountToPay });
         // อัพเดทงวดล่าสุดที่มีการตัดชำระ
-        lastPaidInstallment = inst; 
+        lastPaidInstallment = inst; 
       }
     };
     
@@ -412,18 +452,18 @@ function settlePayment() {
     let dueOldInterest = (inst.oldDefaultInterest||0) - (inst.receivedOldDefaultInterest||0);
     pay(dueOldInterest,'receivedOldDefaultInterest','ด/บ ผิดนัดเดิม');
 
-    // --- 2. คำนวณและตัดชำระ ด/บ ผิดนัดใหม่ (ปรับปรุง Logic) ---
+    // --- 2. คำนวณและตัดชำระ ด/บ ผิดนัดใหม่ (Logic คำนวณตามวันจริง) ---
     const rate = 5; // อัตราดอกเบี้ยผิดนัด % ต่อปี
     // จุดเริ่มต้นในการนับวันผิดนัดใหม่
-    const startCountingDate = inst.lastPaymentDate || inst.dueDate; 
+    const startCountingDate = inst.lastPaymentDate || inst.dueDate; 
     const currentPaymentDate = new Date(actualPaymentDate);
-    
-    const startDate = new Date(startCountingDate);
-    startDate.setHours(0,0,0,0);
-    currentPaymentDate.setHours(0,0,0,0);
-    
-    // นับจำนวนวันผิดนัด: วันที่จ่ายจริง - วันเริ่มต้นนับ
-    const daysOverdue = Math.max(0, Math.floor((currentPaymentDate - startDate)/(1000*60*60*24)));
+    
+    const startDate = new Date(startCountingDate);
+    startDate.setHours(0,0,0,0);
+    currentPaymentDate.setHours(0,0,0,0);
+    
+    // นับจำนวนวันผิดนัด: วันที่จ่ายจริง - วันเริ่มต้นนับ
+    const daysOverdue = Math.max(0, Math.floor((currentPaymentDate - startDate)/(1000*60*60*24)));
 
     const remainingPrincipal = (inst.principal||0)-(inst.receivedPrincipal||0);
     
@@ -434,6 +474,7 @@ function settlePayment() {
     }
     
     // เพิ่มยอดดอกเบี้ยผิดนัดใหม่ที่เกิดขึ้นในช่วงนี้ เข้าไปในยอดหนี้รวม
+    // ยอด inst.newDefaultInterest ตั้งต้นเป็น 0 จึงมีแต่ยอดคำนวณตามวันจริง
     inst.newDefaultInterest = Math.round(((inst.newDefaultInterest||0)+dueNewInterestInPeriod)*100)/100;
     
     // คำนวณยอดคงเหลือของ ด/บ ผิดนัดใหม่ทั้งหมดเพื่อนำไปตัดชำระ
@@ -480,8 +521,9 @@ function applyRowColors(){
   document.querySelectorAll("#payment-table-body tr").forEach(row=>{
     const finalRemainingDebt = parseFloat(row.getAttribute('data-remaining'));
     row.className='';
+    // index ที่ 18 คือสถานะ
     if(finalRemainingDebt <= 0.01) row.classList.add('status-paid');
-    else if(row.cells[17]?.textContent.trim() === "ค้างชำระ") row.classList.add('status-due'); // ปรับ index เป็น 17 เนื่องจากเพิ่มคอลัมน์ใหม่
+    else if(row.cells[18]?.textContent.trim() === "ค้างชำระ") row.classList.add('status-due'); 
   });
 }
 
