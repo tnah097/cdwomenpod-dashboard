@@ -238,7 +238,7 @@
   </div>
   <!-- Card 4 -->
   <div class="card pastel-pink">
-    ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal">-</div>
+    ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal-card4">-</div>
     เงินต้นตามที่ได้รับดำเนินคดี<div class="value" id="principal-legal">-</div>
     จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ<div class="value" id="overdue-legal">-</div>
   </div>
@@ -359,7 +359,7 @@ let provinceDataTable = null;
     document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
     document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
 
-    document.getElementById('legal').textContent = formatNumber(overview.O2);
+    document.getElementById('legal-card4')?.textContent = formatNumber(overview.O2);
     document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
     document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
 
@@ -380,30 +380,31 @@ let provinceDataTable = null;
           donutChartInstance.destroy();
         }
 
-        const donutCtx = document.getElementById('donutChart').getContext('2d');
-        donutChartInstance = new Chart(donutCtx, {
-          type: 'doughnut',
-          data: {
-            labels: pieChartData.map(p => p.province),
-            datasets: [{
-              data: pieChartData.map(p => parseFloat(p.percent)),
-              backgroundColor: pastelColors.slice(0, pieChartData.length)
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return `${context.label || ''}: ${context.raw.toFixed(1)}%`;
-                  }
-                }
-              }
-            }
+        if (donutChartInstance) donutChartInstance.destroy();
+const donutCtx = document.getElementById('donutChart').getContext('2d');
+donutChartInstance = new Chart(donutCtx, {
+  type: 'doughnut',
+  data: {
+    labels: pieChartData.map(p => p.province),
+    datasets: [{
+      data: pieChartData.map(p => parseFloat(p.percent) || 0),
+      backgroundColor: pastelColors.slice(0, pieChartData.length)
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.label || ''}: ${context.raw.toFixed(1)}%`;
           }
-        });
+        }
+      }
+    }
+  }
+});
 
         const tbody = document.querySelector("#provinceTable tbody");
         tbody.innerHTML = "";
