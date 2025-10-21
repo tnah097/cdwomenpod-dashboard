@@ -314,177 +314,215 @@
   <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwwolsXC3tlaoSvEDYE25GGshllToB3uOTzp0e7W5dEGACAvSH0-zB-7HUcToY7-x2t/exec";
 const pastelColors = [
-  '#FF202B', '#87FEBC', '#FFB6B7', '#FFDD63', '#F68B71',
-  '#DAB9E6', '#A0E8E8', '#ADFF2F', '#FFFF00', '#FFA500'
+  '#FF202B', '#87FEBC', '#FFB6B7', '#FFDD63', '#F68B71',
+  '#DAB9E6', '#A0E8E8', '#ADFF2F', '#FFFF00', '#FFA500'
 ];
 
 function formatNumber(num) {
-  return Number(num || 0).toLocaleString("th-TH");
+  // รับค่าได้ทั้ง string และ number และจัดการค่าว่าง
+  return Number(num || 0).toLocaleString("th-TH");
 }
 
-function formatNumberWithDecimals(val) {
-  const num = parseFloat(String(val).replace(/,/g, ''));
-  if (isNaN(num)) return "-";
-  return num.toLocaleString("th-TH", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+function formatPercent(val) {
+  const num = parseFloat(String(val).replace(/[^0-9.-]/g, ''));
+  if (isNaN(num)) return "-";
+  return num.toFixed(2) + "%";
 }
 
 let donutChartInstance = null;
 let provinceDataTable = null;
 
 async function fetchData() {
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    const overview = data.overview || {};
-    const pieChartData = data.topOverdue || [];
-    const provinces = data.provinces || [];
+  try {
+    // ดึงข้อมูลหลักสำหรับ Cards และตารางจังหวัด
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    
+    if (data.error) {
+      console.error("Apps Script Error:", data.error);
+      return;
+    }
 
-    // === แสดงค่าใน Card ===
-    document.getElementById('num-projects').textContent = formatNumber(overview.B2);
-    document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
-    document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
+    const overview = data.overview || {};
+    const pieChartData = data.topOverdue || [];
+    const provinces = data.provinces || [];
 
-    document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
-    document.getElementById('recovered-principal').textContent = formatNumber(overview.G2);
-    document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
+    // === แสดงค่าใน Card (อ้างอิงตาม Cell ที่กำหนดไว้ในโจทย์) ===
+    
+    // Card 1
+    document.getElementById('num-projects').textContent = formatNumber(overview.B2);
+    document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
+    document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
 
-    document.getElementById('mediation').textContent = formatNumber(overview.H2);
-    document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
-    document.getElementById('court-filed').textContent = formatNumber(overview.J2);
-    document.getElementById('court-judgement').textContent = formatNumber(overview.K2);
-    document.getElementById('court-consent').textContent = formatNumber(overview.L2);
-    document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
-    document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
+    // Card 2
+    document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
+    document.getElementById('recovered-principal').textContent = formatNumber(overview.G2);
+    document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
 
-    document.getElementById('legal-card4')?.textContent = formatNumber(overview.O2);
-    document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
-    document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
+    // Card 3
+    document.getElementById('mediation').textContent = formatNumber(overview.H2);
+    document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
+    document.getElementById('court-filed').textContent = formatNumber(overview.J2);
+    document.getElementById('court-judgement').textContent = formatNumber(overview.K2);
+    document.getElementById('court-consent').textContent = formatNumber(overview.L2);
+    document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
+    document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
 
-    document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
-    document.getElementById('percent-overdue-card5').textContent = parseFloat(overview.S2).toFixed(2) + "%";
+    // Card 4
+    document.getElementById('legal-card4').textContent = formatNumber(overview.O2);
+    document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
+    document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
 
-    document.getElementById('contract-end-debt').textContent = formatNumber(overview.T2);
-    document.getElementById('over-5-percent').textContent = parseFloat(overview.U2).toFixed(2) + "%";
+    // Card 5
+    document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
+    document.getElementById('percent-overdue-card5').textContent = formatPercent(overview.S2);
 
-    document.getElementById('approved-money').textContent = formatNumber(overview.C2);
-    document.getElementById('not-due').textContent = formatNumber(overview.F2);
-    document.getElementById('legal').textContent = formatNumber(overview.O2);
+    // Card 6
+    document.getElementById('contract-end-debt').textContent = formatNumber(overview.T2);
+    document.getElementById('over-5-percent').textContent = formatPercent(overview.U2); // แก้เป็น formatPercent ตามชื่อหัวข้อ
 
-    // === Donut Chart ===
-    if (donutChartInstance) donutChartInstance.destroy();
-    const donutCtx = document.getElementById('donutChart').getContext('2d');
-    donutChartInstance = new Chart(donutCtx, {
-      type: 'doughnut',
-      data: {
-        labels: pieChartData.map(p => p.province),
-        datasets: [{
-          data: pieChartData.map(p => parseFloat(p.percent) || 0),
-          backgroundColor: pastelColors.slice(0, pieChartData.length)
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return `${context.label || ''}: ${context.raw.toFixed(1)}%`;
-              }
-            }
-          }
-        }
-      }
-    });
+    // Card 'right' section (ดึงข้อมูลซ้ำจาก Card อื่น)
+    document.getElementById('approved-money').textContent = formatNumber(overview.C2);
+    document.getElementById('not-due').textContent = formatNumber(overview.F2);
+    document.getElementById('legal').textContent = formatNumber(overview.O2);
 
-    // === Province Table ===
-    const tbody = document.querySelector("#provinceTable tbody");
-    tbody.innerHTML = "";
-    provinces.forEach(p => {
-      const provinceEncoded = encodeURIComponent(p.province);
-      const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
-      const alignments = p.alignments || {};
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="align-${alignments.province || 'left'}"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
-        <td class="align-${alignments.totalProjects || 'right'}">${formatNumber(p.totalProjects)}</td>
-        <td class="align-${alignments.approvedAmount || 'right'}">${formatNumber(p.approvedAmount)}</td>
-        <td class="align-${alignments.debtStart || 'right'}">${formatNumber(p.debtStart)}</td>
-        <td class="align-${alignments.debtNow || 'right'}">${formatNumber(p.debtNow)}</td>
-        <td class="align-${alignments.legalAction || 'right'}">${formatNumber(p.legalAction)}</td>
-        <td class="align-${alignments.overdue || 'right'}">${formatNumber(p.overdue)}</td>
-        <td class="align-${alignments.overduePercent || 'right'}">${parseFloat(p.overduePercent).toFixed(2)}%</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    // === Donut Chart (10 อันดับ ร้อยละหนี้เกินกำหนดชำระ) ===
+    if (donutChartInstance) donutChartInstance.destroy();
+    const donutCtx = document.getElementById('donutChart').getContext('2d');
+    donutChartInstance = new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: pieChartData.map(p => p.province),
+        datasets: [{
+          // ใช้ค่า percent ที่ดึงมา
+          data: pieChartData.map(p => parseFloat(p.percent) || 0), 
+          backgroundColor: pastelColors.slice(0, pieChartData.length)
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label || ''}: ${parseFloat(context.raw).toFixed(2)}%`;
+              }
+            }
+          }
+        }
+      }
+    });
 
-    if ($.fn.DataTable.isDataTable('#provinceTable')) {
-      $('#provinceTable').DataTable().clear().destroy();
-    }
-    provinceDataTable = $('#provinceTable').DataTable({
-      paging: false,
-      scrollY: '400px',
-      scrollCollapse: true,
-      language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" }
-    });
+    // === Province Table (ตารางจังหวัด) ===
+    const tbody = document.querySelector("#provinceTable tbody");
+    tbody.innerHTML = "";
+    provinces.forEach(p => {
+      const provinceEncoded = encodeURIComponent(p.province);
+      const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
+      // ใช้ค่าที่ถูกต้องตามโครงสร้างข้อมูลที่ Apps Script ส่งมา
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="align-left"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
+        <td class="align-right">${formatNumber(p.totalProjects)}</td>
+        <td class="align-right">${formatNumber(p.approvedAmount)}</td>
+        <td class="align-right">${formatNumber(p.debtStart)}</td>
+        <td class="align-right">${formatNumber(p.debtNow)}</td>
+        <td class="align-right">${formatNumber(p.legalAction)}</td>
+        <td class="align-right">${formatNumber(p.overdue)}</td>
+        <td class="align-right">${formatPercent(p.overduePercent)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
 
-  } catch (error) {
-    console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
-  }
+    // ตรวจสอบและสร้าง DataTables
+    if ($.fn.DataTable.isDataTable('#provinceTable')) {
+      $('#provinceTable').DataTable().clear().destroy();
+    }
+    provinceDataTable = $('#provinceTable').DataTable({
+      paging: false,
+      scrollY: '400px',
+      scrollCollapse: true,
+      order: [[ 7, 'desc' ]], // เรียงตามร้อยละหนี้เกินกำหนดชำระ (Column 8, index 7)
+      language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" }
+    });
+
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
+  }
 }
 
 async function fetchStudyCenterData() {
-  try {
-    const res = await fetch(`${API_URL}?action=studyCenter`);
-    const data = await res.json();
-    const centers = data.studyCenter || [];
-    const tbody = document.querySelector("#studyCenterTable tbody");
-    tbody.innerHTML = "";
+  try {
+    // ดึงข้อมูลศูนย์ศึกษา โดยระบุ action=studyCenter
+    const res = await fetch(`${API_URL}?action=studyCenter`);
+    const data = await res.json();
+    
+    if (data.error) {
+      console.error("Apps Script Error (Study Center):", data.error);
+      return;
+    }
 
-    centers.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
-      const alignments = row.alignments || {};
-      tr.innerHTML = `
-        <td class="align-${alignments.name || 'left'}"><span class="center-name-link">${row.name}</span></td>
-        <td class="align-${alignments.index || 'center'}">${row.index}</td>
-        <td class="align-${alignments.province || 'left'}">${row.province}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    const centers = data.studyCenter || [];
+    const tbody = document.querySelector("#studyCenterTable tbody");
+    tbody.innerHTML = "";
 
-    if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
-      $('#studyCenterTable').DataTable().clear().destroy();
-    }
-    $('#studyCenterTable').DataTable({
-      paging: false,
-      scrollY: '300px',
-      scrollCollapse: true,
-      searching: true,
-      language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" }
-    });
+    centers.forEach(row => {
+      const tr = document.createElement("tr");
+      // แยกชื่อจังหวัดด้วย | เพื่อให้ DataTables ใช้ในการกรอง (Regular Expression)
+      tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
+      
+      tr.innerHTML = `
+        <td class="align-left"><span class="center-name-link">${row.name}</span></td>
+        <td class="align-center">${formatNumber(row.index)}</td>
+        <td class="align-left">${row.province}</td>
+      `;
+      tbody.appendChild(tr);
+    });
 
-    const studyCenterTableBody = $('#studyCenterTable tbody');
-    studyCenterTableBody.on('click', 'tr', function() {
-      if (!provinceDataTable) return;
-      studyCenterTableBody.find('tr').removeClass('selected-row');
-      $(this).addClass('selected-row');
-      const provincesToFilter = $(this).data('provinces');
-      provinceDataTable.column(0).search(`^(${provincesToFilter})$`, true, false).draw();
-    });
+    // ตรวจสอบและสร้าง DataTables
+    if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
+      $('#studyCenterTable').DataTable().clear().destroy();
+    }
+    $('#studyCenterTable').DataTable({
+      paging: false,
+      scrollY: '300px',
+      scrollCollapse: true,
+      searching: true,
+      info: false, // ปิด info เพื่อให้ดูดีขึ้น
+      language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" }
+    });
 
-    $('.clickable-header').on('click', function() {
-      if (!provinceDataTable) return;
-      studyCenterTableBody.find('tr').removeClass('selected-row');
-      provinceDataTable.column(0).search('').draw();
-    });
+    // การจัดการ Click Event สำหรับการกรองตารางจังหวัด
+    const studyCenterTableBody = $('#studyCenterTable tbody');
+    studyCenterTableBody.off('click').on('click', 'tr', function() {
+      if (!provinceDataTable) return;
+      
+      // จัดการสถานะการเลือก
+      const isSelected = $(this).hasClass('selected-row');
+      studyCenterTableBody.find('tr').removeClass('selected-row');
+      
+      if (!isSelected) {
+        $(this).addClass('selected-row');
+        const provincesToFilter = $(this).data('provinces');
+        // กรองตารางจังหวัดโดยใช้ Regular Expression เพื่อหาชื่อจังหวัดที่ตรงกันหลายรายการ
+        provinceDataTable.column(0).search(`^(${provincesToFilter})$`, true, false).draw();
+      } else {
+        // ยกเลิกการกรอง
+        provinceDataTable.column(0).search('').draw();
+      }
+    });
 
-  } catch (error) {
-    console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลศูนย์ศึกษา:", error);
-  }
+    // การจัดการ Click Event สำหรับ Header เพื่อยกเลิกการกรอง
+    $('.clickable-header').off('click').on('click', function() {
+      if (!provinceDataTable) return;
+      studyCenterTableBody.find('tr').removeClass('selected-row');
+      provinceDataTable.column(0).search('').draw(); // ล้างการกรอง
+    });
+
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลศูนย์ศึกษา:", error);
+  }
 }
 
 fetchData();
@@ -492,4 +530,3 @@ fetchStudyCenterData();
 </script>
 </body>
 </html>
-
