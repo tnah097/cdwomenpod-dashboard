@@ -127,7 +127,6 @@ thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-
     </table>
   </div>
 
-  <!-- ตรงนี้เป็นตารางรายละเอียดหนี้ (จากโค้ดเก่า) ที่เราจะใส่ไว้ใต้ตารางสรุป -->
   <div id="debt-detail-container">
     <h2 style="margin-top: 20px;">ตารางรายละเอียดหนี้ (รายละเอียดแยกตามงวด)</h2>
     <div class="table-wrapper" style="max-height: 400px;">
@@ -205,7 +204,7 @@ function handleFileSelect(event) {
       }
 
       // ตั้งค่าเริ่มต้น/ตัวเก็บข้อมูลเพิ่มเติม
-      installment.newDefaultInterest = 0; // เราจะคำนวณใหม่จากวันจริง
+      // installment.newDefaultInterest = 0; // [BUG FIXED] บรรทัดนี้ถูกลบออก เพราะมันไปล้างค่าที่อ่านมาจาก Excel
       installment.lastPaymentDate = null;
 
       // แปลงวันที่ ให้อยู่ในรูปแบบ YYYY-MM-DD สำหรับใช้งาน
@@ -240,7 +239,7 @@ function handleFileSelect(event) {
 function excelSerialDateToJSDate(serial) {
   // Excel's serial date: 1 => 1900-01-01 (note: 1900 leap bug), but this simple conversion is often acceptable
   const utc_days = Math.floor(serial - 25569);
-  const utc_value = utc_days * 86400; 
+  const utc_value = utc_days * 86400;  
   const date_info = new Date(utc_value * 1000);
   return date_info;
 }
@@ -259,14 +258,14 @@ function renderAll() { renderTable(); renderHistoryTable(); renderSummary(); ren
 
 /* ========== ฟังก์ชันคำนวณวันผิดนัด (เดิม) ========== */
 /**
- * ถ้ามีการชำระครบแล้ว จะคืนจำนวนวันทั้งหมดที่ผิดนัดจนถึงวันชำระล่าสุด
- * ถ้ายังค้างชำระ จะคืนจำนวนวันผิดนัดจากวันชำระล่าสุด/วันครบกำหนด จนถึงวันนี้
- */
+  * ถ้ามีการชำระครบแล้ว จะคืนจำนวนวันทั้งหมดที่ผิดนัดจนถึงวันชำระล่าสุด
+  * ถ้ายังค้างชำระ จะคืนจำนวนวันผิดนัดจากวันชำระล่าสุด/วันครบกำหนด จนถึงวันนี้
+  */
 function getDaysOverdue(inst, forDisplay = true) {
   const DUE_DATE = new Date(inst.dueDate);
   const LAST_PAID_DATE = inst.lastPaymentDate ? new Date(inst.lastPaymentDate) : null;
   const remainingPrincipal = (inst.principal||0) - (inst.receivedPrincipal||0);
-  const IS_PAID = remainingPrincipal <= 0.01 && (inst.receivedInterest >= (inst.interest||0)); 
+  const IS_PAID = remainingPrincipal <= 0.01 && (inst.receivedInterest >= (inst.interest||0));  
   const NOW = new Date();
 
   DUE_DATE.setHours(0,0,0,0);
@@ -304,7 +303,7 @@ function renderTable() {
   thead.innerHTML = '';
   tbody.innerHTML = '';
 
-  const displayHeaders = [ 
+  const displayHeaders = [  
       'ลำดับ',
       'กำหนดวันชำระ',
       'เงินต้น',
@@ -323,7 +322,7 @@ function renderTable() {
       'รับคืนรวม',
       'รับเงินเกิน',
       'หนี้คงเหลือ',
-      'สถานะ' 
+      'สถานะ'  
   ];
   thead.innerHTML = `<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
 
@@ -368,8 +367,8 @@ function renderTable() {
 
 /* ========== renderDebtDetailTable (ตารางใหม่ ที่จะอยู่ใต้สรุป) ========== */
 /* ดึงข้อมูลจาก allInstallments เช่นเดียวกับตารางหลัก แต่จัดแสดงรายละเอียดแบบแถวต่อแถว
-   และคำนวณ "ด/บ ผิดนัดใหม่ (คำนวณ)" โดยใช้ getDaysOverdue() และอัตราใน input#rate
-   ถ้างวดชำระครบแล้ว จะไม่คำนวณหรือเปลี่ยนค่า (แสดงยอดที่บันทึกไว้) */
+    และคำนวณ "ด/บ ผิดนัดใหม่ (คำนวณ)" โดยใช้ getDaysOverdue() และอัตราใน input#rate
+    ถ้างวดชำระครบแล้ว จะไม่คำนวณหรือเปลี่ยนค่า (แสดงยอดที่บันทึกไว้) */
 function renderDebtDetailTable() {
   const tbody = document.getElementById('debt-detail-body');
   tbody.innerHTML = '';
@@ -390,20 +389,25 @@ function renderDebtDetailTable() {
     const isFullyPaid = remainingPrincipal <= 0.01 && remainingInterest <= 0.01 && remainingOldDefault <= 0.01 && remainingNewDefault <= 0.01;
 
     // คำนวณ ด/บ ผิดนัดใหม่ สำหรับการแสดง (แต่ไม่เขียนทับ inst.newDefaultInterest ถ้าเป็นงวดที่ชำระครบ)
+    // 1. เริ่มต้นด้วยค่าที่เก็บไว้ (ซึ่งตอนนี้อ่านมาจาก Excel ได้ถูกต้องแล้ว)
     let calculatedNewDefaultForDisplay = inst.newDefaultInterest || 0;
-    const daysOverdue = getDaysOverdue(inst, false); // คืนจำนวนวันค้าง (จนถึงวันนี้) หรือ 0
-
+    
+    // 2. ถ้ายังชำระไม่ครบ
     if (!isFullyPaid) {
-      // คำนวณจาก remainingPrincipal ในช่วงนี้ (ไม่แก้ inst ขณะ render)
+      const daysOverdue = getDaysOverdue(inst, false); // คืนจำนวนวันค้าง (จนถึงวันนี้) หรือ 0
+      
+      // 3. ถ้ายังมีเงินต้นค้าง และมีวันผิดนัด
       const tempRemainingPrincipal = Math.max(0, remainingPrincipal);
       if (tempRemainingPrincipal > 0 && daysOverdue > 0) {
+        // 4. คำนวณดอกเบี้ยที่กำลังเกิดขึ้น ณ ปัจจุบัน
         const computed = (tempRemainingPrincipal * (rate/100) * daysOverdue) / 365;
+        // 5. บวกเพิ่มเข้าไปในยอดที่จะแสดง
         calculatedNewDefaultForDisplay = Math.round((calculatedNewDefaultForDisplay + computed) * 100) / 100;
       }
-    } else {
-      // ถ้างวดชำระครบแล้ว ให้แสดงยอด newDefaultInterest (ถ้ามี) แต่ไม่เพิ่ม
-      calculatedNewDefaultForDisplay = inst.newDefaultInterest || 0;
-    }
+    } 
+    // 6. (Else) ถ้างวดชำระครบแล้ว (isFullyPaid = true) 
+    // เราจะไม่ทำอะไรเพิ่ม และ 'calculatedNewDefaultForDisplay' จะเป็นค่าจาก inst.newDefaultInterest (จาก Excel)
+    // ซึ่งเป็นพฤติกรรมที่ถูกต้อง
 
     const totalDebt = (inst.principal||0) + (inst.interest||0) + (inst.penalty||0) + (inst.oldDefaultInterest||0) + calculatedNewDefaultForDisplay;
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
@@ -479,9 +483,9 @@ function renderSummary() {
   const summaryHeaders = ['', 'เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รับเงินเกิน','รวม'];
   header.innerHTML = `<th>${summaryHeaders.join('</th><th>')}</th>`;
 
-  const totals = { 
-    due: { principal:0,interest:0,penalty:0,oldDefaultInterest:0,newDefaultInterest:0,overpayment:0,total:0 }, 
-    received: { principal:0,interest:0,penalty:0,oldDefaultInterest:0,newDefaultInterest:0,overpayment:0,total:0 } 
+  const totals = {  
+    due: { principal:0,interest:0,penalty:0,oldDefaultInterest:0,newDefaultInterest:0,overpayment:0,total:0 },  
+    received: { principal:0,interest:0,penalty:0,oldDefaultInterest:0,newDefaultInterest:0,overpayment:0,total:0 }  
   };
 
   allInstallments.forEach(inst => {
@@ -489,7 +493,7 @@ function renderSummary() {
     totals.due.interest += inst.interest||0;
     totals.due.penalty += inst.penalty||0;
     totals.due.oldDefaultInterest += inst.oldDefaultInterest||0;
-    totals.due.newDefaultInterest += inst.newDefaultInterest||0;
+    totals.due.newDefaultInterest += inst.newDefaultInterest||0; // <
     totals.received.principal += inst.receivedPrincipal||0;
     totals.received.interest += inst.receivedInterest||0;
     totals.received.penalty += inst.receivedPenalty||0;
