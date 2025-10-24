@@ -204,7 +204,6 @@ function handleFileSelect(event) {
       }
 
       // ตั้งค่าเริ่มต้น/ตัวเก็บข้อมูลเพิ่มเติม
-      // installment.newDefaultInterest = 0; // [BUG FIXED v1] บรรทัดนี้ถูกลบออก (จากโค้ดก่อนหน้า)
       installment.lastPaymentDate = null;
 
       // แปลงวันที่ ให้อยู่ในรูปแบบ YYYY-MM-DD สำหรับใช้งาน
@@ -213,7 +212,6 @@ function handleFileSelect(event) {
       } else if (typeof installment.dueDate === 'number') {
         installment.dueDate = formatDateForInput(excelSerialDateToJSDate(installment.dueDate));
       } else if (typeof installment.dueDate === 'string') {
-        // พยายาม normalize ให้เป็น YYYY-MM-DD ถ้าเป็น format ที่ browser รับได้
         const d = new Date(installment.dueDate);
         if (!isNaN(d.getTime())) installment.dueDate = formatDateForInput(d);
       }
@@ -226,22 +224,44 @@ function handleFileSelect(event) {
         installment[k] = Number(installment[k] || 0);
       });
 
-      // [NEW FIX v2]
-      // ตรวจสอบและแก้ไขข้อมูล: ถ้า "ยอดรับคืน" (Paid) มากกว่า "ยอดหนี้" (Due) (ซึ่งอาจเกิดจากไฟล์ Excel ที่ข้อมูลไม่ครบ)
-      // ให้ปรับ "ยอดหนี้" (Due) ให้มีค่าอย่างน้อยเท่ากับ "ยอดรับคืน" (Paid)
-      if (installment.receivedNewDefaultInterest > installment.newDefaultInterest) {
-        installment.newDefaultInterest = installment.receivedNewDefaultInterest;
+      // [NEW FIX v3] - ตรรกะซ่อมข้อมูลจาก Excel
+      // 1. ตรวจสอบว่าเงินต้นของงวดนี้จ่ายครบหรือยัง
+      const remainingPrincipal = (installment.principal || 0) - (installment.receivedPrincipal || 0);
+      const isPrincipalPaid = remainingPrincipal <= 0.01;
+
+      if (!isPrincipalPaid) {
+        // 2. ถ้างวดนี้ "ยังไม่" ชำระเงินต้น (เช่น งวดที่ 4)
+        // สมมติว่ายอดในช่อง "รับคืน" (Paid) ที่มาจาก Excel นั้น
+        // จริงๆ แล้วคือ "ยอดหนี้" (Due) และยอด "รับคืน" (Paid) จริงๆ คือ 0
+
+        if (installment.receivedInterest > 0) {
+          // ย้ายยอด "รับคืน" ไปเป็น "หนี้" (ถ้ามันมากกว่ายอดหนี้เดิม)
+          installment.interest = Math.max(installment.interest, installment.receivedInterest);
+          // ตั้งค่า "รับคืน" เป็น 0
+          installment.receivedInterest = 0;
+        }
+        if (installment.receivedPenalty > 0) {
+          installment.penalty = Math.max(installment.penalty, installment.receivedPenalty);
+          installment.receivedPenalty = 0;
+        }
+        if (installment.receivedOldDefaultInterest > 0) {
+          installment.oldDefaultInterest = Math.max(installment.oldDefaultInterest, installment.receivedOldDefaultInterest);
+          installment.receivedOldDefaultInterest = 0;
+        }
+        if (installment.receivedNewDefaultInterest > 0) {
+          installment.newDefaultInterest = Math.max(installment.newDefaultInterest, installment.receivedNewDefaultInterest);
+          installment.receivedNewDefaultInterest = 0;
+        }
+
+      } else {
+        // 3. ถ้างวดนี้ "ชำระครบแล้ว" (เช่น งวดที่ 1-3)
+        // ใช้ตรรกะเดิมจาก v2: แค่ตรวจสอบว่า "หนี้" (Due) ไม่น้อยกว่า "รับคืน" (Paid)
+        installment.interest = Math.max(installment.interest, installment.receivedInterest);
+        installment.penalty = Math.max(installment.penalty, installment.receivedPenalty);
+        installment.oldDefaultInterest = Math.max(installment.oldDefaultInterest, installment.receivedOldDefaultInterest);
+        installment.newDefaultInterest = Math.max(installment.newDefaultInterest, installment.receivedNewDefaultInterest);
       }
-      if (installment.receivedOldDefaultInterest > installment.oldDefaultInterest) {
-        installment.oldDefaultInterest = installment.receivedOldDefaultInterest;
-      }
-      if (installment.receivedPenalty > installment.penalty) {
-        installment.penalty = installment.receivedPenalty;
-      }
-      if (installment.receivedInterest > installment.interest) {
-        installment.interest = installment.receivedInterest;
-      }
-      // [END NEW FIX v2]
+      // [END NEW FIX v3]
 
       return installment;
     });
@@ -405,8 +425,8 @@ function renderDebtDetailTable() {
 
     const isFullyPaid = remainingPrincipal <= 0.01 && remainingInterest <= 0.01 && remainingOldDefault <= 0.01 && remainingNewDefault <= 0.01;
 
-    // คำนวณ ด/บ ผิดนัดใหม่ สำหรับการแสดง (แต่ไม่เขียนทับ inst.newDefaultInterest ถ้าเป็นงวดที่ชำระครบ)
-    // 1. เริ่มต้นด้วยค่าที่เก็บไว้ (ซึ่งตอนนี้ถูก "ซ่อม" มาจาก [NEW FIX v2] แล้ว)
+    // คำนวณ ด/บ ผิดนัดใหม่ สำหรับการแสดง
+    // 1. เริ่มต้นด้วยค่าที่เก็บไว้ (ซึ่ง "ซ่อม" แล้วโดย FIX v3)
     let calculatedNewDefaultForDisplay = inst.newDefaultInterest || 0;
     
     // 2. ถ้ายังชำระไม่ครบ
@@ -424,7 +444,6 @@ function renderDebtDetailTable() {
     } 
     // 6. (Else) ถ้างวดชำระครบแล้ว (isFullyPaid = true) 
     // เราจะไม่ทำอะไรเพิ่ม และ 'calculatedNewDefaultForDisplay' จะเป็นค่าจาก inst.newDefaultInterest
-    // (ซึ่งเป็นค่าที่ "ซ่อม" แล้วจาก Excel)
 
     const totalDebt = (inst.principal||0) + (inst.interest||0) + (inst.penalty||0) + (inst.oldDefaultInterest||0) + calculatedNewDefaultForDisplay;
     const totalPaid = (inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
@@ -504,18 +523,20 @@ function renderSummary() {
     due: { principal:0,interest:0,penalty:0,oldDefaultInterest:0,newDefaultInterest:0,overpayment:0,total:0 },  
     received: { principal:0,interest:0,penalty:0,oldDefaultInterest:0,newDefaultInterest:0,overpayment:0,total:0 }  
   };
-
+  
+  // ข้อมูลใน allInstallments ถูก "ซ่อม" แล้วโดย [NEW FIX v3]
   allInstallments.forEach(inst => {
     totals.due.principal += inst.principal||0;
     totals.due.interest += inst.interest||0;
     totals.due.penalty += inst.penalty||0;
     totals.due.oldDefaultInterest += inst.oldDefaultInterest||0;
-    totals.due.newDefaultInterest += inst.newDefaultInterest||0;
+    totals.due.newDefaultInterest += inst.newDefaultInterest||0; // (e.g., Sum = 6753.64)
+    
     totals.received.principal += inst.receivedPrincipal||0;
     totals.received.interest += inst.receivedInterest||0;
     totals.received.penalty += inst.receivedPenalty||0;
     totals.received.oldDefaultInterest += inst.receivedOldDefaultInterest||0;
-    totals.received.newDefaultInterest += inst.receivedNewDefaultInterest||0;
+    totals.received.newDefaultInterest += inst.receivedNewDefaultInterest||0; // (e.g., Sum = 414.14)
     totals.received.overpayment += inst.overpayment||0;
   });
 
@@ -523,11 +544,11 @@ function renderSummary() {
   totals.received.total = (totals.received.principal + totals.received.interest + totals.received.penalty + totals.received.oldDefaultInterest + totals.received.newDefaultInterest) + totals.received.overpayment;
 
   const remaining = {
-    principal: totals.due.principal-totals.received.principal,
-    interest: totals.due.interest-totals.received.interest,
-    penalty: totals.due.penalty-totals.received.penalty,
-    oldDefaultInterest: totals.due.oldDefaultInterest-totals.received.oldDefaultInterest,
-    newDefaultInterest: totals.due.newDefaultInterest-totals.received.newDefaultInterest,
+    principal: totals.due.principal - totals.received.principal,
+    interest: totals.due.interest - totals.received.interest,
+    penalty: totals.due.penalty - totals.received.penalty,
+    oldDefaultInterest: totals.due.oldDefaultInterest - totals.received.oldDefaultInterest,
+    newDefaultInterest: totals.due.newDefaultInterest - totals.received.newDefaultInterest, // (e.g., 6753.64 - 414.14 = 6339.50)
     overpayment: totals.received.overpayment > 0 ? -totals.received.overpayment : 0,
     total: totals.due.total - (totals.received.total - totals.received.overpayment) - totals.received.overpayment
   };
