@@ -515,7 +515,9 @@ function renderHistoryTable() {
       <td>${item.category}</td>
       <td style="text-align:right;">${formatNumber(item.amount)}</td>
               <td>${item.defaultDate ? formatDate(item.defaultDate) : '-'}</td>
-      <td style="text-align:right;">${item.defaultAmount !== undefined ? formatNumber(item.defaultAmount) : formatNumber(0)}</td>
+     <td style="text-align:right;">
+  ${item.defaultAmount !== undefined ? formatNumber(item.defaultAmount) + ' บาท (' + (item.defaultDays||0) + ' วัน)' : '0.00 บาท (0 วัน)'}
+</td>
               </tr>`;
     });
   }
