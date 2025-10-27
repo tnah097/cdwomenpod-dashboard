@@ -307,14 +307,24 @@ function renderAll() { renderTable(); renderHistoryTable(); renderSummary(); ren
   * ถ้ามีการชำระครบแล้ว จะคืนจำนวนวันทั้งหมดที่ผิดนัดจนถึงวันชำระล่าสุด
   * ถ้ายังค้างชำระ จะคืนจำนวนวันผิดนัดจากวันชำระล่าสุด/วันครบกำหนด จนถึงวันนี้
   */
-function getDaysOverdue(inst, forDisplay = true) {
-  const DUE_DATE = new Date(inst.dueDate);
-  const LAST_PAID_DATE = inst.lastPaymentDate ? new Date(inst.lastPaymentDate) : null;
-  const remainingPrincipal = (inst.principal||0) - (inst.receivedPrincipal||0);
-  const IS_PAID = remainingPrincipal <= 0.01 && (inst.receivedInterest >= (inst.interest||0));  
-  const NOW = new Date();
+function getDaysOverdue(inst, useTodayAsEnd = true) {
+  const due = new Date(inst.dueDate);
+  due.setHours(0,0,0,0);
+  const lastPaid = inst.lastPaymentDate ? new Date(inst.lastPaymentDate) : null;
+  const now = new Date();
+  now.setHours(0,0,0,0);
 
-  DUE_DATE.setHours(0,0,0,0);
+  let endDate = lastPaid || (useTodayAsEnd ? now : null);
+  if (!endDate) return 0;
+
+  const startDate = new Date(due);
+  startDate.setDate(due.getDate() + 1);
+
+  if (endDate < startDate) return 0;
+  const diffDays = Math.floor((endDate - startDate)/(1000*60*60*24)) + 1;
+  return diffDays;
+}
+
   NOW.setHours(0,0,0,0);
 
   if (IS_PAID && LAST_PAID_DATE && forDisplay) {
@@ -443,12 +453,12 @@ function renderDebtDetailTable() {
       const daysOverdue = getDaysOverdue(inst, false); // คืนจำนวนวันค้าง (จนถึงวันนี้) หรือ 0
       
       // 3. ถ้ายังมีเงินต้นค้าง และมีวันผิดนัด
-      const tempRemainingPrincipal = Math.max(0, remainingPrincipal);
+      const tempRemainingPrincipal = Math.max(0, remainingPrincipal); // ยอดเงินต้นค้างจริง
       if (tempRemainingPrincipal > 0 && daysOverdue > 0) {
         // 4. คำนวณดอกเบี้ยที่กำลังเกิดขึ้น ณ ปัจจุบัน
         const computed = (tempRemainingPrincipal * (rate/100) * daysOverdue) / 365;
         // 5. บวกเพิ่มเข้าไปในยอดที่จะแสดง
-        calculatedNewDefaultForDisplay = Math.round((calculatedNewDefaultForDisplay + computed) * 100) / 100;
+        calculatedNewDefaultForDisplay = Math.round((inst.newDefaultInterest + computed) * 100) / 100;
       }
     } 
     // 6. (Else) ถ้างวดชำระครบแล้ว (isFullyPaid = true) 
@@ -480,6 +490,7 @@ function renderDebtDetailTable() {
       <td>${formatNumber(inst.overpayment)}</td>
       <td>${formatNumber(Math.max(0, finalRemainingDebt))}</td>
       <td>${getDaysOverdue(inst, true)}</td>
+      <td>${formatNumber(calculatedNewDefaultForDisplay)}</td>
       <td>${finalRemainingDebt <= 0.01 ? 'ชำระครบแล้ว' : (new Date(inst.dueDate) < new Date() ? 'ค้างชำระ' : 'ยังไม่ถึงกำหนด')}</td>
     `;
     tbody.appendChild(row);
