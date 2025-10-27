@@ -110,7 +110,7 @@ thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-
         <tbody id="history-table-body"><tr><td colspan="7">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>       </table>
       /* เพิ่มการจัดขวาให้คอลัมน์ 'จำนวนเงินที่ผิดนัด' (ต้องดูว่ามันเป็นคอลัมน์ลำดับที่เท่าไหร่) */
 /* ในตาราง history-table คอลัมน์ที่ 7 คือ 'จำนวนเงินที่ผิดนัด' (นับจาก 1) */
-#history-table td:nth-child(7) { text-align: right; }
+td.overdue-amount { text-align: right; }
       
     </div>
   </div>
@@ -285,11 +285,12 @@ function handleFileSelect(event) {
 
 /* Helper: Excel serial date -> JS Date (best-effort) */
 function excelSerialDateToJSDate(serial) {
-  // Excel's serial date: 1 => 1900-01-01 (note: 1900 leap bug), but this simple conversion is often acceptable
   const utc_days = Math.floor(serial - 25569);
-  const utc_value = utc_days * 86400;  
-  const date_info = new Date(utc_value * 1000);
-  return date_info;
+  const date = new Date(utc_days * 86400 * 1000);
+  const fractional_day = serial - Math.floor(serial);
+  const totalSeconds = Math.floor(86400 * fractional_day);
+  date.setSeconds(totalSeconds);
+  return date;
 }
 
 /* Helper: format date to YYYY-MM-DD */
