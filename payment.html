@@ -1,21 +1,131 @@
-<div class="mermaid">
-flowchart TD
-    A[รับข้อมูลงวดหนี้]:::start --> B[ตรวจสอบวันที่ชำระ]:::process
-    B -->|ชำระก่อนหรือครบกำหนด| C[ดอกเบี้ยผิดนัด = 0]:::success
-    B -->|ชำระเกินกำหนด| D[คำนวณจำนวนวันผิดนัด]:::process
-    D --> E[คำนวณดอกเบี้ยผิดนัดใหม่<br>New Default Interest = Remaining Principal × (Rate / 100) × (Days Overdue / 365)]:::process
-    E --> F[รวมยอดหนี้ทั้งหมด<br>Total Debt = Principal + Interest + Penalty + Old Default + New Default]:::process
-    F --> G[ตัดชำระเงินจริงตามลำดับ<br>New Default → Old Default → Penalty → Interest → Principal]:::process
-    G --> H[ปรับยอดคงเหลือและสถานะ]:::process
-    H --> I{ยอดชำระมากกว่าหนี้หรือไม่}:::decision
-    I -->|ใช่| J[เก็บเป็น Overpayment]:::success
-    I -->|ไม่ใช่| K[อัปเดตสถานะงวด<br>“ชำระครบแล้ว” / “ค้างชำระ” / “ยังไม่ถึงกำหนด”]:::process
-    J --> L[อัปเดตตารางรายละเอียดและประวัติการชำระ]:::end
-    K --> L
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard คำนวณดอกเบี้ยผิดนัด</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.4.0/mermaid.min.js"></script>
+<style>
+body {
+    font-family: 'Sarabun', sans-serif;
+    margin: 0; padding: 20px;
+    background: #ffe6f0; /* ชมพูพาสเทลอ่อน */
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #fff0f6; /* ชมพูพาสเทลกล่องหลัก */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+h1,h2 { color: #880e4f; }
+.input-group { margin-bottom: 15px; }
+label { display: block; font-weight: bold; margin-bottom: 5px; }
+input[type="text"], input[type="number"], input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+button {
+    padding: 12px 20px;
+    background: #e91e63;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.result-box {
+    margin-top: 15px;
+    padding: 15px;
+    background: #ffebf2; 
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #880e4f;
+}
+/* Flowchart Mermaid */
+.mermaid {
+    text-align: center;
+    margin-top: 30px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>คำนวณดอกเบี้ยผิดนัด</h1>
+  <div class="input-group">
+    <label>เงินต้น (Principal)</label>
+    <input type="text" id="principal" placeholder="กรอกจำนวนเงินต้น">
+  </div>
+  <div class="input-group">
+    <label>อัตราดอกเบี้ยผิดนัด (% ต่อปี)</label>
+    <input type="number" id="rate" value="5">
+  </div>
+  <div class="input-group">
+    <label>วันที่ครบกำหนดชำระ</label>
+    <input type="date" id="dueDate">
+  </div>
+  <div class="input-group">
+    <label>วันที่จ่ายจริง</label>
+    <input type="date" id="paymentDate">
+  </div>
+  <button onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
+  <div id="result" class="result-box">ผลการคำนวณ: 0.00 บาท</div>
 
-    classDef start fill:#ffe0f0,stroke:#e91e63,color:#880e4f,font-weight:bold;
-    classDef process fill:#ffd1e8,stroke:#e91e63,color:#880e4f,font-weight:bold;
-    classDef decision fill:#ffc1f0,stroke:#e91e63,color:#880e4f,font-weight:bold;
-    classDef success fill:#ffb3d9,stroke:#e91e63,color:#880e4f,font-weight:bold;
-    classDef end fill:#ff99cc,stroke:#e91e63,color:#880e4f,font-weight:bold;
+  <h2>Flowchart หลักการคำนวณ</h2>
+  <div class="mermaid">
+  flowchart TD
+    style A fill:#ffd6e8,stroke:#e91e63,stroke-width:2px
+    style B fill:#ffcade,stroke:#e91e63,stroke-width:2px
+    style C fill:#ffb6c1,stroke:#e91e63,stroke-width:2px
+    style D fill:#ffcce0,stroke:#e91e63,stroke-width:2px
+    style E fill:#ffe6f0,stroke:#e91e63,stroke-width:2px
+    style F fill:#ffb6c1,stroke:#e91e63,stroke-width:2px
+    style G fill:#ffcade,stroke:#e91e63,stroke-width:2px
+    style H fill:#ffd6e8,stroke:#e91e63,stroke-width:2px
+    style I fill:#ffe6f0,stroke:#e91e63,stroke-width:2px
+
+    A[เริ่มต้น] --> B[รับข้อมูลงวดหนี้: เงินต้น, ดอกเบี้ยปกติ, เบี้ยปรับ, ดอกเบี้ยผิดนัดเดิม, วันครบกำหนดชำระ]
+    B --> C{ตรวจสอบวันที่ชำระ}
+    C -->|ชำระก่อนหรือครบกำหนด| D[ดอกเบี้ยผิดนัด = 0]
+    C -->|ชำระเกินกำหนด| E[คำนวณจำนวนวันผิดนัด]
+    E --> F[คำนวณดอกเบี้ยผิดนัดใหม่: New Default = Remaining Principal × (Rate/100) × (Days Overdue/365)]
+    D --> G[รวมยอดหนี้ทั้งหมด: Total Debt = Principal + Interest + Penalty + Old Default + New Default]
+    F --> G
+    G --> H[ตัดชำระเงินจริงตามลำดับ: New Default → Old Default → Penalty → Interest → Principal]
+    H --> I[ปรับยอดคงเหลือและสถานะงวด: ชำระครบ, ค้างชำระ, ยังไม่ถึงกำหนด, หรือ Overpayment]
+    I --> J[อัปเดตตารางรายละเอียดและประวัติการชำระ]
+    J --> K[สิ้นสุด]
+  </div>
 </div>
+
+<script>
+mermaid.initialize({ startOnLoad:true });
+
+function calculateInterest() {
+  const principal = parseFloat(document.getElementById('principal').value.replace(/,/g,''));
+  const rate = parseFloat(document.getElementById('rate').value);
+  const dueDate = new Date(document.getElementById('dueDate').value);
+  const paymentDate = new Date(document.getElementById('paymentDate').value);
+  const resultBox = document.getElementById('result');
+
+  if(isNaN(principal) || isNaN(rate) || isNaN(dueDate.getTime()) || isNaN(paymentDate.getTime())){
+    resultBox.innerHTML = "⚠️ กรุณากรอกข้อมูลให้ครบและถูกต้อง";
+    return;
+  }
+
+  const diffTime = paymentDate - dueDate;
+  const daysOverdue = Math.max(0, Math.floor(diffTime / (1000*60*60*24)));
+
+  const interest = (principal * (rate/100) * daysOverdue)/365;
+
+  resultBox.innerHTML = `ผลการคำนวณ: <strong>${interest.toFixed(2)}</strong> บาท<br>
+  จำนวนวันผิดนัด: ${daysOverdue} วัน`;
+}
+</script>
+</body>
+</html>
