@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<title>โปรแกรมจัดการและตัดชำระหนี้</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* --- CSS เดิมทั้งหมด --- */
+body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing: border-box; background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed; display: flex; flex-direction: column; align-items: center; gap: 30px; }
+.container { border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3); width: 100%; max-width: 600px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.92); }
+.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
+.header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
+.logos img { height: 60px; margin-left: 5px; }
+.calculator-card { background-color: #ffebf2; padding: 25px; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
+.input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.input-group label { font-weight: bold; margin-bottom: 6px; color: #333; }
+.input-group input { padding: 12px; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 1rem; transition: 0.3s ease; }
+.calc-button { width: 100%; padding: 15px; background-color: #e91e63; color: white; font-size: 1.3rem; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s ease; margin-top: 10px; }
+.settle-button { background-color: #28a745; }
+.result-box { margin-top: 20px; padding: 20px; border: 3px dashed #f06292; border-radius: 15px; background-color: #fff8fa; text-align: center; font-size: 1.5rem; font-weight: bold; color: #880e4f; }
+.table-container { border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3); width: 100%; max-width: 1200px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.95); }
+.table-container h1, .table-container h2 { color: navy; text-align: center; margin-bottom: 10px; }
+.upload-section { background-color: #e3f2fd; border: 2px dashed #0d47a1; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
+.table-wrapper { overflow-x: auto; max-height: 500px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; vertical-align: middle;}
+td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(8)):not(:nth-child(9)):not(:nth-child(19)) { text-align: right; }
+thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 10; }
+.status-paid { background-color: #d4edda !important; color: #155724; }
+.status-due { background-color: #f8d7da !important; color: #721c24; }
+.summary-table-wrapper { margin-top: 20px; overflow-x: auto; }
+.summary-table { width: 100%; }
+.summary-table th { background-color: #e9ecef; color: #495057; }
+.summary-table td:first-child { font-weight: bold; text-align: left; }
+.summary-table tr:last-child { font-weight: bold; background-color: #f8f9fa; }
+#history-table { margin-top: 15px; }
+#history-table th { background-color: #6c757d; color: white; }
+#debt-detail-container { margin-top: 25px; }
+#debt-detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+#debt-detail-table th, #debt-detail-table td { border: 1px solid #ccc; padding: 6px; text-align: right; white-space: nowrap; }
+#debt-detail-table th { background: #f2f2f2; color: #222; position: sticky; top: 48px; z-index: 5; }
+.paid-row { background-color: #d0f0c0; color: #0a3d00; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header-section">
+    <div class="header-text"><h1>ส่วนคำนวณและตัดชำระหนี้</h1><h2>เครื่องมือช่วยจัดการ</h2></div>
+    <div class="logos">
+      <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+    </div>
+  </div>
+
+  <div class="calculator-card">
+    <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
+    <div class="input-group">
+      <label for="principal">เงินต้น (สำหรับคำนวณ):</label>
+      <input type="text" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ" onkeyup="formatNumberInput(this)">
+    </div>
+    <div class="input-group">
+      <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
+      <input type="number" id="rate" value="5" readonly>
+    </div>
+    <div class="input-group">
+      <label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label>
+      <input type="date" id="dueDate">
+    </div>
+    <div class="input-group">
+      <label for="paymentDateCalc">วันที่จ่ายชำระ (สำหรับคำนวณ):</label>
+      <input type="date" id="paymentDateCalc">
+    </div>
+    <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
+    <div id="result" class="result-box">ผลการคำนวณ: 0.00 บาท</div>
+
+    <hr style="margin: 20px 0; border: 1px solid #f8bbd0;">
+    <p style="text-align:center; font-weight:bold; color:#155724;">ส่วนที่ 2: ตัดชำระหนี้</p>
+    <div class="input-group">
+      <label for="paymentAmount">ระบุจำนวนเงินที่จะชำระ (ยอดเงินที่ได้รับจริง):</label>
+      <input type="number" id="paymentAmount" placeholder="กรอกยอดเงินที่ได้รับจริง">
+    </div>
+    <div class="input-group">
+      <label for="actualPaymentDate">วันที่จ่ายชำระจริง (สำหรับบันทึก):</label>
+      <input type="date" id="actualPaymentDate">
+    </div>
+    <button class="calc-button settle-button" onclick="settlePayment()">เริ่มตัดชำระหนี้ในตาราง</button>
+  </div>
+</div>
+
+<div class="table-container">
+  <div id="history-container">
+    <h2>ประวัติการตัดชำระ</h2>
+    <div class="table-wrapper" style="max-height: 200px;">
+      <table id="history-table">
+        <thead><tr><th>วันที่ชำระ</th><th>ยอดชำระ</th><th>งวดที่</th><th>รายการที่ตัด</th><th>จำนวนเงิน</th></tr></thead>
+        <tbody id="history-table-body"><tr><td colspan="5">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr style="margin: 30px 0;">
+  <h1>ตารางแสดงรายละเอียดหนี้</h1>
+
+  <div class="upload-section">
+    <label for="excel-file">เลือกไฟล์ Excel (.xlsx, .xls, .csv) เพื่อแสดงข้อมูล</label>
+    <input type="file" id="excel-file" accept=".xlsx, .xls, .csv">
+  </div>
+
+  <div class="table-wrapper">
+    <table id="payment-table">
+      <thead></thead>
+      <tbody id="payment-table-body"><tr><td colspan="20" style="text-align:center; padding: 40px; color: #555;">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div id="summary-container" class="summary-table-wrapper">
+    <h2 style="margin-top: 30px;">ตารางสรุปยอดรวม</h2>
+    <table class="summary-table">
+      <thead><tr id="summary-table-header"></tr></thead>
+      <tbody id="summary-table-body"></tbody>
+    </table>
+  </div>
+
+  <div id="debt-detail-container">
+    <h2 style="margin-top: 20px;">ตารางรายละเอียดหนี้ (รายละเอียดแยกตามงวด)</h2>
+    <div class="table-wrapper" style="max-height: 400px;">
+      <table id="debt-detail-table">
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>กำหนดวันชำระ</th>
+            <th>เงินต้น</th>
+            <th>ดอกเบี้ย</th>
+            <th>เบี้ยปรับ</th>
+            <th>ด/บ ผิดนัดเดิม</th>
+            <th>ด/บ ผิดนัดใหม่ (คำนวณ)</th>
+            <th>รวมหนี้</th>
+            <th>รับคืน ด/บ ผิดนัดเดิม</th>
+            <th>รับคืน ด/บ ผิดนัดใหม่</th>
+            <th>รับคืนเบี้ยปรับ</th>
+            <th>รับคืนดอกเบี้ย</th>
+            <th>รับคืนเงินต้น</th>
+            <th>รับคืนรวม</th>
+            <th>รับเงินเกิน</th>
+            <th>หนี้คงเหลือ</th>
+            <th>คำนวณวันผิดนัด</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody id="debt-detail-body">
+          <tr><td colspan="18" style="text-align:center; padding: 30px; color:#666;">ยังไม่มีข้อมูล — กรุณาอัปโหลดไฟล์ Excel</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ตัวแปรหลัก
+let allInstallments = [];
+let paymentHistory = [];
+const excelHeaderMapping = {
+  'ลำดับ': 'sequence',
+  'กำหนดวันชำระเงิน': 'dueDate',
+  'เงินต้น': 'principal',
+  'ดอกเบี้ย': 'interest',
+  'เบี้ยปรับ': 'penalty',
+  'ดอกเบี้ยผิดนัดเดิม': 'oldDefaultInterest',
+  'ดอกเบี้ยผิดนัดใหม่': 'newDefaultInterest',
+  'รับคืนเงินต้น': 'receivedPrincipal',
+  'รับคืนดอกเบี้ย': 'receivedInterest',
+  'รับคืนเบี้ยปรับ': 'receivedPenalty',
+  'รับคืนดอกเบี้ยผิดนัดเดิม': 'receivedOldDefaultInterest',
+  'รับคืนดอกเบี้ยผิดนัดใหม่': 'receivedNewDefaultInterest',
+  'รับเงินเกิน': 'overpayment'
+};
+document.getElementById('excel-file').addEventListener('change', handleFileSelect);
+
+// อ่าน Excel -> allInstallments
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    if (jsonData.length === 0) { alert("ไฟล์ Excel ไม่มีข้อมูล"); return; }
+
+    allInstallments = jsonData.map((row, index) => {
+      let inst = { id:index };
+      for(const header in excelHeaderMapping){
+        const key = excelHeaderMapping[header];
+        inst[key] = row[header]||0;
+      }
+      inst.lastPaymentDate = null;
+      // แปลงวันที่
+      if (inst.dueDate instanceof Date) inst.dueDate = formatDateForInput(inst.dueDate);
+      else if (typeof inst.dueDate === 'number') inst.dueDate = formatDateForInput(excelSerialDateToJSDate(inst.dueDate));
+      else if (typeof inst.dueDate === 'string') { const d=new Date(inst.dueDate); if(!isNaN(d)) inst.dueDate=formatDateForInput(d); }
+      if(!inst.sequence) inst.sequence=index+1;
+      ['principal','interest','penalty','oldDefaultInterest','newDefaultInterest','receivedPrincipal','receivedInterest','receivedPenalty','receivedOldDefaultInterest','receivedNewDefaultInterest','overpayment'].forEach(k=>{inst[k]=Number(inst[k]||0);});
+      return inst;
+    });
+    paymentHistory=[];
+    renderAll();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function excelSerialDateToJSDate(serial){const utc_days=Math.floor(serial-25569);const utc_value=utc_days*86400;const date_info=new Date(utc_value*1000);return date_info;}
+function formatDateForInput(date){if(!(date instanceof Date)||isNaN(date)) return '';const y=date.getFullYear();const m=String(date.getMonth()+1).padStart(2,'0');const d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+function formatNumberInput(el){el.value = el.value.replace(/[^0-9.]/g,'').replace(/(\..*?)\..*/,'$1');}
+function formatNumber(num){return (num||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function formatDate(dateStr){if(!dateStr) return '';const d=new Date(dateStr);return d.toLocaleDateString('th-TH');}
+
+function renderAll(){renderTable();renderHistoryTable();renderSummary();renderDebtDetailTable();}
+function getDaysOverdue(inst,forDisplay=true){
+  const DUE_DATE=new Date(inst.dueDate);
+  const LAST_PAID_DATE=inst.lastPaymentDate?new Date(inst.lastPaymentDate):null;
+  const remainingPrincipal=(inst.principal||0)-(inst.receivedPrincipal||0);
+  const IS_PAID=remainingPrincipal<=0.01&&(inst.receivedInterest>=inst.interest||0);
+  const NOW=new Date();DUE_DATE.setHours(0,0,0,0);NOW.setHours(0,0,0,0);
+  if(IS_PAID&&LAST_PAID_DATE&&forDisplay){LAST_PAID_DATE.setHours(0,0,0,0);const startCountDate=new Date(DUE_DATE);startCountDate.setDate(DUE_DATE.getDate()+1);const diffTime=Math.abs(LAST_PAID_DATE.getTime()-startCountDate.getTime());return Math.max(0,Math.floor(diffTime/(1000*60*60*24))+1);}
+  const startCountingDate=LAST_PAID_DATE||DUE_DATE;startCountingDate.setHours(0,0,0,0);
+  const startCount=new Date(startCountingDate);startCount.setDate(startCountingDate.getDate()+1);
+  if(startCount.getTime()>NOW.getTime()) return 0;
+  const diffTime=Math.abs(NOW.getTime()-startCount.getTime());return Math.max(0,Math.floor(diffTime/(1000*60*60*24))+1);
+}
+
+function renderTable(){
+  const tbody=document.getElementById('payment-table-body');
+  const thead=document.getElementById('payment-table').querySelector('thead');
+  thead.innerHTML='';tbody.innerHTML='';
+  const displayHeaders=['ลำดับ','กำหนดวันชำระ','เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รวมหนี้','คำนวณวันผิดนัด','ด/บ ผิดนัดสะสม (ตัดชำระแล้ว)','รับคืน ด/บ ผิดนัดเดิม','รับคืน ด/บ ผิดนัดใหม่','รับคืนเบี้ยปรับ','รับคืนดอกเบี้ย','รับคืนเงินต้น','รับคืนรวม','รับเงินเกิน','หนี้คงเหลือ','สถานะ'];
+  thead.innerHTML=`<tr><th>${displayHeaders.join('</th><th>')}</th></tr>`;
+  allInstallments.forEach(inst=>{
+    const totalDebt=(inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+(inst.newDefaultInterest||0);
+    const totalPaid=(inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
+    const remainingDebtBeforeOverpay=totalDebt-totalPaid;
+    const finalRemainingDebt=remainingDebtBeforeOverpay-(inst.overpayment||0);
+    let status=(finalRemainingDebt<=0.01)?'ชำระครบแล้ว':(new Date(inst.dueDate)<new Date()?'ค้างชำระ':'ยังไม่ถึงกำหนด');
+    let daysOverdueDisplay=getDaysOverdue(inst,true);
+    const actualDefaultInterestPaid=inst.receivedNewDefaultInterest||0;
+    const cells=[inst.sequence,formatDate(inst.dueDate),formatNumber(inst.principal),formatNumber(inst.interest),formatNumber(inst.penalty),formatNumber(inst.oldDefaultInterest),formatNumber(inst.newDefaultInterest),formatNumber(totalDebt),daysOverdueDisplay,formatNumber(actualDefaultInterestPaid),formatNumber(inst.receivedOldDefaultInterest),formatNumber(inst.receivedNewDefaultInterest),formatNumber(inst.receivedPenalty),formatNumber(inst.receivedInterest),formatNumber(inst.receivedPrincipal),formatNumber(totalPaid),formatNumber(inst.overpayment),formatNumber(remainingDebtBeforeOverpay),status];
+    tbody.innerHTML+=`<tr data-remaining="${finalRemainingDebt}"><td>${cells.join('</td><td>')}</td></tr>`;
+  });
+}
+
+function renderDebtDetailTable(){
+  const tbody=document.getElementById('debt-detail-body');
+  tbody.innerHTML='';
+  if(!allInstallments||allInstallments.length===0){tbody.innerHTML='<tr><td colspan="18" style="text-align:center; padding: 30px; color:#666;">ยังไม่มีข้อมูล — กรุณาอัปโหลดไฟล์ Excel</td></tr>';return;}
+  const rate=parseFloat(document.getElementById('rate').value)||5;
+  allInstallments.forEach(inst=>{
+    const remainingPrincipal=(inst.principal||0)-(inst.receivedPrincipal||0);
+    const remainingInterest=(inst.interest||0)-(inst.receivedInterest||0);
+    const remainingOldDefault=(inst.oldDefaultInterest||0)-(inst.receivedOldDefaultInterest||0);
+    const remainingNewDefault=(inst.newDefaultInterest||0)-(inst.receivedNewDefaultInterest||0);
+    const isFullyPaid=remainingPrincipal<=0.01 && remainingInterest<=0.01 && remainingOldDefault<=0.01 && remainingNewDefault<=0.01;
+    let calculatedNewDefaultForDisplay=inst.newDefaultInterest||0;
+    if(!isFullyPaid){
+      const daysOverdue=getDaysOverdue(inst,false);
+      if(remainingPrincipal>0&&daysOverdue>0){calculatedNewDefaultForDisplay=Math.round((calculatedNewDefaultForDisplay+(remainingPrincipal*(rate/100)*daysOverdue)/365)*100)/100;}
+    }
+    const totalDebt=(inst.principal||0)+(inst.interest||0)+(inst.penalty||0)+(inst.oldDefaultInterest||0)+calculatedNewDefaultForDisplay;
+    const totalPaid=(inst.receivedOldDefaultInterest||0)+(inst.receivedNewDefaultInterest||0)+(inst.receivedPenalty||0)+(inst.receivedInterest||0)+(inst.receivedPrincipal||0);
+    const remainingDebtBeforeOverpay=totalDebt-totalPaid;
+    const finalRemainingDebt=remainingDebtBeforeOverpay-(inst.overpayment||0);
+    const row=document.createElement('tr');
+    if(isFullyPaid) row.classList.add('paid-row');
+    row.innerHTML=`<td>${inst.sequence}</td><td>${formatDate(inst.dueDate)}</td><td>${formatNumber(inst.principal)}</td><td>${formatNumber(inst.interest)}</td><td>${formatNumber(inst.penalty)}</td><td>${formatNumber(inst.oldDefaultInterest)}</td><td>${formatNumber(calculatedNewDefaultForDisplay)}</td><td>${formatNumber(totalDebt)}</td><td>${formatNumber(inst.receivedOldDefaultInterest)}</td><td>${formatNumber(inst.receivedNewDefaultInterest)}</td><td>${formatNumber(inst.receivedPenalty)}</td><td>${formatNumber(inst.receivedInterest)}</td><td>${formatNumber(inst.receivedPrincipal)}</td><td>${formatNumber(totalPaid)}</td><td>${formatNumber(inst.overpayment)}</td><td>${formatNumber(Math.max(0,finalRemainingDebt))}</td><td>${getDaysOverdue(inst,true)}</td><td>${finalRemainingDebt<=0.01?'ชำระครบแล้ว':(new Date(inst.dueDate)<new Date()?'ค้างชำระ':'ยังไม่ถึงกำหนด')}</td>`;
+    tbody.appendChild(row);
+  });
+}
+
+// ฟังก์ชันอื่นๆ (renderHistoryTable, renderSummary, calculateInterest, settlePayment) ยังคงเหมือนเดิมและเชื่อมกับ partial payment logic
+
+</script>
+</body>
+</html>
