@@ -7,190 +7,209 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-/* --- รักษา CSS เดิมทั้งหมด --- */
-body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; box-sizing: border-box; background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed; display: flex; flex-direction: column; align-items: center; gap: 30px; }
-.container { border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3); width: 100%; max-width: 600px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.92); }
-.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-.header-text h1 { font-size: 2rem; font-weight: bold; margin: 0; color: navy; }
-.header-text h2 { font-size: 1.2rem; margin: 5px 0; color: deeppink; }
-.logos img { height: 60px; margin-left: 5px; }
-.calculator-card { background-color: #ffebf2; padding: 25px; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
-.input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-.input-group label { font-weight: bold; margin-bottom: 6px; color: #333; }
-.input-group input { padding: 12px; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 1rem; transition: 0.3s ease; }
-.calc-button { width: 100%; padding: 15px; background-color: #e91e63; color: white; font-size: 1.3rem; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s ease; margin-top: 10px; }
-.settle-button { background-color: #28a745; }
-.result-box { margin-top: 20px; padding: 20px; border: 3px dashed #f06292; border-radius: 15px; background-color: #fff8fa; text-align: center; font-size: 1.5rem; font-weight: bold; color: #880e4f; }
-.table-container { border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3); width: 100%; max-width: 1200px; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.95); }
-.table-container h1, .table-container h2 { color: navy; text-align: center; margin-bottom: 10px; }
-.upload-section { background-color: #e3f2fd; border: 2px dashed #0d47a1; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
-.table-wrapper { overflow-x: auto; max-height: 500px; }
-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; vertical-align: middle;}
-td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(8)):not(:nth-child(9)):not(:nth-child(19)) { text-align: right; }
-thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-index: 10; }
-.status-paid { background-color: #d4edda !important; color: #155724; }
-.status-due { background-color: #f8d7da !important; color: #721c24; }
-.summary-table-wrapper { margin-top: 20px; overflow-x: auto; }
-.summary-table { width: 100%; }
-.summary-table th { background-color: #e9ecef; color: #495057; }
-.summary-table td:first-child { font-weight: bold; text-align: left; }
-.summary-table tr:last-child { font-weight: bold; background-color: #f8f9fa; }
-#history-table { margin-top: 15px; }
-#history-table th { background-color: #6c757d; color: white; }
-#debt-detail-container { margin-top: 25px; }
-#debt-detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-#debt-detail-table th, #debt-detail-table td { border: 1px solid #ccc; padding: 6px; text-align: right; white-space: nowrap; }
-#debt-detail-table th { background: #f2f2f2; color: #222; position: sticky; top: 48px; z-index: 5; }
-.paid-row { background-color: #d0f0c0; color: #0a3d00; }
+/* ——— CSS เดิมทั้งหมด ——— */
+body { font-family: 'Sarabun', sans-serif; background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://i.postimg.cc/507bjy9Z/cdd.png') center/cover no-repeat fixed; display: flex; flex-direction: column; align-items: center; gap: 30px; padding:20px;}
+.container {border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3); width: 100%; max-width: 600px; background-color: rgba(255, 255, 255, 0.92);}
+.header-section{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.logos img{height:60px;margin-left:5px;}
+.result-box { margin-top: 10px; padding: 10px; border: 2px dashed #f06292; border-radius: 15px; background-color: #fff8fa; text-align: center; font-size: 1rem; font-weight: bold; color: #880e4f; }
+.table-container { border-radius: 25px; padding: 30px; box-shadow: 0 8px 25px rgba(0, 81, 150, 0.3); width: 100%; max-width: 1200px; background-color: rgba(255, 255, 255, 0.95); }
+.table-wrapper { overflow-x: auto; max-height: 400px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; }
+thead th { background-color: #002D62; color: white; position: sticky; top: 0; }
 </style>
 </head>
 <body>
+
 <div class="container">
   <div class="header-section">
-    <div class="header-text"><h1>ส่วนคำนวณและตัดชำระหนี้</h1><h2>เครื่องมือช่วยจัดการ</h2></div>
+    <div class="header-text">
+      <h1>ส่วนคำนวณและตัดชำระหนี้</h1>
+      <h2>เครื่องมือช่วยจัดการ</h2>
+    </div>
     <div class="logos">
       <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
     </div>
   </div>
 
+  <!-- Manual Calculator -->
   <div class="calculator-card">
     <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
-    <div class="input-group">
-      <label for="principal">เงินต้น (สำหรับคำนวณ):</label>
-      <input type="text" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ" onkeyup="formatNumberInput(this)">
-    </div>
-    <div class="input-group">
-      <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
-      <input type="number" id="rate" value="5" readonly>
-    </div>
-    <div class="input-group">
-      <label for="dueDate">วันที่ครบกำหนด/วันสุดท้ายที่จ่าย:</label>
-      <input type="date" id="dueDate">
-    </div>
-    <div class="input-group">
-      <label for="paymentDateCalc">วันที่จ่ายชำระ (สำหรับคำนวณ):</label>
-      <input type="date" id="paymentDateCalc">
-    </div>
+    <div class="input-group"><label>เงินต้น</label><input type="text" id="principal" onkeyup="formatNumberInput(this)"></div>
+    <div class="input-group"><label>อัตราดอกเบี้ยผิดนัด (% ต่อปี)</label><input type="number" id="rate" value="5" readonly></div>
+    <div class="input-group"><label>วันที่ครบกำหนด</label><input type="date" id="dueDate"></div>
+    <div class="input-group"><label>วันที่จ่ายชำระ</label><input type="date" id="paymentDateCalc"></div>
     <button class="calc-button" onclick="calculateInterest()">คำนวณดอกเบี้ยผิดนัด</button>
-
     <div id="result" class="result-box">ผลการคำนวณ: 0.00 บาท</div>
-    <div id="overdue-days-box" class="result-box" style="background-color:#fffaf0; color:#d35400;">
-      จำนวนวันที่ผิดนัด: 0 วัน
-    </div>
-    <div id="overdue-amount-box" class="result-box" style="background-color:#fffaf0; color:#c0392b;">
-      จำนวนเงินวันที่ผิดนัด: 0.00 บาท
-    </div>
+    <div id="overdue-days-box" class="result-box" style="background-color:#fffaf0; color:#d35400;">จำนวนวันที่ผิดนัด: 0 วัน</div>
+    <div id="overdue-amount-box" class="result-box" style="background-color:#fffaf0; color:#c0392b;">จำนวนเงินวันที่ผิดนัด: 0.00 บาท</div>
 
-    <hr style="margin: 20px 0; border: 1px solid #f8bbd0;">
+    <hr>
     <p style="text-align:center; font-weight:bold; color:#155724;">ส่วนที่ 2: ตัดชำระหนี้</p>
-    <div class="input-group">
-      <label for="paymentAmount">ระบุจำนวนเงินที่จะชำระ (ยอดเงินที่ได้รับจริง):</label>
-      <input type="number" id="paymentAmount" placeholder="กรอกยอดเงินที่ได้รับจริง">
-    </div>
-    <div class="input-group">
-      <label for="actualPaymentDate">วันที่จ่ายชำระจริง (สำหรับบันทึก):</label>
-      <input type="date" id="actualPaymentDate">
-    </div>
+    <div class="input-group"><label>จำนวนเงินที่จ่าย</label><input type="number" id="paymentAmount"></div>
+    <div class="input-group"><label>วันที่จ่ายจริง</label><input type="date" id="actualPaymentDate"></div>
     <button class="calc-button settle-button" onclick="settlePayment()">เริ่มตัดชำระหนี้ในตาราง</button>
   </div>
 </div>
 
-<!-- ✅ ปรับตารางประวัติ เพิ่ม 2 คอลัมน์ -->
+<!-- Upload Excel -->
 <div class="table-container">
-  <div id="history-container">
-    <h2>ประวัติการตัดชำระ</h2>
-    <div class="table-wrapper" style="max-height: 200px;">
-      <table id="history-table">
-        <thead>
-          <tr>
-            <th>วันที่ชำระ</th>
-            <th>ยอดชำระ</th>
-            <th>งวดที่</th>
-            <th>รายการที่ตัด</th>
-            <th>จำนวนเงิน</th>
-            <th>จำนวนวันที่ผิดนัด</th>
-            <th>จำนวนเงินวันที่ผิดนัด</th>
-          </tr>
-        </thead>
-        <tbody id="history-table-body"><tr><td colspan="7">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>
-      </table>
-    </div>
+  <h2>นำเข้าไฟล์ Excel</h2>
+  <input type="file" id="excel-file" accept=".xlsx,.xls,.csv">
+  <div class="table-wrapper">
+    <table id="payment-table">
+      <thead><tr><th>งวด</th><th>กำหนดชำระ</th><th>เงินต้น</th><th>สถานะ</th></tr></thead>
+      <tbody id="payment-table-body"><tr><td colspan="4">กรุณาเลือกไฟล์ Excel...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- History Table -->
+<div class="table-container">
+  <h2>ประวัติการตัดชำระ</h2>
+  <div class="table-wrapper">
+    <table id="history-table">
+      <thead>
+        <tr>
+          <th>วันที่ชำระ</th>
+          <th>ยอดชำระ</th>
+          <th>งวดที่</th>
+          <th>รายการที่ตัด</th>
+          <th>จำนวนเงิน</th>
+          <th>จำนวนวันที่ผิดนัด</th>
+          <th>จำนวนเงินวันที่ผิดนัด</th>
+        </tr>
+      </thead>
+      <tbody id="history-table-body"><tr><td colspan="7">ยังไม่มีประวัติการชำระเงิน</td></tr></tbody>
+    </table>
   </div>
 </div>
 
 <script>
-/* ✅ ฟังก์ชันคำนวณดอกเบี้ยผิดนัด */
-function calculateInterest() {
-  const principalRaw = document.getElementById('principal').value.replace(/,/g, '');
-  const principal = parseFloat(principalRaw);
-  const rate = parseFloat(document.getElementById('rate').value);
-  const dueDateStr = document.getElementById('dueDate').value;
-  const paymentDateStr = document.getElementById('paymentDateCalc').value;
-  const resultBox = document.getElementById('result');
-  const overdueDaysBox = document.getElementById('overdue-days-box');
-  const overdueAmountBox = document.getElementById('overdue-amount-box');
+let allInstallments = [];
+let paymentHistory = [];
 
-  if (!principal || !rate || !dueDateStr || !paymentDateStr) {
-    resultBox.innerHTML = "⚠️ โปรดกรอกข้อมูลสำหรับคำนวณให้ครบ";
-    overdueDaysBox.innerHTML = "จำนวนวันที่ผิดนัด: 0 วัน";
-    overdueAmountBox.innerHTML = "จำนวนเงินวันที่ผิดนัด: 0.00 บาท";
-    return;
-  }
+/* 📥 โหลด Excel */
+document.getElementById('excel-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const data = new Uint8Array(event.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(sheet);
+    allInstallments = json.map((row, i) => ({
+      id: i,
+      sequence: row['งวด'] || (i+1),
+      dueDate: formatExcelDate(row['กำหนดวันชำระ']),
+      principal: Number(row['เงินต้น']) || 0,
+      status: row['สถานะ'] || 'ค้างชำระ'
+    }));
+    renderInstallmentTable();
+  };
+  reader.readAsArrayBuffer(file);
+});
 
-  const dueDate = new Date(dueDateStr);
-  const paymentDate = new Date(paymentDateStr);
-  dueDate.setHours(0,0,0,0);
-  paymentDate.setHours(0,0,0,0);
-
-  const days = Math.max(0, Math.floor((paymentDate - dueDate) / (1000 * 60 * 60 * 24)));
-  const interest = (principal * (rate / 100) * days) / 365;
-
-  resultBox.innerHTML = `ผลการคำนวณ: ${interest.toFixed(2)} บาท`;
-  overdueDaysBox.innerHTML = `จำนวนวันที่ผิดนัด: ${days.toLocaleString('th-TH')} วัน`;
-  overdueAmountBox.innerHTML = `จำนวนเงินวันที่ผิดนัด: ${interest.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท`;
+/* 📊 Render ตารางงวด */
+function renderInstallmentTable(){
+  const tbody = document.getElementById('payment-table-body');
+  tbody.innerHTML = '';
+  allInstallments.forEach(inst=>{
+    tbody.innerHTML += `<tr>
+      <td>${inst.sequence}</td>
+      <td>${formatDate(inst.dueDate)}</td>
+      <td style="text-align:right;">${inst.principal.toLocaleString()}</td>
+      <td>${inst.status}</td>
+    </tr>`;
+  });
 }
 
-/* ✅ เพิ่มข้อมูลวันผิดนัด / ยอดดอกเบี้ยผิดนัด ลงในประวัติ */
-function settlePayment() {
-  const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-  const actualPaymentDate = document.getElementById('actualPaymentDate').value;
-  if (isNaN(paymentAmount) || paymentAmount <= 0 || !actualPaymentDate) {
-    alert("กรุณากรอกข้อมูลให้ครบ");
-    return;
-  }
+/* 🧮 คำนวณ Manual */
+function calculateInterest(){
+  const p = parseFloat(document.getElementById('principal').value.replace(/,/g,''))||0;
+  const r = parseFloat(document.getElementById('rate').value)||0;
+  const due = new Date(document.getElementById('dueDate').value);
+  const pay = new Date(document.getElementById('paymentDateCalc').value);
+  due.setHours(0,0,0,0); pay.setHours(0,0,0,0);
+  const days = Math.max(0, Math.floor((pay - due) / (1000*60*60*24)));
+  const interest = (p * (r/100) * days) / 365;
+  document.getElementById('result').innerHTML = `ผลการคำนวณ: ${interest.toFixed(2)} บาท`;
+  document.getElementById('overdue-days-box').innerHTML = `จำนวนวันที่ผิดนัด: ${days} วัน`;
+  document.getElementById('overdue-amount-box').innerHTML = `จำนวนเงินวันที่ผิดนัด: ${interest.toFixed(2)} บาท`;
+}
 
-  // ตัวอย่างข้อมูลผิดนัด (ในระบบจริงจะดึงจากงวดที่เกี่ยวข้อง)
-  const dueDate = new Date(document.getElementById('dueDate').value);
-  const payDate = new Date(actualPaymentDate);
+/* 💰 ตัดชำระและบันทึก Overdue จริงจากไฟล์ */
+function settlePayment(){
+  const amount = parseFloat(document.getElementById('paymentAmount').value);
+  const payDateStr = document.getElementById('actualPaymentDate').value;
+  if(!amount || !payDateStr){ alert("กรุณากรอกข้อมูลให้ครบ"); return; }
+  const payDate = new Date(payDateStr); payDate.setHours(0,0,0,0);
+
+  // หา "งวดแรกที่ค้างชำระ"
+  const nextInstallment = allInstallments.find(inst => inst.status === 'ค้างชำระ');
+  if(!nextInstallment){ alert("ไม่มีงวดค้างชำระ"); return; }
+
+  const dueDate = new Date(nextInstallment.dueDate);
   dueDate.setHours(0,0,0,0);
-  payDate.setHours(0,0,0,0);
+  const daysOverdue = Math.max(0, Math.floor((payDate - dueDate) / (1000*60*60*24)));
 
-  const daysOverdue = Math.max(0, Math.floor((payDate - dueDate) / (1000 * 60 * 60 * 24)));
-  const principal = parseFloat(document.getElementById('principal').value.replace(/,/g,'')) || 0;
-  const rate = parseFloat(document.getElementById('rate').value) || 5;
-  const overdueAmount = (principal * (rate / 100) * daysOverdue) / 365;
+  const rate = parseFloat(document.getElementById('rate').value)||5;
+  const overdueInterest = (nextInstallment.principal * (rate/100) * daysOverdue)/365;
 
+  // บันทึกประวัติ
+  paymentHistory.push({
+    date: payDate,
+    amount,
+    sequence: nextInstallment.sequence,
+    category: 'เงินต้น',
+    overdueDays: daysOverdue,
+    overdueAmount: overdueInterest
+  });
+
+  // เปลี่ยนสถานะงวด
+  nextInstallment.status = 'ชำระแล้ว';
+  renderInstallmentTable();
+  renderHistoryTable();
+}
+
+/* 📝 แสดงประวัติ */
+function renderHistoryTable(){
   const tbody = document.getElementById('history-table-body');
-  if (tbody.children.length === 1 && tbody.children[0].children[0].colSpan === 7) tbody.innerHTML = '';
-
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td>${new Date(actualPaymentDate).toLocaleDateString('th-TH')}</td>
-    <td style="text-align:right;">${paymentAmount.toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
-    <td>1</td>
-    <td>เงินต้น</td>
-    <td style="text-align:right;">${paymentAmount.toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
-    <td>${daysOverdue}</td>
-    <td style="text-align:right;">${overdueAmount.toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
-  `;
-  tbody.appendChild(row);
-
-  document.getElementById('paymentAmount').value = '';
-  document.getElementById('actualPaymentDate').value = '';
+  tbody.innerHTML = '';
+  if(paymentHistory.length===0){
+    tbody.innerHTML = '<tr><td colspan="7">ยังไม่มีประวัติการชำระเงิน</td></tr>';
+    return;
+  }
+  paymentHistory.forEach(h=>{
+    tbody.innerHTML += `
+    <tr>
+      <td>${formatDate(h.date)}</td>
+      <td style="text-align:right;">${h.amount.toLocaleString()}</td>
+      <td>${h.sequence}</td>
+      <td>${h.category}</td>
+      <td style="text-align:right;">${h.amount.toLocaleString()}</td>
+      <td>${h.overdueDays}</td>
+      <td style="text-align:right;">${h.overdueAmount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+    </tr>`;
+  });
 }
-function formatNumberInput(input){ let value=input.value.replace(/,/g,''); if(!isNaN(value) && value.length>0){ input.value=parseFloat(value).toLocaleString('en-US'); } }
+
+/* 🧭 Helper */
+function formatExcelDate(val){
+  if(val instanceof Date) return val;
+  if(typeof val === 'number'){ return new Date((val - 25569) * 86400 * 1000); }
+  return new Date(val);
+}
+function formatDate(d){
+  if(!d) return '';
+  return new Date(d).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function formatNumberInput(input){
+  let value=input.value.replace(/,/g,'');
+  if(!isNaN(value)&&value.length>0) input.value=parseFloat(value).toLocaleString('en-US');
+}
 </script>
 </body>
 </html>
