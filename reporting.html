@@ -16,12 +16,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  /* สีชมพูไล่เฉดตามที่คุณต้องการ */
   background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6); 
 }
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px; /* ขยายความกว้างสำหรับตารางที่กว้างขึ้น */
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 25px;
   padding: 30px;
@@ -52,15 +51,17 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
+  font-size: 0.85rem; /* ลดขนาดฟอนต์สำหรับตารางที่กว้าง */
 }
 th, td {
   border: 1px solid #f0a5bc; 
-  padding: 8px 12px;
+  padding: 8px 6px; /* ลด Padding */
   text-align: center;
 }
 th {
   background-color: #f8bbd0;
   color: #880e4f;
+  vertical-align: middle;
 }
 tr:nth-child(even) {
   background-color: rgba(255,182,193,0.2);
@@ -77,130 +78,78 @@ tr.summary-row td {
   text-align: right;
   padding-right: 20px !important;
 }
-/* Modal Styles (ตามที่คุณกำหนด) */
-.modal {
-  display: none; 
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
-  padding-top: 60px;
-}
-.modal-content {
-  background-color: #fff;
-  margin: 5% auto;
-  padding: 25px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  position: relative;
-  animation-name: animatetop;
-  animation-duration: 0.4s
-}
-@keyframes animatetop {
-  from {top: -300px; opacity: 0}
-  to {top: 0; opacity: 1}
-}
-.close-button {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  position: absolute;
-  top: 10px;
-  right: 20px;
-}
-.close-button:hover,
-.close-button:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-.modal-header h2 {
-    color: deeppink;
-}
-.modal-body {
-    margin-top: 15px;
-}
-.clickable-kpi {
-    cursor: pointer;
-    color: #d81b60;
-    font-weight: bold;
-    text-decoration: underline;
-}
-.clickable-kpi:hover {
-    color: #880e4f;
-}
-#evidenceTable {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
-}
-#evidenceTable th, #evidenceTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-#evidenceTable th {
-    background-color: #f2f2f2;
-    color: #333;
-}
-#evidenceTable td:nth-child(2) {
-    text-align: center;
-    font-size: 1.2rem;
-}
+/* Modal Styles (คงเดิม) */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); padding-top: 60px; }
+.modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; animation-name: animatetop; animation-duration: 0.4s }
+@keyframes animatetop { from {top: -300px; opacity: 0} to {top: 0; opacity: 1} }
+.close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; position: absolute; top: 10px; right: 20px; }
+.close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
+.modal-header h2 { color: deeppink; }
+.modal-body { margin-top: 15px; }
+.clickable-kpi { cursor: pointer; color: #d81b60; font-weight: bold; text-decoration: underline; }
+.clickable-kpi:hover { color: #880e4f; }
+#evidenceTable { width: 100%; margin-top: 20px; border-collapse: collapse; }
+#evidenceTable th, #evidenceTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+#evidenceTable th { background-color: #f2f2f2; color: #333; }
+#evidenceTable td:nth-child(2) { text-align: center; font-size: 1.2rem; }
 .status-true { color: green; }
 .status-false { color: red; }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h1>สรุปผลการดำเนินงานตามตัวชี้วัดของกองทุนพัฒนาบทบาทสตรี</h1>
-    <p>กรมการพัฒนาชุมชน ประจำปีบัญชี 2568 จำนวน 6 ด้าน 15 ตัวชี้วัด ข้อมูล ณ วันที่ 15 กันยายน 2568</p>
-  </div>
-  <div class="logos">
-    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
-  </div>
-  <table id="kpiTable">
-    <thead>
+    <div class="header">
+    <h1>รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี ประจำปีงบประมาณ พ.ศ. 2569</h1>
+    <p>ข้อมูลระดับจังหวัดจากชีต "ไตรมาส 1-2" ณ วันที่ปัจจุบัน</p>
+  </div>
+  <div class="logos">
+    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
+  </div>
+  <table id="kpiTable">
+    <thead>
+            <tr>
+        <th rowspan="2">ลำดับ</th>
+        <th rowspan="2">จังหวัด</th>
+        <th colspan="3">ร้อยละการใช้จ่ายเงินทุนหมุนเวียน (A)</th>
+        <th colspan="3">ร้อยละการรับชำระคืนเงินกู้ยืม (B)</th>
+        <th colspan="3">ร้อยละหนี้เกินกำหนดชำระ (C)</th>
+        <th colspan="2">ระดับความสำเร็จ (D)</th>
+      </tr>
       <tr>
-        <th>ด้าน</th>
-        <th>ตัวชี้วัด</th>
-        <th>หน่วยวัด</th>
-        <th>เป้าหมาย</th>
-        <th>ผลงาน</th>
-        <th>คะแนน</th>
-        <th>คาดการณ์ กันยายน</th>
+        <th>ร้อยละ</th>
+        <th>คะแนน (ตชว.)</th>
+        <th>คะแนน (เน้นย้ำ)</th>
+        <th>ร้อยละ</th>
+        <th>คะแนน (ตชว.)</th>
+        <th>คะแนน (เน้นย้ำ)</th>
+        <th>ร้อยละ</th>
+        <th>คะแนน (ตชว.)</th>
+        <th>คะแนน (เน้นย้ำ)</th>
+        <th>คะแนนรวม</th>
+        <th>ระดับ</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="7" style="font-style: italic;">กำลังโหลดข้อมูล...</td></tr>
-    </tbody>
-  </table>
+    </thead>
+    <tbody>
+      <tr><td colspan="13" style="font-style: italic;">กำลังโหลดข้อมูล...</td></tr>
+    </tbody>
+  </table>
 </div>
 
 <div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close-button">&times;</span>
-    <div class="modal-header">
-      <h2>รายละเอียดตัวชี้วัดที่ 1.1</h2>
-      <p><strong>ชื่อ:</strong> ร้อยละของการรับชำระคืนเงินกู้ยืม (น้ำหนักร้อยละ 8)</p>
-    </div>
-    <div class="modal-body">
-      <p><strong>รายการตรวจสอบหลักฐาน (Checklist)</strong></p>
-      <div id="evidence-container">
-        <p><i>กำลังโหลดข้อมูลหลักฐาน...</i></p>
-      </div>
-    </div>
-  </div>
+    <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>รายละเอียดตัวชี้วัด</h2>
+      <p id="modal-kpi-name"><strong>ชื่อ:</strong> ร้อยละของการรับชำระคืนเงินกู้ยืม</p>
+    </div>
+    <div class="modal-body">
+      <p><strong>รายการตรวจสอบหลักฐาน (Checklist)</strong></p>
+      <div id="evidence-container">
+        <p><i>กำลังโหลดข้อมูลหลักฐาน...</i></p>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -208,150 +157,126 @@ tr.summary-row td {
 const modal = document.getElementById('myModal');
 const closeBtn = document.querySelector('.close-button');
 const tbody = document.querySelector('#kpiTable tbody');
+const modalKpiName = document.getElementById('modal-kpi-name');
 
 function closeModal() {
-  modal.style.display = "none";
+  modal.style.display = "none";
 }
 closeBtn.onclick = function() { closeModal(); }
 window.onclick = function(event) {
-  if (event.target == modal) { closeModal(); }
+  if (event.target == modal) { closeModal(); }
 }
 
-/**
- * ฟังก์ชันแสดงผลข้อมูลหลักฐานใน Modal
- * @param {Array<Array<string>>} data ข้อมูลหลักฐานจาก getEvidenceData()
- */
 function displayEvidenceData(data) {
-    const container = document.getElementById('evidence-container');
-    container.innerHTML = ''; 
-    
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p style="color:red;">ไม่พบข้อมูลหลักฐาน</p>';
-        return;
-    }
+  // ฟังก์ชันแสดงผลหลักฐาน (ใช้ข้อมูลจำลอง/สามารถเชื่อมต่อได้ถ้ามีชีตชื่อ 'Evidence')
+    const container = document.getElementById('evidence-container');
+    container.innerHTML = ''; 
+    
+    if (!data || data.length === 0) {
+        container.innerHTML = '<p style="color:red;">ไม่พบข้อมูลหลักฐาน</p>';
+        return;
+    }
 
-    const table = document.createElement('table');
+    const table = document.createElement('table');
     table.id = 'evidenceTable';
-
-    // สร้าง Header
     const thead = document.createElement('thead');
     thead.innerHTML = `<tr><th>รายการหลักฐาน</th><th>สถานะ</th></tr>`;
     table.appendChild(thead);
 
     const tbodyModal = document.createElement('tbody');
-
     data.forEach(cells => {
         const evidence = cells[0] || 'ไม่ระบุ';
-        // ข้อมูลสถานะมาจาก Apps Script จะเป็น string 'TRUE' หรือ 'FALSE'
         const status = (cells[1] + '').trim().toUpperCase(); 
-
-        let statusSymbol;
-        let statusClass;
-
-        if (status === 'TRUE') {
-            statusSymbol = '✓'; // เครื่องหมายติ๊กถูก
-            statusClass = 'status-true';
-        } else {
-            statusSymbol = '✗'; // เครื่องหมายกากบาท
-            statusClass = 'status-false';
-        }
-
+        let statusSymbol = (status === 'TRUE') ? '✓' : '✗';
+        let statusClass = (status === 'TRUE') ? 'status-true' : 'status-false';
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${evidence}</td><td class="${statusClass}">${statusSymbol}</td>`;
         tbodyModal.appendChild(tr);
     });
-    
     table.appendChild(tbodyModal);
-    container.appendChild(table);
+    container.appendChild(table);
 }
 
 /**
- * ฟังก์ชันเปิด Modal และเรียกข้อมูลหลักฐาน
- */
-function openModal() {
-  modal.style.display = "block";
-  const container = document.getElementById('evidence-container');
-  container.innerHTML = '<p><i>กำลังโหลดข้อมูลหลักฐาน...</i></p>'; 
-  
-  // เรียก Apps Script Function โดยใช้ google.script.run
-  google.script.run
-    .withSuccessHandler(displayEvidenceData)
-    .withFailureHandler((error) => {
-        container.innerHTML = `<p style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${error.message}</p>`;
-        console.error("ผิดพลาดขณะโหลดข้อมูลหลักฐาน:", error);
-    })
-    .getEvidenceData(); 
+ * ฟังก์ชันเปิด Modal และเรียกข้อมูลหลักฐาน
+ */
+function openModal(kpiName) {
+  modal.style.display = "block";
+  modalKpiName.innerHTML = `<strong>ชื่อ:</strong> ${kpiName}`;
+  const container = document.getElementById('evidence-container');
+  container.innerHTML = '<p><i>กำลังโหลดข้อมูลหลักฐาน...</i></p>'; 
+  
+  // เรียก Apps Script Function
+  google.script.run
+    .withSuccessHandler(displayEvidenceData)
+    .withFailureHandler((error) => {
+        container.innerHTML = `<p style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${error.message}</p>`;
+        console.error("ผิดพลาดขณะโหลดข้อมูลหลักฐาน:", error);
+    })
+    .getEvidenceData(); 
 }
 
 /**
- * ฟังก์ชันแสดงผลข้อมูลหลักในตาราง
- * @param {object} response ข้อมูลที่ได้รับจาก getMainData()
- */
+ * ฟังก์ชันแสดงผลข้อมูลหลักในตาราง
+ * @param {object} response ข้อมูลที่ได้รับจาก getMainData()
+ */
 function displayKpiData(response) {
-  
-  if (response.error) {
-    tbody.innerHTML = `<tr><td colspan="7" style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${response.error}</td></tr>`;
-    console.error('Apps Script Error:', response.error);
-    return;
-  }
-  
-  const data = response.mainData;
-  const summary = response.summaryData;
-  
-  tbody.innerHTML = ''; 
+  
+  if (response.error) {
+    tbody.innerHTML = `<tr><td colspan="13" style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${response.error}</td></tr>`;
+    console.error('Apps Script Error:', response.error);
+    return;
+  }
+  
+  const data = response.mainData;
+  tbody.innerHTML = ''; 
 
-  data.forEach(row => {
-    const tr = document.createElement('tr');
-    const kpiText = row['ตัวชี้วัด'] || '';
+  data.forEach(row => {
+    // กรองแถวว่างหรือแถวที่ไม่ใช่ข้อมูลจังหวัดออก
+    if (!row['จังหวัด']) return; 
     
-    tr.innerHTML = `
-      <td>${row['ด้าน'] || ''}</td>
-      <td style="text-align:left">${kpiText}</td>
-      <td>${row['หน่วยวัด'] || ''}</td>
-      <td>${row['เป้าหมาย'] || ''}</td>
-      <td>${row['ผลงาน'] || ''}</td>
-      <td>${row['คะแนน'] || ''}</td>
-      <td>${row['คาดการณ์ กันยายน'] || ''}</td>
+    // โค้ด HTML สำหรับแต่ละแถว (13 คอลัมน์)
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${row['ลำดับ'] || ''}</td>
+      <td style="text-align:left">${row['จังหวัด'] || ''}</td>
+      <td>${row['A: ร้อยละ'] || ''}</td>
+      <td>${row['A: คะแนน (ตชว.)'] || ''}</td>
+      <td>${row['A: คะแนน (เน้นย้ำ)'] || ''}</td>
+      <td>${row['B: ร้อยละ'] || ''}</td>
+      <td>${row['B: คะแนน (ตชว.)'] || ''}</td>
+      <td>${row['B: คะแนน (เน้นย้ำ)'] || ''}</td>
+      <td>${row['C: ร้อยละ'] || ''}</td>
+      <td>${row['C: คะแนน (ตชว.)'] || ''}</td>
+      <td>${row['C: คะแนน (เน้นย้ำ)'] || ''}</td>
+      <td>${row['D: คะแนนรวม'] || ''}</td>
+      <td>${row['D: ระดับ'] || ''}</td>
     `;
     tbody.appendChild(tr);
 
-    // ทำให้ตัวชี้วัดที่ 1.1 สามารถคลิกได้ตามโค้ดเดิม
-    if (kpiText.includes('ตัวชี้วัดที่ 1.1')) {
-      const kpiCell = tr.querySelector('td:nth-child(2)');
-      kpiCell.classList.add('clickable-kpi');
-      kpiCell.addEventListener('click', openModal);
-    }
-  });
-
-  if (summary && summary.label) {
-    const tr = document.createElement('tr');
-    tr.className = 'summary-row';
-    tr.innerHTML = `
-      <td colspan="4" style="text-align: right;">${summary.label}</td>
-      <td colspan="2">${summary.value}</td>
-      <td>${summary.forecast}</td>
-    `;
-    tbody.appendChild(tr);
-  }
+    // ทำให้ชื่อจังหวัดสามารถคลิกได้ (สำหรับการสาธิต Modal)
+    const provinceCell = tr.querySelector('td:nth-child(2)');
+    provinceCell.classList.add('clickable-kpi');
+    provinceCell.addEventListener('click', () => openModal(`ข้อมูลจังหวัด: ${row['จังหวัด']}`));
+  });
 }
 
 /**
- * ฟังก์ชันเริ่มต้น: โหลดข้อมูลจาก Apps Script
- */
+ * ฟังก์ชันเริ่มต้น: โหลดข้อมูลจาก Apps Script
+ */
 function loadAndDisplayData() {
-  // เรียก Apps Script Function โดยใช้ google.script.run
-  google.script.run
-    .withSuccessHandler(displayKpiData)
-    .withFailureHandler((error) => {
-      tbody.innerHTML = `<tr><td colspan="7" style="color:red;"><strong>เกิดข้อผิดพลาดในการเชื่อมต่อ:</strong> ${error.message}</td></tr>`;
-      console.error('Connection Error:', error);
-    })
-    .getMainData();
+  // เรียก Apps Script Function โดยใช้ google.script.run
+  google.script.run
+    .withSuccessHandler(displayKpiData)
+    .withFailureHandler((error) => {
+      tbody.innerHTML = `<tr><td colspan="13" style="color:red;"><strong>เกิดข้อผิดพลาดในการเชื่อมต่อ:</strong> ${error.message}</td></tr>`;
+      console.error('Connection Error:', error);
+    })
+    .getMainData();
 }
 
 // เริ่มโหลดข้อมูลทันทีที่หน้าจอโหลดเสร็จ
 window.onload = loadAndDisplayData;
 </script>
-
 </body>
 </html>
