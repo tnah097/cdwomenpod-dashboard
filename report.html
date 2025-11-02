@@ -34,20 +34,22 @@ body {
 }
 .logos-top img { height: 55px; }
 
-#reportInfo {
+.header-text {
   text-align: center;
   color: #880e4f;
   font-weight: bold;
-  margin: 15px 0 5px 0;
   line-height: 1.6em;
+  margin-top: 50px;
+  margin-bottom: 0;
 }
 #reportDate {
   text-align: right;
   color: #880e4f;
   font-weight: bold;
   font-size: 0.95rem;
-  margin-bottom: 20px;
+  margin: 5px 0 20px 0;
 }
+
 .filter-bar {
   text-align: right;
   margin-bottom: 10px;
@@ -68,7 +70,7 @@ body {
   background: white;
 }
 
-/* ✅ ปรับเส้นตารางให้เหมือน Google Sheet */
+/* ✅ เส้นขอบตาราง */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -82,18 +84,19 @@ th, td {
   white-space: nowrap;
 }
 
-/* ✅ Sticky Header: ทุกแถวหัวตารางจะติดบน */
+/* ✅ Sticky Header หลายบรรทัด */
 thead th {
-  position: sticky;
-  top: 0;
   background-color: #f8bbd0;
   color: #880e4f;
-  z-index: 5;
   font-weight: 700;
   border: 1.5px solid #b36a84;
+  z-index: 5;
 }
+thead tr:nth-child(1) th { position: sticky; top: 0; }
+thead tr:nth-child(2) th { position: sticky; top: 32px; }
+thead tr:nth-child(3) th { position: sticky; top: 64px; }
 
-/* ✅ หนาสุดแถวล่างของหัวตาราง */
+/* ✅ เส้นขอบหัวตารางล่างสุด */
 thead tr:last-child th {
   border-bottom: 2.5px solid #880e4f;
 }
@@ -117,7 +120,7 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
   </div>
 
-  <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+  <div class="header-text" id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
   <div id="reportDate"></div>
 
   <div class="filter-bar">
@@ -135,9 +138,8 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 </div>
 
 <script>
-// ✅ ลิงก์ Apps Script ปัจจุบัน
+// ✅ ลิงก์ Apps Script
 const API_URL = 'https://script.google.com/macros/s/AKfycbyUo2wVFt55Jkj-SpPrIBeCu4ekpB4LvZmvwTwOxMaQyhA4BUuGHTOkvGQBexfVNxlk/exec';
-
 const START_HEADER_ROW = 3;
 const END_HEADER_ROW = 5;
 const START_BODY_ROW = 6;
@@ -181,8 +183,11 @@ async function loadSheet() {
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
     const headerPart = data.slice(0, START_HEADER_ROW);
-    infoEl.innerHTML = headerPart.map(r => r.filter(c => c).join(' ')).slice(0, 2).join('<br>');
-    dateEl.textContent = headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
+    const reportTitle = headerPart.map(r => r.filter(c => c).join(' ')).slice(0, 2).join('<br>');
+    const reportDate = headerPart[2].join(' ').trim();
+
+    infoEl.innerHTML = `${reportTitle}<br><span style="font-weight:700;">${reportDate}</span>`;
+    dateEl.textContent = '';
 
     const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
     const headerMerged = merged.filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
