@@ -1,282 +1,138 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<base target="_top">
 <meta charset="UTF-8">
-<title>สรุปผลตัวชี้วัดกองทุนพัฒนาบทบาทสตรี</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <style>
 body {
   font-family: 'Sarabun', sans-serif;
   margin: 0;
-  min-height: 100vh;
   padding: 20px;
-  box-sizing: border-box;
+  background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6); 
+  min-height: 100vh;
 }
 .container {
   width: 100%;
-  max-width: 1400px; /* ขยายความกว้างสำหรับตารางที่กว้างขึ้น */
-  background-color: rgba(255, 255, 255, 0.9);
+  max-width: 1400px;
+  background: rgba(255,255,255,0.95);
   border-radius: 25px;
   padding: 30px;
-  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.25);
+  position: relative;
 }
+.logos-top {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+.logos-top img { height: 55px; }
+
 .header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 40px;
 }
-.header h1 {
-  color: deeppink;
-  margin: 0;
-  font-size: 2rem;
-}
-.header p {
+#reportInfo {
+  text-align: center;
   color: #880e4f;
-  margin-top: 5px;
   font-weight: bold;
+  margin: 15px 0;
+  line-height: 1.6em;
 }
-.logos {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 75vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(233,30,99,0.1);
 }
-.logos img { height: 60px; }
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
-  font-size: 0.85rem; /* ลดขนาดฟอนต์สำหรับตารางที่กว้าง */
+  font-size: 0.9rem;
+  background-color: white;
 }
 th, td {
-  border: 1px solid #f0a5bc; 
-  padding: 8px 6px; /* ลด Padding */
+  border: 1px solid #f0a5bc;
+  padding: 6px 8px;
   text-align: center;
+  vertical-align: middle;
 }
 th {
   background-color: #f8bbd0;
   color: #880e4f;
-  vertical-align: middle;
+  font-weight: 700;
 }
-tr:nth-child(even) {
-  background-color: rgba(255,182,193,0.2);
+tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
+tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
+.empty-row td {
+  text-align: center;
+  padding: 15px;
+  font-style: italic;
+  color: #c62828;
 }
-tr:nth-child(odd) {
-  background-color: rgba(255,192,203,0.1);
-}
-tr.summary-row {
-  background-color: #f48fb1 !important;
-  font-weight: bold;
-}
-tr.summary-row td {
-  color: #880e4f;
-  text-align: right;
-  padding-right: 20px !important;
-}
-/* Modal Styles (คงเดิม) */
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); padding-top: 60px; }
-.modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; animation-name: animatetop; animation-duration: 0.4s }
-@keyframes animatetop { from {top: -300px; opacity: 0} to {top: 0; opacity: 1} }
-.close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; position: absolute; top: 10px; right: 20px; }
-.close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
-.modal-header h2 { color: deeppink; }
-.modal-body { margin-top: 15px; }
-.clickable-kpi { cursor: pointer; color: #d81b60; font-weight: bold; text-decoration: underline; }
-.clickable-kpi:hover { color: #880e4f; }
-#evidenceTable { width: 100%; margin-top: 20px; border-collapse: collapse; }
-#evidenceTable th, #evidenceTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-#evidenceTable th { background-color: #f2f2f2; color: #333; }
-#evidenceTable td:nth-child(2) { text-align: center; font-size: 1.2rem; }
-.status-true { color: green; }
-.status-false { color: red; }
 </style>
 </head>
+
 <body>
 <div class="container">
-    <div class="header">
-    <h1>รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี ประจำปีงบประมาณ พ.ศ. 2569</h1>
-    <p>ข้อมูลระดับจังหวัดจากชีต "ไตรมาส 1-2" ณ วันที่ปัจจุบัน</p>
-  </div>
-  <div class="logos">
-    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
-  </div>
-  <table id="kpiTable">
-    <thead>
-            <tr>
-        <th rowspan="2">ลำดับ</th>
-        <th rowspan="2">จังหวัด</th>
-        <th colspan="3">ร้อยละการใช้จ่ายเงินทุนหมุนเวียน (A)</th>
-        <th colspan="3">ร้อยละการรับชำระคืนเงินกู้ยืม (B)</th>
-        <th colspan="3">ร้อยละหนี้เกินกำหนดชำระ (C)</th>
-        <th colspan="2">ระดับความสำเร็จ (D)</th>
-      </tr>
-      <tr>
-        <th>ร้อยละ</th>
-        <th>คะแนน (ตชว.)</th>
-        <th>คะแนน (เน้นย้ำ)</th>
-        <th>ร้อยละ</th>
-        <th>คะแนน (ตชว.)</th>
-        <th>คะแนน (เน้นย้ำ)</th>
-        <th>ร้อยละ</th>
-        <th>คะแนน (ตชว.)</th>
-        <th>คะแนน (เน้นย้ำ)</th>
-        <th>คะแนนรวม</th>
-        <th>ระดับ</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="13" style="font-style: italic;">กำลังโหลดข้อมูล...</td></tr>
-    </tbody>
-  </table>
-</div>
+  <div class="logos-top">
+    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+  </div>
 
-<div id="myModal" class="modal">
-    <div class="modal-content">
-    <span class="close-button">&times;</span>
-    <div class="modal-header">
-      <h2>รายละเอียดตัวชี้วัด</h2>
-      <p id="modal-kpi-name"><strong>ชื่อ:</strong> ร้อยละของการรับชำระคืนเงินกู้ยืม</p>
-    </div>
-    <div class="modal-body">
-      <p><strong>รายการตรวจสอบหลักฐาน (Checklist)</strong></p>
-      <div id="evidence-container">
-        <p><i>กำลังโหลดข้อมูลหลักฐาน...</i></p>
-      </div>
-    </div>
-  </div>
-</div>
+  <!-- ❌ ลบหัวรายงานถาวร -->
+  <div class="header"></div>
 
+  <!-- ✅ ใช้หัวรายงานจากชีตแทน -->
+  <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+
+  <div class="table-wrapper">
+    <table id="dataTable">
+      <tbody id="tableBody">
+        <tr class="empty-row"><td>กำลังโหลดข้อมูล...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 <script>
-const modal = document.getElementById('myModal');
-const closeBtn = document.querySelector('.close-button');
-const tbody = document.querySelector('#kpiTable tbody');
-const modalKpiName = document.getElementById('modal-kpi-name');
+const API_URL = 'https://script.google.com/macros/s/AKfycbwkDmamkTUIGrGVAb5toTBRoyOo2OhEMwNwma1AzvoZ1-QceP3CwgSUVAqBc3T2GWFG/exec';
 
-function closeModal() {
-  modal.style.display = "none";
-}
-closeBtn.onclick = function() { closeModal(); }
-window.onclick = function(event) {
-  if (event.target == modal) { closeModal(); }
-}
+async function loadSheet() {
+  const infoEl = document.getElementById('reportInfo');
+  const tbody = document.getElementById('tableBody');
 
-function displayEvidenceData(data) {
-  // ฟังก์ชันแสดงผลหลักฐาน (ใช้ข้อมูลจำลอง/สามารถเชื่อมต่อได้ถ้ามีชีตชื่อ 'Evidence')
-    const container = document.getElementById('evidence-container');
-    container.innerHTML = ''; 
-    
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p style="color:red;">ไม่พบข้อมูลหลักฐาน</p>';
-        return;
-    }
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
+    const data = await res.json();
+    if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    const table = document.createElement('table');
-    table.id = 'evidenceTable';
-    const thead = document.createElement('thead');
-    thead.innerHTML = `<tr><th>รายการหลักฐาน</th><th>สถานะ</th></tr>`;
-    table.appendChild(thead);
+    // ✅ แสดงเฉพาะหัวรายงานจากแถว 1–2
+    const headerPart = data.slice(0, 2).map(r => r.join(' ').trim()).join('<br>');
+    infoEl.innerHTML = headerPart.replace('ข้อมูล ณ วันที่', '');
 
-    const tbodyModal = document.createElement('tbody');
-    data.forEach(cells => {
-        const evidence = cells[0] || 'ไม่ระบุ';
-        const status = (cells[1] + '').trim().toUpperCase(); 
-        let statusSymbol = (status === 'TRUE') ? '✓' : '✗';
-        let statusClass = (status === 'TRUE') ? 'status-true' : 'status-false';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${evidence}</td><td class="${statusClass}">${statusSymbol}</td>`;
-        tbodyModal.appendChild(tr);
+    // ✅ ส่วนข้อมูลจริงเริ่มจากแถวที่ 3 เป็นต้นไป
+    const tableData = data.slice(2);
+    tbody.innerHTML = '';
+    tableData.forEach((row) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = row.map((cell) => `<td>${cell || ''}</td>`).join('');
+      tbody.appendChild(tr);
     });
-    table.appendChild(tbodyModal);
-    container.appendChild(table);
+
+  } catch (err) {
+    infoEl.textContent = '';
+    tbody.innerHTML = `<tr class="empty-row"><td>❌ ${err.message}</td></tr>`;
+  }
 }
-
-/**
- * ฟังก์ชันเปิด Modal และเรียกข้อมูลหลักฐาน
- */
-function openModal(kpiName) {
-  modal.style.display = "block";
-  modalKpiName.innerHTML = `<strong>ชื่อ:</strong> ${kpiName}`;
-  const container = document.getElementById('evidence-container');
-  container.innerHTML = '<p><i>กำลังโหลดข้อมูลหลักฐาน...</i></p>'; 
-  
-  // เรียก Apps Script Function
-  google.script.run
-    .withSuccessHandler(displayEvidenceData)
-    .withFailureHandler((error) => {
-        container.innerHTML = `<p style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${error.message}</p>`;
-        console.error("ผิดพลาดขณะโหลดข้อมูลหลักฐาน:", error);
-    })
-    .getEvidenceData(); 
-}
-
-/**
- * ฟังก์ชันแสดงผลข้อมูลหลักในตาราง
- * @param {object} response ข้อมูลที่ได้รับจาก getMainData()
- */
-function displayKpiData(response) {
-  
-  if (response.error) {
-    tbody.innerHTML = `<tr><td colspan="13" style="color:red;"><strong>เกิดข้อผิดพลาด:</strong> ${response.error}</td></tr>`;
-    console.error('Apps Script Error:', response.error);
-    return;
-  }
-  
-  const data = response.mainData;
-  tbody.innerHTML = ''; 
-
-  data.forEach(row => {
-    // กรองแถวว่างหรือแถวที่ไม่ใช่ข้อมูลจังหวัดออก
-    if (!row['จังหวัด']) return; 
-    
-    // โค้ด HTML สำหรับแต่ละแถว (13 คอลัมน์)
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${row['ลำดับ'] || ''}</td>
-      <td style="text-align:left">${row['จังหวัด'] || ''}</td>
-      <td>${row['A: ร้อยละ'] || ''}</td>
-      <td>${row['A: คะแนน (ตชว.)'] || ''}</td>
-      <td>${row['A: คะแนน (เน้นย้ำ)'] || ''}</td>
-      <td>${row['B: ร้อยละ'] || ''}</td>
-      <td>${row['B: คะแนน (ตชว.)'] || ''}</td>
-      <td>${row['B: คะแนน (เน้นย้ำ)'] || ''}</td>
-      <td>${row['C: ร้อยละ'] || ''}</td>
-      <td>${row['C: คะแนน (ตชว.)'] || ''}</td>
-      <td>${row['C: คะแนน (เน้นย้ำ)'] || ''}</td>
-      <td>${row['D: คะแนนรวม'] || ''}</td>
-      <td>${row['D: ระดับ'] || ''}</td>
-    `;
-    tbody.appendChild(tr);
-
-    // ทำให้ชื่อจังหวัดสามารถคลิกได้ (สำหรับการสาธิต Modal)
-    const provinceCell = tr.querySelector('td:nth-child(2)');
-    provinceCell.classList.add('clickable-kpi');
-    provinceCell.addEventListener('click', () => openModal(`ข้อมูลจังหวัด: ${row['จังหวัด']}`));
-  });
-}
-
-/**
- * ฟังก์ชันเริ่มต้น: โหลดข้อมูลจาก Apps Script
- */
-function loadAndDisplayData() {
-  // เรียก Apps Script Function โดยใช้ google.script.run
-  google.script.run
-    .withSuccessHandler(displayKpiData)
-    .withFailureHandler((error) => {
-      tbody.innerHTML = `<tr><td colspan="13" style="color:red;"><strong>เกิดข้อผิดพลาดในการเชื่อมต่อ:</strong> ${error.message}</td></tr>`;
-      console.error('Connection Error:', error);
-    })
-    .getMainData();
-}
-
-// เริ่มโหลดข้อมูลทันทีที่หน้าจอโหลดเสร็จ
-window.onload = loadAndDisplayData;
+window.onload = loadSheet;
 </script>
 </body>
 </html>
