@@ -44,21 +44,13 @@
     }
     tr:nth-child(even) { background-color: rgba(255,182,193,0.2); }
     tr:nth-child(odd) { background-color: rgba(255,192,203,0.1); }
-    tr.summary-row { background-color: #f48fb1 !important; font-weight: bold; }
-    .clickable-kpi {
-      cursor: pointer;
-      color: #d81b60;
-      font-weight: bold;
-      text-decoration: underline;
-    }
-    .clickable-kpi:hover { color: #880e4f; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี</h1>
-      <p>ข้อมูลระดับจังหวัดจากชีต “ไตรมาส 1-2”</p>
+      <p>ข้อมูลระดับจังหวัดจากชีต "ไตรมาส 1-2"</p>
     </div>
 
     <div class="logos">
@@ -99,31 +91,27 @@
   <script>
     const tbody = document.querySelector('#kpiTable tbody');
 
-    // 🧭 ใส่ ID ของชีตตรงนี้
+    // 🧭 ใส่ ID ของ Google Sheet ของตัวเองตรงนี้
     const sheetId = '19--z9FJSSDOZD9F5_6sTPdCRMqkmrJY6DAn9g1_TiVY';
     const sheetName = 'ไตรมาส 1-2';
     const API_URL = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
 
-    // 🚀 โหลดข้อมูลจาก Google Sheet โดยตรง
+    // 🚀 โหลดข้อมูลจาก Google Sheet
     async function loadAndDisplayData() {
       try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error('โหลดข้อมูลไม่สำเร็จ');
 
-        // ✅ ดึงข้อมูล text และแปลง encoding UTF-8 ให้แน่ใจว่าอ่านภาษาไทยถูกต้อง
-        const rawText = await res.text();
-        const blob = new Blob([rawText], { type: 'text/plain; charset=utf-8' });
-        const text = await blob.text();
+        const text = await res.text();
         const data = JSON.parse(text);
-
         const filtered = data.filter(row => row['จังหวัด']);
-        tbody.innerHTML = '';
 
+        tbody.innerHTML = '';
         filtered.forEach((row, i) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${i + 1}</td>
-            <td class="clickable-kpi">${row['จังหวัด'] || ''}</td>
+            <td>${row['จังหวัด'] || ''}</td>
             <td>${row['A: ร้อยละ'] || ''}</td>
             <td>${row['A: คะแนน (ตชว.)'] || ''}</td>
             <td>${row['A: คะแนน (เน้นย้ำ)'] || ''}</td>
