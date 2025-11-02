@@ -42,11 +42,6 @@ body {
   font-size: 2rem;
   margin: 0;
 }
-.header p {
-  color: #880e4f;
-  font-weight: bold;
-  margin-top: 5px;
-}
 #reportInfo {
   text-align: center;
   color: #880e4f;
@@ -98,9 +93,9 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 
   <div class="header">
     <h1>รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี ประจำปีงบประมาณ พ.ศ. 2569</h1>
-    <p>ข้อมูลระดับจังหวัดจากชีต "ไตรมาส 1-2"</p>
   </div>
 
+  <!-- ✅ แสดงข้อมูลรายงานจากชีต -->
   <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
 
   <div class="table-wrapper">
@@ -125,13 +120,12 @@ async function loadSheet() {
     const data = await res.json();
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    // ✅ แยกส่วนหัวรายงาน (แถว 1-2)
+    // ✅ แสดงเฉพาะหัวรายงานจากแถว 1–2
     const headerPart = data.slice(0, 2).map(r => r.join(' ').trim()).join('<br>');
     infoEl.innerHTML = headerPart.replace('ข้อมูล ณ วันที่', '');
 
     // ✅ ส่วนข้อมูลจริงเริ่มจากแถวที่ 3 เป็นต้นไป
     const tableData = data.slice(2);
-
     tbody.innerHTML = '';
     tableData.forEach((row) => {
       const tr = document.createElement('tr');
