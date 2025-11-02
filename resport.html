@@ -88,9 +88,10 @@ tr.summary-row td {
     <h1>รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี ประจำปีงบประมาณ พ.ศ. 2569</h1>
     <p>ข้อมูลระดับจังหวัดจากชีต "ไตรมาส 1-2" ณ วันที่ปัจจุบัน</p>
   </div>
+
   <div class="logos">
-    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
+    <img src="images/cdd.png" alt="CDD Logo">
+    <img src="images/womenfund.png" alt="Women Fund Logo">
   </div>
 
   <table id="kpiTable">
@@ -114,21 +115,27 @@ async function loadAndDisplayData() {
   try {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลจากชีตได้');
-    const data = await res.json();
+    const allRows = await res.json();
+    if (!allRows.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    if (!data.length) throw new Error('ชีตไม่มีข้อมูล');
+    // 🔍 หาแถวที่มีคำว่า "จังหวัด" เพื่อใช้เป็นหัวตารางจริง
+    const headerIndex = allRows.findIndex(row =>
+      Object.values(row).some(v => typeof v === 'string' && v.includes('จังหวัด'))
+    );
 
-    // ✅ เอาชื่อคอลัมน์จริงจากชีต
-    const columns = Object.keys(data[0]);
+    if (headerIndex === -1) throw new Error('ไม่พบหัวตารางที่มีคำว่า จังหวัด');
 
-    // ✅ สร้างหัวตารางอัตโนมัติจากชื่อจริงในชีต
-    thead.innerHTML = `<tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr>`;
+    const columns = Object.values(allRows[headerIndex]).filter(c => c);
+    const dataRows = allRows.slice(headerIndex + 1);
 
-    // ✅ เติมข้อมูลแถวตามคอลัมน์จริง
+    // ✅ แสดงหัวตารางจริง
+    thead.innerHTML = `<tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr>`;
+
+    // ✅ เติมข้อมูล
     tbody.innerHTML = '';
-    data.forEach((row) => {
+    dataRows.forEach((row) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = columns.map(col => `<td>${row[col] || ''}</td>`).join('');
+      tr.innerHTML = columns.map((c, i) => `<td>${Object.values(row)[i] || ''}</td>`).join('');
       tbody.appendChild(tr);
     });
 
