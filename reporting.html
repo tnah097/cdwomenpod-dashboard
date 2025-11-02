@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 body {
   font-family: 'Sarabun', sans-serif;
@@ -14,6 +15,7 @@ body {
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  transition: background 0.8s ease; /* ✅ fade transition เวลาเปลี่ยนไตรมาส */
 }
 .container {
   width: 100%;
@@ -47,6 +49,7 @@ body {
   font-weight: bold;
   margin-top: 40px;
   line-height: 1.6em;
+  transition: color 0.5s ease;
 }
 #reportDate {
   flex-basis: 100%;
@@ -55,9 +58,10 @@ body {
   font-weight: bold;
   font-size: 0.95rem;
   margin-top: 5px;
+  transition: color 0.5s ease;
 }
 
-/* ✅ แถบเครื่องมือ */
+/* ✅ Toolbar */
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -99,6 +103,7 @@ body {
   border: 1px solid #f48fb1;
   font-family: 'Sarabun';
   font-size: 0.9rem;
+  transition: border 0.3s ease;
 }
 
 /* ✅ ตาราง */
@@ -127,6 +132,7 @@ thead th {
   font-weight: 700;
   border: 1.5px solid #b36a84;
   z-index: 5;
+  transition: all 0.5s ease;
 }
 thead tr:nth-child(1) th { position: sticky; top: 0; }
 thead tr:nth-child(2) th { position: sticky; top: 32px; }
@@ -191,6 +197,49 @@ const START_HEADER_ROW = 3;
 const END_HEADER_ROW = 5;
 const START_BODY_ROW = 6;
 
+// ✅ เปลี่ยนสีธีมตามไตรมาส (ชมพู ↔ ม่วง)
+function updateThemeColor(quarter) {
+  const body = document.body;
+  const tableHead = document.querySelectorAll("thead th");
+  const header = document.getElementById("reportInfo");
+  const date = document.getElementById("reportDate");
+  const filterItems = document.querySelectorAll(".filter-bar select, .filter-bar input");
+  const homeButton = document.querySelector(".left-tools button");
+
+  let colorMain = "#f8bbd0";   // 💗 ชมพูอ่อน (ไตรมาส 1-2)
+  let colorDark = "#880e4f";   // ชมพูเข้ม
+  let gradient = "linear-gradient(to bottom right, #ffe6f0, #ffd1e6)";
+
+  if (quarter === "ไตรมาส 3-4") {
+    colorMain = "#e1bee7";   // 💜 ม่วงอ่อน
+    colorDark = "#6a1b9a";   // ม่วงเข้ม
+    gradient = "linear-gradient(to bottom right, #f3e5f5, #e1bee7)";
+  }
+
+  // พื้นหลังและหัวข้อ
+  body.style.background = gradient;
+  header.style.color = colorDark;
+  date.style.color = colorDark;
+
+  // หัวตาราง
+  tableHead.forEach(th => {
+    th.style.backgroundColor = colorMain;
+    th.style.color = colorDark;
+    th.style.borderColor = colorDark;
+  });
+
+  // ช่องกรอง
+  filterItems.forEach(el => {
+    el.style.border = `1px solid ${colorMain}`;
+  });
+
+  // ปุ่มเมนู
+  homeButton.style.backgroundColor = colorMain;
+  homeButton.style.color = colorDark;
+  homeButton.style.border = `1px solid ${colorDark}`;
+}
+
+// ✅ ฟังก์ชันแสดง merge cells
 function applyMergedCells(cellData, mergedInfo) {
   const hiddenCells = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
   let html = '';
@@ -216,6 +265,7 @@ function applyMergedCells(cellData, mergedInfo) {
   return html;
 }
 
+// ✅ โหลดข้อมูล
 async function loadSheet(sheetName = 'ไตรมาส 1-2') {
   const infoEl = document.getElementById('reportInfo');
   const dateEl = document.getElementById('reportDate');
@@ -239,12 +289,15 @@ async function loadSheet(sheetName = 'ไตรมาส 1-2') {
     thead.innerHTML = applyMergedCells(headerData, headerMerged);
 
     renderTableBody(data.slice(START_BODY_ROW));
+    updateThemeColor(sheetName);
+
   } catch (err) {
     infoEl.textContent = '❌ ไม่สามารถโหลดข้อมูลรายงาน';
     tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ${err.message}</td></tr>`;
   }
 }
 
+// ✅ สร้างตารางข้อมูล
 function renderTableBody(data) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
@@ -265,12 +318,15 @@ function renderTableBody(data) {
   });
 }
 
+// ✅ เปลี่ยนไตรมาส
 function changeQuarter() {
   const select = document.getElementById('quarterSelect');
   currentQuarter = select.value;
   loadSheet(currentQuarter);
+  updateThemeColor(currentQuarter);
 }
 
+// ✅ ค้นหา
 document.getElementById('filterInput').addEventListener('keyup', function() {
   const keyword = this.value.toLowerCase();
   const rows = document.querySelectorAll('#tableBody tr');
@@ -280,7 +336,11 @@ document.getElementById('filterInput').addEventListener('keyup', function() {
   });
 });
 
-window.onload = () => loadSheet(currentQuarter);
+// ✅ โหลดครั้งแรก
+window.onload = () => {
+  loadSheet(currentQuarter);
+  updateThemeColor(currentQuarter);
+};
 </script>
 </body>
 </html>
