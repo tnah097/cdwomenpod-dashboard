@@ -21,14 +21,14 @@ body {
 .container {
   width: 100%;
   max-width: 1400px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 25px;
   padding: 30px;
-  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.15);
 }
 .header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
 .header h1 {
   color: deeppink;
@@ -37,49 +37,61 @@ body {
 }
 .header p {
   color: #880e4f;
-  margin-top: 5px;
+  margin: 6px 0 14px 0;
   font-weight: bold;
+}
+.info-lines {
+  text-align: center;
+  margin: 6px 0 18px 0;
+  color: #6a0b3b;
+  font-weight: 600;
 }
 .logos {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 18px;
+  margin-bottom: 18px;
 }
-.logos img { height: 60px; }
+.logos img { height: 60px; display:block; }
+.table-wrap {
+  border-radius: 16px;
+  padding: 18px;
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 6px 18px rgba(233,30,99,0.06);
+}
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
-  font-size: 0.85rem;
+  margin-top: 6px;
+  font-size: 0.9rem;
 }
 th, td {
   border: 1px solid #f0a5bc;
-  padding: 8px 6px;
+  padding: 8px 8px;
   text-align: center;
+  vertical-align: middle;
 }
 th {
   background-color: #f8bbd0;
   color: #880e4f;
-  vertical-align: middle;
+  font-weight: 700;
 }
-tr:nth-child(even) {
-  background-color: rgba(255,182,193,0.2);
+tr:nth-child(even) td {
+  background-color: rgba(255,182,193,0.06);
 }
-tr:nth-child(odd) {
-  background-color: rgba(255,192,203,0.1);
+tr:nth-child(odd) td {
+  background-color: rgba(255,192,203,0.03);
 }
-tr.summary-row {
-  background-color: #f48fb1 !important;
-  font-weight: bold;
+.empty-row td {
+  text-align: center;
+  font-style: italic;
+  color: #b04066;
+  padding: 18px;
 }
-tr.summary-row td {
-  color: #880e4f;
-  text-align: right;
-  padding-right: 20px !important;
+.notice {
+  color: #b00020;
+  font-weight: 700;
 }
-.clickable-kpi { cursor: pointer; color: #d81b60; font-weight: bold; text-decoration: underline; }
-.clickable-kpi:hover { color: #880e4f; }
 </style>
 </head>
 <body>
@@ -90,59 +102,136 @@ tr.summary-row td {
   </div>
 
   <div class="logos">
-    <img src="images/cdd.png" alt="CDD Logo">
-    <img src="images/womenfund.png" alt="Women Fund Logo">
+    <!-- ถ้าจะใช้ไฟล์ใน repo ให้เก็บไว้ที่ /images/cdd.png, /images/womenfund.png 
+         หากไม่สะดวก ให้เปลี่ยน src เป็น URL ของรูปจริง -->
+    <img src="images/cdd.png" alt="CDD Logo" onerror="this.style.display='none'">
+    <img src="images/womenfund.png" alt="Women Fund Logo" onerror="this.style.display='none'">
   </div>
 
-  <table id="kpiTable">
-    <thead id="tableHead">
-      <tr><th>กำลังโหลดหัวตาราง...</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>กำลังโหลดข้อมูล...</td></tr>
-    </tbody>
-  </table>
+  <!-- ที่จะใส่ชื่อไฟล์รายงาน + วันที่อัปเดต (ดึงจากแถวบนสุดของชีต) -->
+  <div class="info-lines" id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+
+  <div class="table-wrap">
+    <table id="kpiTable" aria-describedby="reportInfo">
+      <thead id="tableHead">
+        <tr><th>กำลังโหลดหัวตาราง...</th></tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr class="empty-row"><td>กำลังโหลดข้อมูล...</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
+/*
+  Final reposting.html
+  - ดึงข้อมูลจาก OpenSheet API
+  - หาแถวหัวตารางจริง (แถวที่มีคำว่า "จังหวัด" หรือ "ลำดับ")
+  - แสดงแถวด้านบนสุด (ชื่อไฟล์ / วันที่ ฯลฯ) เหนือหัวตาราง
+  - ไม่เปลี่ยนดีไซน์หลักของหน้า
+*/
+
 const sheetId = '19--z9FJSSDOZD9F5_6sTPdCRMqkmrJY6DAn9g1_TiVY';
 const sheetName = 'ไตรมาส 1-2';
-const API_URL = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
-const tbody = document.querySelector('#kpiTable tbody');
-const thead = document.querySelector('#tableHead');
+const API_URL = `https://opensheet.elk.sh/${sheetId}/${encodeURIComponent(sheetName)}`;
+
+const reportInfoEl = document.getElementById('reportInfo');
+const thead = document.getElementById('tableHead');
+const tbody = document.getElementById('tableBody');
+
+function normalizeStr(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).trim();
+}
 
 async function loadAndDisplayData() {
   try {
     const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลจากชีตได้');
-    const allRows = await res.json();
-    if (!allRows.length) throw new Error('ไม่พบข้อมูลในชีต');
+    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลจากชีตได้ (HTTP ' + res.status + ')');
 
-    // 🔍 หาแถวที่มีคำว่า "จังหวัด" เพื่อใช้เป็นหัวตารางจริง
-    const headerIndex = allRows.findIndex(row =>
-      Object.values(row).some(v => typeof v === 'string' && v.includes('จังหวัด'))
-    );
+    // OpenSheet บางครั้งให้ UTF-8 เพี้ยน — อ่านเป็น text ก่อน parse
+    const rawText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (e) {
+      // ถ้า parse ไม่ได้ ลองแก้ encoding แบบปลอดภัย
+      const blob = new Blob([rawText], { type: 'text/plain;charset=utf-8' });
+      const txt = await blob.text();
+      data = JSON.parse(txt);
+    }
 
-    if (headerIndex === -1) throw new Error('ไม่พบหัวตารางที่มีคำว่า จังหวัด');
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error('ไม่พบข้อมูลในชีต');
+    }
 
-    const columns = Object.values(allRows[headerIndex]).filter(c => c);
-    const dataRows = allRows.slice(headerIndex + 1);
+    // หาแถวหัวตารางจริง (ค้นหาแถวที่มีคำว่า 'จังหวัด' หรือ 'ลำดับ')
+    let headerIndex = -1;
+    for (let i = 0; i < data.length; i++) {
+      const vals = Object.values(data[i]).map(v => normalizeStr(v).toLowerCase());
+      // มองหา 'จังหวัด' หรือ 'ลำดับ' เป็น key ภายในแถว
+      if (vals.some(v => v === 'จังหวัด' || v.includes('จังหวัด')) ||
+          vals.some(v => v === 'ลำดับ' || v.includes('ลำดับ'))) {
+        headerIndex = i;
+        break;
+      }
+    }
 
-    // ✅ แสดงหัวตารางจริง
-    thead.innerHTML = `<tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr>`;
+    if (headerIndex === -1) {
+      // ถ้าหาไม่เจอ เราตัดสินใจใช้แถวแรกเป็นหัวตาราง
+      headerIndex = 0;
+    }
 
-    // ✅ เติมข้อมูล
+    // แสดงข้อความชื่อไฟล์/วันที่ — เราจะรวมค่าส่วนบนทั้งหมด (จากแถว 0 ถึง headerIndex-1)
+    const headerRows = data.slice(0, headerIndex);
+    if (headerRows.length > 0) {
+      // เอาค่าที่มีความหมายของแต่ละแถวมาแสดงเป็นบรรทัดแยก
+      const infoLines = headerRows.map(row => {
+        // รวมค่าที่ไม่ว่างในแถวเป็น string เดียว
+        const vals = Object.values(row).map(v => normalizeStr(v)).filter(v => v !== '');
+        return vals.join(' | ');
+      }).filter(l => l && l.length > 0);
+      if (infoLines.length > 0) {
+        reportInfoEl.textContent = infoLines.join(' — ');
+      } else {
+        reportInfoEl.textContent = '';
+      }
+    } else {
+      reportInfoEl.textContent = '';
+    }
+
+    // หาชื่อคอลัมน์จากแถว headerIndex
+    const headerRowObj = data[headerIndex];
+    const columns = Object.values(headerRowObj).map(v => normalizeStr(v));
+
+    // สร้างหัวตาราง HTML (ใช้ชื่อคอลัมน์จริงจากชีต)
+    thead.innerHTML = '<tr>' + columns.map(col => `<th>${col || ''}</th>`).join('') + '</tr>';
+
+    // เตรียมข้อมูลแถว (จาก headerIndex + 1 ถึงจบ)
+    const rowsData = data.slice(headerIndex + 1);
+
+    // ถ้าไม่มีข้อมูลแถว ให้แสดง empty message
+    if (!rowsData.length) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="${columns.length}">ไม่พบข้อมูลในชีต</td></tr>`;
+      return;
+    }
+
+    // สร้างแถวข้อมูล โดยใช้ลำดับของ Object.values ให้ตรงคอลัมน์
     tbody.innerHTML = '';
-    dataRows.forEach((row) => {
+    rowsData.forEach((rowObj, rIndex) => {
+      const rowVals = Object.values(rowObj).map(v => normalizeStr(v));
+      // สร้าง tr
       const tr = document.createElement('tr');
-      tr.innerHTML = columns.map((c, i) => `<td>${Object.values(row)[i] || ''}</td>`).join('');
+      tr.innerHTML = rowVals.map(v => `<td>${v}</td>`).join('');
       tbody.appendChild(tr);
     });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error loading/displaying data:', err);
+    reportInfoEl.textContent = '';
     thead.innerHTML = `<tr><th>เกิดข้อผิดพลาด</th></tr>`;
-    tbody.innerHTML = `<tr><td style="color:red;">❌ ${err.message}</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="1" style="color:red;">❌ ${normalizeStr(err.message)}</td></tr>`;
   }
 }
 
