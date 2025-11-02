@@ -6,7 +6,7 @@
 <title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* CSS: คงรูปแบบเดิมตามที่คุณต้องการ */
+/* CSS: คงรูปแบบและเพิ่มการแก้ไขสี/การจัดศูนย์กลาง */
 body {
   font-family: 'Sarabun', sans-serif;
   margin: 0;
@@ -39,6 +39,7 @@ body {
   margin-top: 40px;
 }
 #reportInfo {
+  /* ✅ แก้ไขให้จัดกึ่งกลาง */
   text-align: center;
   color: #880e4f;
   font-weight: bold;
@@ -61,17 +62,21 @@ table {
 th, td {
   border: 1px solid #f0a5bc;
   padding: 6px 8px;
-  text-align: center;
+  /* ✅ ทำให้ทุกเซลล์ (ทั้งหัวและข้อมูล) อยู่ตรงกลาง */
+  text-align: center; 
   vertical-align: middle;
 }
 th {
   background-color: #f8bbd0;
   color: #880e4f;
   font-weight: 700;
-  /* เพิ่มเพื่อให้หัวตารางติดอยู่ด้านบนเมื่อมีการ scroll */
+  /* Fixed header */
   position: sticky; 
   top: 0; 
   z-index: 10;
+  /* ✅ สำคัญมาก: ต้องกำหนด background-color ซ้ำ เมื่อใช้ position: sticky */
+  /* เพื่อให้ background ไม่โปร่งใสเมื่อเลื่อนผ่าน */
+  background-color: #f8bbd0; 
 }
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
 tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
@@ -98,7 +103,7 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
   <div class="table-wrapper">
     <table id="dataTable">
       <thead id="tableHead"></thead>
-      <tbody id="tableBody">
+      <tbody id="tableBody">
         <tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>
       </tbody>
     </table>
@@ -106,7 +111,7 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 </div>
 
 <script>
-// ✅ อัปเดต URL เป็นลิงก์ใหม่ที่คุณให้มา
+// URL ของ Apps Script Deployment ของคุณ
 const API_URL = 'https://script.google.com/macros/s/AKfycbyUo2wVFt55Jkj-SpPrIBeCu4ekpB4LvZmvwTwOxMaQyhA4BUuGHTOkvGQBexfVNxlk/exec';
 
 // ** Row Index Based on 0 (นับจาก 0) **
@@ -121,7 +126,6 @@ const START_BODY_ROW = 6;   // แถวที่ 7 ใน Sheet (A7)
  * @returns {string} HTML string สำหรับใส่ใน thead หรือ tbody
  */
 function applyMergedCells(cellData, mergedInfo) {
-  // สร้าง Array 2 มิติเพื่อเก็บสถานะว่าเซลล์ไหนถูกครอบทับแล้ว เพื่อซ่อนเซลล์ซ้ำซ้อน
   const hiddenCells = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
 
   let html = '';
@@ -133,20 +137,19 @@ function applyMergedCells(cellData, mergedInfo) {
     html += '<tr>';
     for (let c = 0; c < cellData[r].length; c++) {
       if (hiddenCells[r][c]) {
-        continue; // ข้ามเซลล์ที่ถูกครอบทับ
+        continue;
       }
       
       let cellAttributes = '';
       let merge = mergedInfo.find(m => m.row === r && m.col === c);
 
       if (merge && (merge.height > 1 || merge.width > 1)) {
-        // เป็นเซลล์เริ่มต้นของการรวม: กำหนด rowspan/colspan และทำเครื่องหมายเซลล์อื่นให้เป็น hidden
         cellAttributes += ` rowspan="${merge.height}"`;
         cellAttributes += ` colspan="${merge.width}"`;
         
         for (let i = 0; i < merge.height; i++) {
           for (let j = 0; j < merge.width; j++) {
-            if (i === 0 && j === 0) continue; // ไม่ซ่อนตัวเอง
+            if (i === 0 && j === 0) continue; 
             if (r + i < cellData.length && c + j < cellData[r].length) {
               hiddenCells[r + i][c + j] = true;
             }
@@ -154,7 +157,6 @@ function applyMergedCells(cellData, mergedInfo) {
         }
       }
 
-      // แสดงผล (ใช้ค่าจาก cellData[r][c] ซึ่งควรเป็นค่าของเซลล์รวม)
       html += `<${tagName}${cellAttributes}>${cellData[r][c] || ''}</${tagName}>`;
     }
     html += '</tr>';
@@ -172,34 +174,31 @@ async function loadSheet() {
     if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้ (HTTP Error)');
     
     const resJson = await res.json();
-    if (resJson.error) throw new Error(resJson.error); // ดักจับ Apps Script Error
+    if (resJson.error) throw new Error(resJson.error);
     
     const { data, merged } = resJson;
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
     // 1. แสดงหัวรายงาน (แถว 1 ถึง 3 ใน Sheet)
     const reportHeaderData = data.slice(0, START_HEADER_ROW);
-    // กรองค่าว่างและรวมเป็นข้อความ (เหมือนโค้ดเดิม)
     const headerPart = reportHeaderData.map(r => r.filter(c => c).join(' ')).join('<br>');
     infoEl.innerHTML = headerPart;
 
     // 2. แยกข้อมูล Header (แถว 4 ถึง 6 ใน Sheet)
     const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
     const headerMerged = merged.filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
-      .map(m => ({ ...m, row: m.row - START_HEADER_ROW })); // ปรับ index ให้เป็น 0-based ของส่วน Header
+      .map(m => ({ ...m, row: m.row - START_HEADER_ROW }));
     
-    // สร้างตาราง Header โดยใช้ Merged Cells Logic
     thead.innerHTML = applyMergedCells(headerData, headerMerged);
 
     // 3. แยกข้อมูล Body (แถว 7 เป็นต้นไปใน Sheet)
     const bodyData = data.slice(START_BODY_ROW);
     
-    // สร้างตาราง Body (ใช้ logic เดิม เพราะส่วน Body ไม่มีการรวมเซลล์ซ้อนกันมาก)
     let bodyHtml = '';
     bodyData.forEach((row) => {
       bodyHtml += '<tr>';
       row.forEach((cell) => {
-        // ใช้ .toLocaleString('th-TH') เพื่อจัดรูปแบบตัวเลข (ถ้าต้องการ)
+        // จัดรูปแบบตัวเลขเป็นภาษาไทย
         let displayValue = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
         bodyHtml += `<td>${displayValue}</td>`;
       });
@@ -209,7 +208,6 @@ async function loadSheet() {
     tbody.innerHTML = bodyHtml;
 
   } catch (err) {
-    // ดักจับข้อผิดพลาดทั้งหมดและแสดงผล
     infoEl.textContent = '❌ รายงานผลกองทุนพัฒนาบทบาทสตรี';
     tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ข้อผิดพลาดในการโหลด: ${err.message}</td></tr>`;
   }
