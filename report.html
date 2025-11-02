@@ -34,20 +34,28 @@ body {
 }
 .logos-top img { height: 55px; }
 
+.header-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
 #reportInfo {
+  flex: 1;
   text-align: center;
   color: #880e4f;
   font-weight: bold;
-  margin: 20px 0 0 0;
+  margin-top: 40px;
   line-height: 1.6em;
 }
 #reportDate {
+  flex-basis: 100%;
   text-align: right;
   color: #880e4f;
   font-weight: bold;
   font-size: 0.95rem;
   margin-top: 5px;
-  margin-bottom: 15px;
 }
 
 .filter-bar {
@@ -119,8 +127,11 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
   </div>
 
-  <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
-  <div id="reportDate"></div>
+  <!-- ✅ จัดบล็อกหัวรายงานใหม่ -->
+  <div class="header-block">
+    <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+    <div id="reportDate"></div>
+  </div>
 
   <div class="filter-bar">
     🔍 <input type="text" id="filterInput" placeholder="ค้นหาข้อมูล... เช่น ชื่อจังหวัด หรือคะแนน">
@@ -180,11 +191,11 @@ async function loadSheet() {
     const { data, merged } = resJson;
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    // ✅ แสดงหัวรายงาน
+    // ✅ แสดงหัวรายงานตรงกลาง
     const headerPart = data.slice(0, START_HEADER_ROW);
     infoEl.innerHTML = headerPart.map(r => r.filter(c => c).join(' ')).slice(0, 2).join('<br>');
-    
-    // ✅ แสดงวันที่ชิดขวา (ใต้หัวข้อเดือน)
+
+    // ✅ แสดงวันที่ใต้หัวข้อเดือน (ขวาสุด)
     dateEl.textContent = 'ข้อมูล ณ วันที่ ' + headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
 
     // ✅ แสดงหัวตาราง (มี merge)
@@ -203,7 +214,6 @@ async function loadSheet() {
   }
 }
 
-// ✅ ฟังก์ชันแสดงข้อมูล พร้อมรวมเซลล์ "รวม"
 function renderTableBody(data) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
@@ -215,7 +225,7 @@ function renderTableBody(data) {
       if (index === data.length - 1 && colIndex === 0) {
         tr += `<td colspan="2" style="font-weight:bold;">${value}</td>`;
       } else if (index === data.length - 1 && colIndex === 1) {
-        return; // ข้ามคอลัมน์ B
+        return;
       } else {
         tr += `<td>${value}</td>`;
       }
