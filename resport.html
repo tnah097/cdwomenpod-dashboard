@@ -25,22 +25,24 @@ body {
   border-radius: 25px;
   padding: 30px;
   box-shadow: 0 8px 25px rgba(233, 30, 99, 0.25);
+  position: relative;
 }
 
 /* ✅ โลโก้ด้านบนสุด */
 .logos-top {
+  position: absolute;
+  top: 20px;
+  right: 20px;
   display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-bottom: 10px;
+  gap: 10px;
 }
 .logos-top img {
-  height: 60px;
+  height: 55px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 10px;
+  margin-top: 40px;
 }
 
 .header h1 {
@@ -131,7 +133,7 @@ tr:nth-child(odd) td {
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxx1aiiWqE-RukZ9M_ECizRzL-VSUCfKL2mbRvw17q3FPAWGH220QGd1pdJLAw3UxID/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwkDmamkTUIGrGVAb5toTBRoyOo2OhEMwNwma1AzvoZ1-QceP3CwgSUVAqBc3T2GWFG/exec';
 
 async function loadSheet() {
   const infoEl = document.getElementById('reportInfo');
@@ -144,16 +146,22 @@ async function loadSheet() {
 
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    // ✅ เอาแถวที่ 2 แสดงเป็นหัวรายงาน (ลบคำว่า "ข้อมูล ณ วันที่")
+    // ✅ แสดงหัวรายงาน (ตัดคำว่า “ข้อมูล ณ วันที่”)
     const headerText = data[1].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
     infoEl.textContent = headerText;
 
-    // ✅ แสดงข้อมูลทั้งหมด (ไม่ตัด ไม่กรอง)
+    // ✅ ล้างตารางเก่า
     tbody.innerHTML = '';
 
+    // ✅ วาดข้อมูลทั้งหมดแบบไม่ซ้ำ merge
     data.forEach((row, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = row.map(v => `<td>${v ?? ''}</td>`).join('');
+      tr.innerHTML = row.map((cell, j) => {
+        // ถ้าเป็นช่องว่างต่อจาก merge ให้ไม่แสดงซ้ำ
+        const prev = row[j - 1];
+        if (cell && cell === prev) return `<td></td>`;
+        return `<td>${cell || ''}</td>`;
+      }).join('');
       tbody.appendChild(tr);
     });
 
