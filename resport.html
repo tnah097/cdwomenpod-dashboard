@@ -25,26 +25,22 @@ body {
   border-radius: 25px;
   padding: 30px;
   box-shadow: 0 8px 25px rgba(233, 30, 99, 0.25);
-  position: relative;
 }
 
-/* ส่วนหัว */
+/* ✅ โลโก้ด้านบนสุด */
+.logos-top {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+.logos-top img {
+  height: 60px;
+}
+
 .header {
   text-align: center;
   margin-bottom: 10px;
-  position: relative;
-}
-
-/* ✅ โลโก้ที่มุมขวาบน */
-.header .logos-top {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: 10px;
-}
-.header .logos-top img {
-  height: 55px;
 }
 
 .header h1 {
@@ -112,12 +108,13 @@ tr:nth-child(odd) td {
 
 <body>
 <div class="container">
-  <div class="header">
-    <div class="logos-top">
-      <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
-    </div>
+  <!-- ✅ โลโก้อยู่ด้านบนสุด -->
+  <div class="logos-top">
+    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+  </div>
 
+  <div class="header">
     <h1>รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี ประจำปีงบประมาณ พ.ศ. 2569</h1>
     <p>ข้อมูลระดับจังหวัดจากชีต "ไตรมาส 1-2"</p>
   </div>
@@ -134,7 +131,7 @@ tr:nth-child(odd) td {
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwFNFLeFiYgguDjFvdIRKqz0lLd-Q7sIHU1L5mrpPuu8dpJKISxUlePgShX6kW4v-dZ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxx1aiiWqE-RukZ9M_ECizRzL-VSUCfKL2mbRvw17q3FPAWGH220QGd1pdJLAw3UxID/exec';
 
 async function loadSheet() {
   const infoEl = document.getElementById('reportInfo');
@@ -147,15 +144,14 @@ async function loadSheet() {
 
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    // ✅ แสดงชื่อรายงาน + วันที่ (ตัดคำว่า "ข้อมูล ณ วันที่" ออก)
+    // ✅ เอาแถวที่ 2 แสดงเป็นหัวรายงาน (ลบคำว่า "ข้อมูล ณ วันที่")
     const headerText = data[1].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
     infoEl.textContent = headerText;
 
-    // ✅ ลบแถวหัวที่ไม่จำเป็น และแสดงข้อมูลทั้งหมด
-    const startIndex = 3;
+    // ✅ แสดงข้อมูลทั้งหมด (ไม่ตัด ไม่กรอง)
     tbody.innerHTML = '';
 
-    data.slice(startIndex).forEach(row => {
+    data.forEach((row, i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = row.map(v => `<td>${v ?? ''}</td>`).join('');
       tbody.appendChild(tr);
