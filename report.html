@@ -5,92 +5,94 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
+/* CSS: คงรูปแบบเดิมและเพิ่มการแก้ไขตำแหน่งวันที่ */
 body {
-  font-family: 'Sarabun', sans-serif;
-  margin: 0;
-  padding: 20px;
-  background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
+  font-family: 'Sarabun', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
 }
 .container {
-  width: 100%;
-  max-width: 1400px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 25px;
-  padding: 30px;
-  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.25);
-  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.25);
+  position: relative;
 }
 .logos-top {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
 }
 .logos-top img { height: 55px; }
 
-.header-text {
-  text-align: center;
-  color: #880e4f;
-  font-weight: bold;
-  line-height: 1.6em;
-  margin-top: 50px;
-  margin-bottom: 0;
+#reportInfo {
+  text-align: center;
+  color: #880e4f;
+  font-weight: bold;
+  margin: 20px 0 10px 0;
+  line-height: 1.6em;
 }
+
+/* ✅ แก้ไขตำแหน่งวันที่ให้อยู่มุมขวา ใต้หัวข้อหลัก */
 #reportDate {
-  text-align: right;
-  color: #880e4f;
-  font-weight: bold;
-  font-size: 0.95rem;
-  margin: 5px 0 20px 0;
+  position: absolute;
+  top: 120px; /* ปรับค่าให้เหมาะสมเพื่อให้อยู่ใต้ "ประจำเดือน พฤศจิกายน พ.ศ. 2568" */
+  right: 30px; /* ใกล้ขอบขวา */
+  color: #880e4f;
+  font-weight: bold;
+  font-size: 0.95rem;
+  z-index: 10;
 }
 
 .filter-bar {
-  text-align: right;
-  margin-bottom: 10px;
+  text-align: right;
+  margin-bottom: 10px;
 }
 .filter-bar input {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #f48fb1;
-  font-family: 'Sarabun';
-  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #f48fb1;
+  font-family: 'Sarabun';
+  font-size: 0.9rem;
 }
 
 .table-wrapper {
-  overflow: auto;
-  max-height: 80vh;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(233,30,99,0.1);
-  background: white;
+  overflow: auto;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(233,30,99,0.1);
+  background: white;
 }
 
-/* ✅ เส้นขอบตาราง */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
 }
 th, td {
-  border: 1px solid #c97a9b;
-  padding: 6px 8px;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
+  border: 1px solid #c97a9b;
+  padding: 6px 8px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 /* ✅ Sticky Header หลายบรรทัด */
 thead th {
-  background-color: #f8bbd0;
-  color: #880e4f;
-  font-weight: 700;
-  border: 1.5px solid #b36a84;
-  z-index: 5;
+  background-color: #f8bbd0;
+  color: #880e4f;
+  font-weight: 700;
+  border: 1.5px solid #b36a84;
+  z-index: 5;
 }
 thead tr:nth-child(1) th { position: sticky; top: 0; }
 thead tr:nth-child(2) th { position: sticky; top: 32px; }
@@ -98,132 +100,166 @@ thead tr:nth-child(3) th { position: sticky; top: 64px; }
 
 /* ✅ เส้นขอบหัวตารางล่างสุด */
 thead tr:last-child th {
-  border-bottom: 2.5px solid #880e4f;
+  border-bottom: 2.5px solid #880e4f;
 }
 
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
 tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 
+/* ✅ สไตล์สำหรับแถวรวม */
+tr.total-row td {
+  font-weight: bold;
+  background-color: #f8bbd0 !important; /* ใช้สีเดียวกับหัวตาราง */
+}
+
 .empty-row td {
-  text-align: center;
-  padding: 15px;
-  font-style: italic;
-  color: #c62828;
+  text-align: center;
+  padding: 15px;
+  font-style: italic;
+  color: #c62828;
 }
 </style>
 </head>
 
 <body>
 <div class="container">
-  <div class="logos-top">
-    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
-  </div>
+  <div class="logos-top">
+    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
+  </div>
 
-  <div class="header-text" id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
-  <div id="reportDate"></div>
+    <div id="reportDate"></div>
+  <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
 
-  <div class="filter-bar">
-    🔍 <input type="text" id="filterInput" placeholder="ค้นหาข้อมูล... เช่น ชื่อจังหวัด หรือคะแนน">
-  </div>
+  <div class="filter-bar">
+    🔍 <input type="text" id="filterInput" placeholder="ค้นหาข้อมูล... เช่น ชื่อจังหวัด หรือคะแนน">
+  </div>
 
-  <div class="table-wrapper">
-    <table id="dataTable">
-      <thead id="tableHead"></thead>
-      <tbody id="tableBody">
-        <tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <div class="table-wrapper">
+    <table id="dataTable">
+      <thead id="tableHead"></thead>
+      <tbody id="tableBody">
+        <tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
-// ✅ ลิงก์ Apps Script
+// URL ของ Apps Script Deployment ของคุณ
 const API_URL = 'https://script.google.com/macros/s/AKfycbyUo2wVFt55Jkj-SpPrIBeCu4ekpB4LvZmvwTwOxMaQyhA4BUuGHTOkvGQBexfVNxlk/exec';
 const START_HEADER_ROW = 3;
 const END_HEADER_ROW = 5;
 const START_BODY_ROW = 6;
 
 function applyMergedCells(cellData, mergedInfo) {
-  const hiddenCells = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
-  let html = '';
-  for (let r = 0; r < cellData.length; r++) {
-    html += '<tr>';
-    for (let c = 0; c < cellData[r].length; c++) {
-      if (hiddenCells[r][c]) continue;
-      let cellAttributes = '';
-      let merge = mergedInfo.find(m => m.row === r && m.col === c);
-      if (merge && (merge.height > 1 || merge.width > 1)) {
-        cellAttributes += ` rowspan="${merge.height}" colspan="${merge.width}"`;
-        for (let i = 0; i < merge.height; i++) {
-          for (let j = 0; j < merge.width; j++) {
-            if (i === 0 && j === 0) continue;
-            if (r + i < cellData.length && c + j < cellData[r].length) hiddenCells[r + i][c + j] = true;
-          }
-        }
-      }
-      html += `<th ${cellAttributes}>${cellData[r][c] || ''}</th>`;
-    }
-    html += '</tr>';
-  }
-  return html;
+  const hiddenCells = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
+  let html = '';
+  for (let r = 0; r < cellData.length; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cellData[r].length; c++) {
+      if (hiddenCells[r][c]) continue;
+      let cellAttributes = '';
+      let merge = mergedInfo.find(m => m.row === r && m.col === c);
+      if (merge && (merge.height > 1 || merge.width > 1)) {
+        cellAttributes += ` rowspan="${merge.height}" colspan="${merge.width}"`;
+        for (let i = 0; i < merge.height; i++) {
+          for (let j = 0; j < merge.width; j++) {
+            if (i === 0 && j === 0) continue;
+            if (r + i < cellData.length && c + j < cellData[r].length) hiddenCells[r + i][c + j] = true;
+          }
+        }
+      }
+      html += `<th ${cellAttributes}>${cellData[r][c] || ''}</th>`;
+    }
+    html += '</tr>';
+  }
+  return html;
 }
 
 async function loadSheet() {
-  const infoEl = document.getElementById('reportInfo');
-  const dateEl = document.getElementById('reportDate');
-  const thead = document.getElementById('tableHead');
-  const tbody = document.getElementById('tableBody');
+  const infoEl = document.getElementById('reportInfo');
+  const dateEl = document.getElementById('reportDate');
+  const thead = document.getElementById('tableHead');
+  const tbody = document.getElementById('tableBody');
 
-  try {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
-    const resJson = await res.json();
-    const { data, merged } = resJson;
-    if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
+    const resJson = await res.json();
+    if (resJson.error) throw new Error(resJson.error);
+    
+    const { data, merged } = resJson;
+    if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    const headerPart = data.slice(0, START_HEADER_ROW);
-    const reportTitle = headerPart.map(r => r.filter(c => c).join(' ')).slice(0, 2).join('<br>');
-    const reportDate = headerPart[2].join(' ').trim();
+    // 1. จัดการหัวรายงานและวันที่
+    const headerPart = data.slice(0, START_HEADER_ROW);
+    infoEl.innerHTML = headerPart.slice(0, 2).map(r => r.filter(c => c).join(' ')).join('<br>');
+    
+    // ✅ ดึงวันที่จากแถวที่ 3 (Index 2)
+    const dateRow = headerPart[2].filter(c => c).join(' ');
+    dateEl.textContent = dateRow; // แสดงข้อความ "ข้อมูล ณ วันที่ 15 พฤศจิกายน 2568"
 
-    infoEl.innerHTML = `${reportTitle}<br><span style="font-weight:700;">${reportDate}</span>`;
-    dateEl.textContent = '';
+    // 2. จัดการหัวตาราง (Thead)
+    const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
+    const headerMerged = merged.filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
+      .map(m => ({ ...m, row: m.row - START_HEADER_ROW }));
+    thead.innerHTML = applyMergedCells(headerData, headerMerged);
 
-    const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
-    const headerMerged = merged.filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
-      .map(m => ({ ...m, row: m.row - START_HEADER_ROW }));
-    thead.innerHTML = applyMergedCells(headerData, headerMerged);
+    // 3. จัดการส่วนข้อมูล (Tbody)
+    const bodyData = data.slice(START_BODY_ROW);
+    renderTableBody(bodyData);
 
-    const bodyData = data.slice(START_BODY_ROW);
-    renderTableBody(bodyData);
-
-  } catch (err) {
-    infoEl.textContent = '❌ ไม่สามารถโหลดข้อมูลรายงาน';
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ${err.message}</td></tr>`;
-  }
+  } catch (err) {
+    infoEl.textContent = '❌ ไม่สามารถโหลดข้อมูลรายงาน';
+    dateEl.textContent = '';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ข้อผิดพลาด: ${err.message}</td></tr>`;
+  }
 }
 
+/**
+ * ฟังก์ชันสำหรับสร้าง HTML ของส่วน Body และจัดการแถว 'รวม'
+ * @param {Array<Array<any>>} data - ข้อมูลส่วน Body
+ */
 function renderTableBody(data) {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-  data.forEach((row) => {
-    let tr = '<tr>';
-    row.forEach((cell) => {
-      const value = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
-      tr += `<td>${value}</td>`;
-    });
-    tr += '</tr>';
-    tbody.innerHTML += tr;
-  });
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  data.forEach((row) => {
+    let tr = '<tr>';
+    // ตรวจสอบว่าเป็นแถวรวมหรือไม่ (ค่าในคอลัมน์ A (Index 0) หรือ B (Index 1) มีคำว่า 'รวม')
+    const isTotalRow = (String(row[0]).toLowerCase().includes('รวม') || String(row[1]).toLowerCase().includes('รวม'));
+    
+    if (isTotalRow) {
+      tr = '<tr class="total-row">';
+    }
+
+    row.forEach((cell, colIndex) => {
+      let cellAttributes = '';
+      
+      // ✅ ถ้าเป็นแถว 'รวม' และเป็นคอลัมน์แรก (A) ให้ทำการรวมเซลล์ (A+B)
+      if (isTotalRow && colIndex === 0) {
+        cellAttributes = ' colspan="2"';
+        // แสดงผลเฉพาะค่าจากคอลัมน์ A (ซึ่งควรเป็น 'รวม')
+      } else if (isTotalRow && colIndex === 1) {
+        return; // ข้ามคอลัมน์ B เนื่องจากถูกรวมไปแล้ว
+      }
+      
+      // จัดรูปแบบตัวเลขเป็นภาษาไทย
+      const value = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
+      tr += `<td${cellAttributes}>${value}</td>`;
+    });
+    tr += '</tr>';
+    tbody.innerHTML += tr;
+  });
 }
 
 document.getElementById('filterInput').addEventListener('keyup', function() {
-  const keyword = this.value.toLowerCase();
-  const rows = document.querySelectorAll('#tableBody tr');
-  rows.forEach(r => {
-    const text = r.innerText.toLowerCase();
-    r.style.display = text.includes(keyword) ? '' : 'none';
-  });
+  const keyword = this.value.toLowerCase();
+  const rows = document.querySelectorAll('#tableBody tr');
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    r.style.display = text.includes(keyword) ? '' : 'none';
+  });
 });
 
 window.onload = loadSheet;
