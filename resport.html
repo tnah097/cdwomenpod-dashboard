@@ -92,79 +92,50 @@ tr.summary-row td {
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
   </div>
+
   <table id="kpiTable">
-    <thead>
-      <tr>
-        <th rowspan="2">ลำดับ</th>
-        <th rowspan="2">จังหวัด</th>
-        <th colspan="3">ร้อยละการใช้จ่ายเงินทุนหมุนเวียน (A)</th>
-        <th colspan="3">ร้อยละการรับชำระคืนเงินกู้ยืม (B)</th>
-        <th colspan="3">ร้อยละหนี้เกินกำหนดชำระ (C)</th>
-        <th colspan="2">ระดับความสำเร็จ (D)</th>
-      </tr>
-      <tr>
-        <th>ร้อยละ</th>
-        <th>คะแนน (ตชว.)</th>
-        <th>คะแนน (เน้นย้ำ)</th>
-        <th>ร้อยละ</th>
-        <th>คะแนน (ตชว.)</th>
-        <th>คะแนน (เน้นย้ำ)</th>
-        <th>ร้อยละ</th>
-        <th>คะแนน (ตชว.)</th>
-        <th>คะแนน (เน้นย้ำ)</th>
-        <th>คะแนนรวม</th>
-        <th>ระดับ</th>
-      </tr>
+    <thead id="tableHead">
+      <tr><th>กำลังโหลดหัวตาราง...</th></tr>
     </thead>
     <tbody>
-      <tr><td colspan="13" style="font-style: italic;">กำลังโหลดข้อมูล...</td></tr>
+      <tr><td>กำลังโหลดข้อมูล...</td></tr>
     </tbody>
   </table>
 </div>
 
 <script>
-const tbody = document.querySelector('#kpiTable tbody');
 const sheetId = '19--z9FJSSDOZD9F5_6sTPdCRMqkmrJY6DAn9g1_TiVY';
 const sheetName = 'ไตรมาส 1-2';
 const API_URL = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
+const tbody = document.querySelector('#kpiTable tbody');
+const thead = document.querySelector('#tableHead');
 
 async function loadAndDisplayData() {
   try {
     const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('โหลดข้อมูลไม่สำเร็จ');
-    const text = await res.text();
-    const data = JSON.parse(text);
+    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลจากชีตได้');
+    const data = await res.json();
 
-    // ✅ กรองเฉพาะแถวที่มีจังหวัด
-    const filtered = data.filter(row => row['จังหวัด']);
+    if (!data.length) throw new Error('ชีตไม่มีข้อมูล');
 
+    // ✅ เอาชื่อคอลัมน์จริงจากชีต
+    const columns = Object.keys(data[0]);
+
+    // ✅ สร้างหัวตารางอัตโนมัติจากชื่อจริงในชีต
+    thead.innerHTML = `<tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr>`;
+
+    // ✅ เติมข้อมูลแถวตามคอลัมน์จริง
     tbody.innerHTML = '';
-    filtered.forEach((row, i) => {
+    data.forEach((row) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${i + 1}</td>
-        <td class="clickable-kpi">${row['จังหวัด'] || ''}</td>
-        <td>${row['A:ร้อยละ'] || ''}</td>
-        <td>${row['A:คะแนน (ตชว.)'] || ''}</td>
-        <td>${row['A:คะแนน(เน้นย้ำ)'] || ''}</td>
-        <td>${row['B:ร้อยละ'] || ''}</td>
-        <td>${row['B:คะแนน (ตชว.)'] || ''}</td>
-        <td>${row['B:คะแนน(เน้นย้ำ)'] || ''}</td>
-        <td>${row['C:ร้อยละ'] || ''}</td>
-        <td>${row['C:คะแนน (ตชว.)'] || ''}</td>
-        <td>${row['C:คะแนน(เน้นย้ำ)'] || ''}</td>
-        <td>${row['D:คะแนนรวม'] || ''}</td>
-        <td>${row['D:ระดับ'] || ''}</td>
-      `;
+      tr.innerHTML = columns.map(col => `<td>${row[col] || ''}</td>`).join('');
       tbody.appendChild(tr);
     });
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="13" style="color:red;">ไม่พบข้อมูลในชีต</td></tr>`;
-    }
   } catch (err) {
-    console.error('เกิดข้อผิดพลาด:', err);
-    tbody.innerHTML = `<tr><td colspan="13" style="color:red;">❌ ${err.message}</td></tr>`;
+    console.error(err);
+    thead.innerHTML = `<tr><th>เกิดข้อผิดพลาด</th></tr>`;
+    tbody.innerHTML = `<tr><td style="color:red;">❌ ${err.message}</td></tr>`;
   }
 }
 
