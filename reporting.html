@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 body {
   font-family: 'Sarabun', sans-serif;
@@ -37,20 +38,38 @@ body {
   text-align: center;
   color: #880e4f;
   font-weight: bold;
-  margin: 15px 0 25px 0;
+  margin: 20px 0 10px 0;
   line-height: 1.6em;
+}
+#reportDate {
+  position: absolute;
+  top: 25px;
+  right: 200px;
+  color: #880e4f;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+.filter-bar {
+  text-align: right;
+  margin-bottom: 10px;
+}
+.filter-bar input {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #f48fb1;
+  font-family: 'Sarabun';
+  font-size: 0.9rem;
 }
 
 .table-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: auto;
   max-height: 80vh;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(233,30,99,0.1);
   background: white;
 }
 
-/* ✅ ปรับเส้นตารางให้เหมือน Google Sheet */
+/* ✅ เส้นขอบตาราง */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -64,23 +83,23 @@ th, td {
   white-space: nowrap;
 }
 
-/* ✅ หัวตาราง */
-th {
+/* ✅ Sticky Header หลายบรรทัด */
+thead th {
   background-color: #f8bbd0;
   color: #880e4f;
   font-weight: 700;
   border: 1.5px solid #b36a84;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  z-index: 5;
 }
+thead tr:nth-child(1) th { position: sticky; top: 0; }
+thead tr:nth-child(2) th { position: sticky; top: 32px; }
+thead tr:nth-child(3) th { position: sticky; top: 64px; }
 
-/* ✅ เส้นขอบหัวล่างสุดหนา */
+/* ✅ เส้นขอบหัวตารางล่างสุด */
 thead tr:last-child th {
   border-bottom: 2.5px solid #880e4f;
 }
 
-/* ✅ แถวข้อมูล */
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
 tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 
@@ -100,7 +119,12 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
   </div>
 
+  <div id="reportDate"></div>
   <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+
+  <div class="filter-bar">
+    🔍 <input type="text" id="filterInput" placeholder="ค้นหาข้อมูล... เช่น ชื่อจังหวัด หรือคะแนน">
+  </div>
 
   <div class="table-wrapper">
     <table id="dataTable">
@@ -113,9 +137,7 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 </div>
 
 <script>
-// ✅ ลิงก์ Apps Script ที่ใช้ปัจจุบัน
 const API_URL = 'https://script.google.com/macros/s/AKfycbyUo2wVFt55Jkj-SpPrIBeCu4ekpB4LvZmvwTwOxMaQyhA4BUuGHTOkvGQBexfVNxlk/exec';
-
 const START_HEADER_ROW = 3;
 const END_HEADER_ROW = 5;
 const START_BODY_ROW = 6;
@@ -123,9 +145,6 @@ const START_BODY_ROW = 6;
 function applyMergedCells(cellData, mergedInfo) {
   const hiddenCells = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
   let html = '';
-  const isHeader = cellData.length <= (END_HEADER_ROW - START_HEADER_ROW + 1);
-  const tagName = isHeader ? 'th' : 'td';
-
   for (let r = 0; r < cellData.length; r++) {
     html += '<tr>';
     for (let c = 0; c < cellData[r].length; c++) {
@@ -133,8 +152,7 @@ function applyMergedCells(cellData, mergedInfo) {
       let cellAttributes = '';
       let merge = mergedInfo.find(m => m.row === r && m.col === c);
       if (merge && (merge.height > 1 || merge.width > 1)) {
-        cellAttributes += ` rowspan="${merge.height}"`;
-        cellAttributes += ` colspan="${merge.width}"`;
+        cellAttributes += ` rowspan="${merge.height}" colspan="${merge.width}"`;
         for (let i = 0; i < merge.height; i++) {
           for (let j = 0; j < merge.width; j++) {
             if (i === 0 && j === 0) continue;
@@ -142,7 +160,7 @@ function applyMergedCells(cellData, mergedInfo) {
           }
         }
       }
-      html += `<${tagName}${cellAttributes}>${cellData[r][c] || ''}</${tagName}>`;
+      html += `<th ${cellAttributes}>${cellData[r][c] || ''}</th>`;
     }
     html += '</tr>';
   }
@@ -151,20 +169,20 @@ function applyMergedCells(cellData, mergedInfo) {
 
 async function loadSheet() {
   const infoEl = document.getElementById('reportInfo');
+  const dateEl = document.getElementById('reportDate');
   const thead = document.getElementById('tableHead');
   const tbody = document.getElementById('tableBody');
 
   try {
     const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้ (HTTP Error)');
+    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
     const resJson = await res.json();
-    if (resJson.error) throw new Error(resJson.error);
     const { data, merged } = resJson;
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
-    const reportHeaderData = data.slice(0, START_HEADER_ROW);
-    const headerPart = reportHeaderData.map(r => r.filter(c => c).join(' ')).join('<br>');
-    infoEl.innerHTML = headerPart;
+    const headerPart = data.slice(0, START_HEADER_ROW);
+    infoEl.innerHTML = headerPart.map(r => r.filter(c => c).join(' ')).slice(0, 2).join('<br>');
+    dateEl.textContent = headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
 
     const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
     const headerMerged = merged.filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
@@ -172,22 +190,37 @@ async function loadSheet() {
     thead.innerHTML = applyMergedCells(headerData, headerMerged);
 
     const bodyData = data.slice(START_BODY_ROW);
-    let bodyHtml = '';
-    bodyData.forEach((row) => {
-      bodyHtml += '<tr>';
-      row.forEach((cell) => {
-        let displayValue = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
-        bodyHtml += `<td>${displayValue}</td>`;
-      });
-      bodyHtml += '</tr>';
-    });
-    tbody.innerHTML = bodyHtml;
+    renderTableBody(bodyData);
 
   } catch (err) {
-    infoEl.textContent = '❌ รายงานผลกองทุนพัฒนาบทบาทสตรี';
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ข้อผิดพลาดในการโหลด: ${err.message}</td></tr>`;
+    infoEl.textContent = '❌ ไม่สามารถโหลดข้อมูลรายงาน';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ${err.message}</td></tr>`;
   }
 }
+
+function renderTableBody(data) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  data.forEach((row) => {
+    let tr = '<tr>';
+    row.forEach((cell) => {
+      const value = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
+      tr += `<td>${value}</td>`;
+    });
+    tr += '</tr>';
+    tbody.innerHTML += tr;
+  });
+}
+
+document.getElementById('filterInput').addEventListener('keyup', function() {
+  const keyword = this.value.toLowerCase();
+  const rows = document.querySelectorAll('#tableBody tr');
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    r.style.display = text.includes(keyword) ? '' : 'none';
+  });
+});
+
 window.onload = loadSheet;
 </script>
 </body>
