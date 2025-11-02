@@ -124,8 +124,6 @@ tr.summary-row td {
 
 <script>
 const tbody = document.querySelector('#kpiTable tbody');
-
-// ✅ ใช้ Google Sheet ID จริง
 const sheetId = '19--z9FJSSDOZD9F5_6sTPdCRMqkmrJY6DAn9g1_TiVY';
 const sheetName = 'ไตรมาส 1-2';
 const API_URL = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
@@ -133,14 +131,14 @@ const API_URL = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
 async function loadAndDisplayData() {
   try {
     const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลจาก Google Sheet ได้');
-    
+    if (!res.ok) throw new Error('โหลดข้อมูลไม่สำเร็จ');
     const text = await res.text();
     const data = JSON.parse(text);
-    const filtered = data.filter(row => row['จังหวัด']);
-    
-    tbody.innerHTML = '';
 
+    // ✅ กรองเฉพาะแถวที่มีจังหวัด
+    const filtered = data.filter(row => row['จังหวัด']);
+
+    tbody.innerHTML = '';
     filtered.forEach((row, i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -164,7 +162,6 @@ async function loadAndDisplayData() {
     if (filtered.length === 0) {
       tbody.innerHTML = `<tr><td colspan="13" style="color:red;">ไม่พบข้อมูลในชีต</td></tr>`;
     }
-
   } catch (err) {
     console.error('เกิดข้อผิดพลาด:', err);
     tbody.innerHTML = `<tr><td colspan="13" style="color:red;">❌ ${err.message}</td></tr>`;
