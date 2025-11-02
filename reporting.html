@@ -34,21 +34,30 @@ body {
 }
 .logos-top img { height: 55px; }
 
+.header-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
 #reportInfo {
+  flex: 1;
   text-align: center;
   color: #880e4f;
   font-weight: bold;
-  margin: 20px 0 10px 0;
+  margin-top: 40px;
   line-height: 1.6em;
 }
 #reportDate {
-  position: absolute;
-  top: 25px;
-  right: 200px;
+  flex-basis: 100%;
+  text-align: right;
   color: #880e4f;
   font-weight: bold;
   font-size: 0.95rem;
+  margin-top: 5px;
 }
+
 .filter-bar {
   text-align: right;
   margin-bottom: 10px;
@@ -95,7 +104,6 @@ thead tr:nth-child(1) th { position: sticky; top: 0; }
 thead tr:nth-child(2) th { position: sticky; top: 32px; }
 thead tr:nth-child(3) th { position: sticky; top: 64px; }
 
-/* ✅ เส้นขอบหัวตารางล่างสุด */
 thead tr:last-child th {
   border-bottom: 2.5px solid #880e4f;
 }
@@ -119,8 +127,11 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
   </div>
 
-  <div id="reportDate"></div>
-  <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+  <!-- ✅ จัดบล็อกหัวรายงานใหม่ -->
+  <div class="header-block">
+    <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+    <div id="reportDate"></div>
+  </div>
 
   <div class="filter-bar">
     🔍 <input type="text" id="filterInput" placeholder="ค้นหาข้อมูล... เช่น ชื่อจังหวัด หรือคะแนน">
@@ -180,15 +191,20 @@ async function loadSheet() {
     const { data, merged } = resJson;
     if (!data || !data.length) throw new Error('ไม่พบข้อมูลในชีต');
 
+    // ✅ แสดงหัวรายงานตรงกลาง
     const headerPart = data.slice(0, START_HEADER_ROW);
     infoEl.innerHTML = headerPart.map(r => r.filter(c => c).join(' ')).slice(0, 2).join('<br>');
-    dateEl.textContent = headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
 
+    // ✅ แสดงวันที่ใต้หัวข้อเดือน (ขวาสุด)
+    dateEl.textContent = 'ข้อมูล ณ วันที่ ' + headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
+
+    // ✅ แสดงหัวตาราง (มี merge)
     const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
     const headerMerged = merged.filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
       .map(m => ({ ...m, row: m.row - START_HEADER_ROW }));
     thead.innerHTML = applyMergedCells(headerData, headerMerged);
 
+    // ✅ ส่วนข้อมูล
     const bodyData = data.slice(START_BODY_ROW);
     renderTableBody(bodyData);
 
@@ -201,11 +217,18 @@ async function loadSheet() {
 function renderTableBody(data) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
-  data.forEach((row) => {
+  data.forEach((row, index) => {
     let tr = '<tr>';
-    row.forEach((cell) => {
+    row.forEach((cell, colIndex) => {
       const value = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
-      tr += `<td>${value}</td>`;
+      // ✅ แถวสุดท้าย (รวม) — ผสาน A กับ B
+      if (index === data.length - 1 && colIndex === 0) {
+        tr += `<td colspan="2" style="font-weight:bold;">${value}</td>`;
+      } else if (index === data.length - 1 && colIndex === 1) {
+        return;
+      } else {
+        tr += `<td>${value}</td>`;
+      }
     });
     tr += '</tr>';
     tbody.innerHTML += tr;
