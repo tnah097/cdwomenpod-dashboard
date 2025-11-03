@@ -482,16 +482,33 @@ async function fetchStudyCenterData() {
 
     // ตรวจสอบและสร้าง DataTables
     if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
-      $('#studyCenterTable').DataTable().clear().destroy();
-    }
-    $('#studyCenterTable').DataTable({
-      paging: false,
-      scrollY: '300px',
-      scrollCollapse: true,
-      searching: true,
-      info: false, // ปิด info เพื่อให้ดูดีขึ้น
-      language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" }
-    });
+  $('#studyCenterTable').DataTable().clear().destroy();
+}
+
+const studyTable = $('#studyCenterTable').DataTable({
+  paging: false,
+  scrollY: '300px',
+  scrollCollapse: true,
+  autoWidth: false,
+  searching: true,
+  info: false,
+  ordering: false,
+  language: {
+    search: "ค้นหา:",
+    info: "แสดง _TOTAL_ รายการ",
+    infoEmpty: "ไม่มีข้อมูล",
+    zeroRecords: "ไม่พบข้อมูล"
+  },
+  initComplete: function () {
+    // ✅ ปรับขนาดคอลัมน์ใหม่หลังโหลด
+    this.api().columns.adjust();
+  }
+});
+
+// ✅ บังคับให้ DataTables ปรับหัวคอลัมน์หลัง render แล้ว
+setTimeout(() => {
+  studyTable.columns.adjust().draw(false);
+}, 300);
 
     // การจัดการ Click Event สำหรับการกรองตารางจังหวัด
     const studyCenterTableBody = $('#studyCenterTable tbody');
