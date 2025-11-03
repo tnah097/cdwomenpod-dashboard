@@ -82,12 +82,17 @@
       margin-left: 3cm;
       text-align: left !important;
     }
+
+    /* ✅ แก้เฉพาะจุด: ให้ตารางตรงแน่นอน */
     .summary-table {
-      width: 95%;
-      border-collapse: collapse;
+      width: 100% !important;
+      border-collapse: separate;
+      border-spacing: 0;
       font-size: 0.85rem;
       color: black;
+      table-layout: fixed;
     }
+
     .summary-table th {
       background-color: #f06292;
       color: black;
@@ -113,85 +118,19 @@
       color: darkblue;
     }
 
-    /* === START: CSS ที่อัปเดตสำหรับ Filter และการจัดรูปแบบ === */
-    #studyCenterTable tbody tr {
-        cursor: pointer;
-    }
-    #studyCenterTable tbody tr:hover {
-        background-color: #e0e0e0 !important;
-    }
+    #studyCenterTable tbody tr { cursor: pointer; }
+    #studyCenterTable tbody tr:hover { background-color: #e0e0e0 !important; }
     #studyCenterTable tbody tr.selected-row {
-        background-color: #d1e7fd !important;
-        font-weight: bold;
+      background-color: #d1e7fd !important;
+      font-weight: bold;
     }
-    .clickable-header {
-        cursor: pointer;
-        /* ✅ เอาขีดเส้นใต้ออก */
-    }
-    .clickable-header:hover {
-        color: #555;
-    }
-    .center-name-link {
-        color: blue;
-        text-decoration: underline;
-    }
+    .clickable-header { cursor: pointer; }
+    .clickable-header:hover { color: #555; }
+    .center-name-link { color: blue; text-decoration: underline; }
     .align-left { text-align: left !important; }
     .align-center { text-align: center !important; }
     .align-right { text-align: right !important; }
-    /* === END: CSS ที่อัปเดต === */
 
-    @media (max-width: 1400px) {
-      .dashboard-container { padding: 30px; }
-      .header-text h1 { font-size: 2.2rem; }
-      .header-text h2 { font-size: 1.3rem; }
-      .logo-container img { height: 50px; margin-left: 5px; }
-      .cards { gap: 15px; }
-      .card .value { font-size: 1.5rem; }
-      .main-visuals { flex-direction: column; }
-      .left, .center, .right { min-width: 100%; }
-      #donutChart { height: 400px !important; }
-      .center img { width: 200px; }
-      .province-table-wrapper { margin-left: 0; }
-    }
-    @media (max-width: 1024px) and (orientation: landscape) {
-      .dashboard-container { padding: 25px; }
-      .cards { flex-direction: column; gap: 10px; }
-      .main-visuals { flex-direction: column; gap: 15px; }
-      #donutChart { height: 350px !important; }
-      .center img { width: 180px; }
-    }
-    @media (max-width: 768px) {
-      .dashboard-container { padding: 20px; }
-      .header { flex-direction: column; align-items: flex-start; }
-      .header-text h1 { font-size: 1.8rem; }
-      .header-text h2 { font-size: 1.1rem; }
-      .cards { flex-direction: column; }
-      .card { padding: 15px; }
-      .card .value { font-size: 1.3rem; }
-      .main-visuals { flex-direction: column; gap: 15px; }
-      #donutChart { height: 300px !important; }
-      .center img { width: 150px; }
-      .province-table-wrapper { overflow-x: auto; margin-left: 0; }
-    }
-    @media (max-width: 480px) and (orientation: portrait) {
-      .header-text h1 { font-size: 1.5rem; }
-      .header-text h2 { font-size: 1rem; }
-      .cards { flex-direction: column; }
-      .card { padding: 10px; }
-      .card .value { font-size: 1.1rem; }
-      #donutChart { height: 250px !important; }
-      .center img { width: 120px; }
-    }
-    @media (max-width: 480px) and (orientation: landscape) {
-      .header-text h1 { font-size: 1.3rem; }
-      .header-text h2 { font-size: 0.9rem; }
-      .cards { flex-direction: column; }
-      .card { padding: 8px; }
-      .card .value { font-size: 1rem; }
-      #donutChart { height: 200px !important; }
-      .center img { width: 100px; }
-      .province-table-wrapper { overflow-x: scroll; }
-    }
   </style>
 </head>
 <body>
@@ -204,75 +143,72 @@
           ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
         </div>
       </div>
-    <div class="logo-container">
-  <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
-</div>
+      <div class="logo-container">
+        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+      </div>
     </div>
+
     <div style="color: navy; font-weight: bold; text-align: right; font-size: 1.5rem; margin-top: 1rem;">
       ข้อมูล ณ วันที่ 30 กันยายน 2568
     </div>
 
-   <div class="cards">
-  <!-- Card 1 -->
-  <div class="card pink">
-    จำนวนโครงการ<div class="value" id="num-projects">-</div>
-    เงินที่อนุมัติ<div class="value" id="approved-money-card1">-</div>
-    ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568<div class="value" id="debt-start-card1">-</div>
-  </div>
-  <!-- Card 2 -->
-  <div class="card light-pink">
-    ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now-card2">-</div>
-    รับคืนเงินต้น<div class="value" id="recovered-principal">-</div>
-    หนี้ยังไม่ถึงกำหนดชำระ (ข)<div class="value" id="not-due-card2">-</div>
-  </div>
-  <!-- Card 3 -->
-  <div class="card orange">
-    การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)<div class="value" id="mediation">-</div>
-    พนักงานอัยการรับเรื่อง(ง1)<div class="value" id="prosecutor">-</div>
-    ศาลประทับรับฟ้อง(ง2)<div class="value" id="court-filed">-</div>
-    ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)<div class="value" id="court-judgement">-</div>
-    ศาลมีคำพิพากษาตามยอม(ง4)<div class="value" id="court-consent">-</div>
-    ป.วิ แพ่ง มาตรา 20 ตรี(ง5)<div class="value" id="civil-law-20">-</div>
-    ดำเนินคดีอาญา(ง6)<div class="value" id="criminal-action">-</div>
-  </div>
-  <!-- Card 4 -->
-  <div class="card pastel-pink">
-    ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal-card4">-</div>
-    เงินต้นตามที่ได้รับดำเนินคดี<div class="value" id="principal-legal">-</div>
-    จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ<div class="value" id="overdue-legal">-</div>
-  </div>
-  <!-- Card 5 -->
-  <div class="card deep-pastel-pink">
-    หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue-card5">-</div>
-    ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue-card5">-</div>
-  </div>
-  <!-- Card 6 -->
-  <div class="card deep-pastel-pink">
-    จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน<div class="value" id="contract-end-debt">-</div>
-    มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด<div class="value" id="over-5-percent">-</div>
-  </div>
-</div>
+    <!-- 🟣 Cards -->
+    <div class="cards">
+      <div class="card pink">
+        จำนวนโครงการ<div class="value" id="num-projects">-</div>
+        เงินที่อนุมัติ<div class="value" id="approved-money-card1">-</div>
+        ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568<div class="value" id="debt-start-card1">-</div>
+      </div>
+      <div class="card light-pink">
+        ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now-card2">-</div>
+        รับคืนเงินต้น<div class="value" id="recovered-principal">-</div>
+        หนี้ยังไม่ถึงกำหนดชำระ (ข)<div class="value" id="not-due-card2">-</div>
+      </div>
+      <div class="card orange">
+        การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)<div class="value" id="mediation">-</div>
+        พนักงานอัยการรับเรื่อง(ง1)<div class="value" id="prosecutor">-</div>
+        ศาลประทับรับฟ้อง(ง2)<div class="value" id="court-filed">-</div>
+        ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)<div class="value" id="court-judgement">-</div>
+        ศาลมีคำพิพากษาตามยอม(ง4)<div class="value" id="court-consent">-</div>
+        ป.วิ แพ่ง มาตรา 20 ตรี(ง5)<div class="value" id="civil-law-20">-</div>
+        ดำเนินคดีอาญา(ง6)<div class="value" id="criminal-action">-</div>
+      </div>
+      <div class="card pastel-pink">
+        ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal-card4">-</div>
+        เงินต้นตามที่ได้รับดำเนินคดี<div class="value" id="principal-legal">-</div>
+        จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ<div class="value" id="overdue-legal">-</div>
+      </div>
+      <div class="card deep-pastel-pink">
+        หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue-card5">-</div>
+        ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue-card5">-</div>
+      </div>
+      <div class="card deep-pastel-pink">
+        จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน<div class="value" id="contract-end-debt">-</div>
+        มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด<div class="value" id="over-5-percent">-</div>
+      </div>
+    </div>
 
     <div class="main-visuals">
       <div class="left">
         <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
-        <br />
         <canvas id="donutChart"></canvas>
       </div>
+
       <div class="center">
         <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
       </div>
 
       <div class="right">
         <div class="cards" style="flex-direction: column; gap: 20px;">
-       <div class="card deep-pastel-pink">
-  เงินที่อนุมัติ<div class="value" id="approved-money">-</div>
-  หนี้ยังไม่ถึงกำหนดชำระ<div class="value" id="not-due">-</div>
-</div>
+          <div class="card deep-pastel-pink">
+            เงินที่อนุมัติ<div class="value" id="approved-money">-</div>
+            หนี้ยังไม่ถึงกำหนดชำระ<div class="value" id="not-due">-</div>
+          </div>
 
-
-          <div class="card deep-pastel-pink">ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal">-</div></div>
+          <div class="card deep-pastel-pink">
+            ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal">-</div>
+          </div>
 
           <div class="card deep-pastel-pink">
             <div style="font-weight: bold; color: white;">ศูนย์ศึกษาและพัฒนาชุมชน</div>
@@ -293,7 +229,7 @@
     </div>
 
     <div class="province-table-wrapper">
-      <table class="summary-table" id="provinceTable" style="margin-left: 0;">
+      <table class="summary-table" id="provinceTable">
         <thead>
           <tr>
             <th>จังหวัด</th>
@@ -313,237 +249,94 @@
 
   <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwwolsXC3tlaoSvEDYE25GGshllToB3uOTzp0e7W5dEGACAvSH0-zB-7HUcToY7-x2t/exec";
-const pastelColors = [
-  '#FF202B', '#87FEBC', '#FFB6B7', '#FFDD63', '#F68B71',
-  '#DAB9E6', '#A0E8E8', '#ADFF2F', '#FFFF00', '#FFA500'
-];
-
-function formatNumber(num) {
-  // รับค่าได้ทั้ง string และ number และจัดการค่าว่าง
-  return Number(num || 0).toLocaleString("th-TH");
-}
-
-function formatPercent(val) {
-  const num = parseFloat(String(val).replace(/[^0-9.-]/g, ''));
-  if (isNaN(num)) return "-";
-  return num.toFixed(2) + "%";
-}
-
 let donutChartInstance = null;
 let provinceDataTable = null;
 
-async function fetchData() {
-  try {
-    // ดึงข้อมูลหลักสำหรับ Cards และตารางจังหวัด
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    
-    if (data.error) {
-      console.error("Apps Script Error:", data.error);
-      return;
-    }
+function formatNumber(num){return Number(num||0).toLocaleString("th-TH");}
+function formatPercent(val){const num=parseFloat(String(val).replace(/[^0-9.-]/g,''));return isNaN(num)?"-":num.toFixed(2)+"%";}
 
-    const overview = data.overview || {};
-    const pieChartData = data.topOverdue || [];
-    const provinces = data.provinces || [];
+async function fetchData(){try{
+const res=await fetch(API_URL);const data=await res.json();if(data.error){console.error("Apps Script Error:",data.error);return;}
+const overview=data.overview||{};const pieChartData=data.topOverdue||[];const provinces=data.provinces||[];
+document.getElementById('num-projects').textContent=formatNumber(overview.B2);
+document.getElementById('approved-money-card1').textContent=formatNumber(overview.C2);
+document.getElementById('debt-start-card1').textContent=formatNumber(overview.D2);
+document.getElementById('debt-now-card2').textContent=formatNumber(overview.E2);
+document.getElementById('recovered-principal').textContent=formatNumber(overview.G2);
+document.getElementById('not-due-card2').textContent=formatNumber(overview.F2);
+document.getElementById('mediation').textContent=formatNumber(overview.H2);
+document.getElementById('prosecutor').textContent=formatNumber(overview.I2);
+document.getElementById('court-filed').textContent=formatNumber(overview.J2);
+document.getElementById('court-judgement').textContent=formatNumber(overview.K2);
+document.getElementById('court-consent').textContent=formatNumber(overview.L2);
+document.getElementById('civil-law-20').textContent=formatNumber(overview.M2);
+document.getElementById('criminal-action').textContent=formatNumber(overview.N2);
+document.getElementById('legal-card4').textContent=formatNumber(overview.O2);
+document.getElementById('principal-legal').textContent=formatNumber(overview.P2);
+document.getElementById('overdue-legal').textContent=formatNumber(overview.Q2);
+document.getElementById('overdue-card5').textContent=formatNumber(overview.R2);
+document.getElementById('percent-overdue-card5').textContent=formatPercent(overview.S2);
+document.getElementById('contract-end-debt').textContent=formatNumber(overview.T2);
+document.getElementById('over-5-percent').textContent=formatPercent(overview.U2);
+document.getElementById('approved-money').textContent=formatNumber(overview.C2);
+document.getElementById('not-due').textContent=formatNumber(overview.F2);
+document.getElementById('legal').textContent=formatNumber(overview.O2);
+if(donutChartInstance)donutChartInstance.destroy();
+const ctx=document.getElementById('donutChart').getContext('2d');
+donutChartInstance=new Chart(ctx,{type:'doughnut',data:{labels:pieChartData.map(p=>p.province),datasets:[{data:pieChartData.map(p=>parseFloat(p.percent)||0),backgroundColor:['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']}]},options:{responsive:true,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>`${c.label}: ${parseFloat(c.raw).toFixed(2)}%`}}}}});
+const tbody=document.querySelector("#provinceTable tbody");tbody.innerHTML="";
+provinces.forEach(p=>{const tr=document.createElement("tr");const url=`https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${encodeURIComponent(p.province)}`;
+tr.innerHTML=`<td class="align-left"><a href="${url}" class="province-link" target="_blank">${p.province}</a></td>
+<td class="align-right">${formatNumber(p.totalProjects)}</td>
+<td class="align-right">${formatNumber(p.approvedAmount)}</td>
+<td class="align-right">${formatNumber(p.debtStart)}</td>
+<td class="align-right">${formatNumber(p.debtNow)}</td>
+<td class="align-right">${formatNumber(p.legalAction)}</td>
+<td class="align-right">${formatNumber(p.overdue)}</td>
+<td class="align-right">${formatPercent(p.overduePercent)}</td>`;tbody.appendChild(tr);});
+if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
+provinceDataTable=$('#provinceTable').DataTable({paging:false,scrollY:'400px',scrollCollapse:true,order:[[7,'desc']],language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"}});
+}catch(e){console.error(e);}}
 
-    // === แสดงค่าใน Card (อ้างอิงตาม Cell ที่กำหนดไว้ในโจทย์) ===
-    
-    // Card 1
-    document.getElementById('num-projects').textContent = formatNumber(overview.B2);
-    document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
-    document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
+async function fetchStudyCenterData(){try{
+const res=await fetch(`${API_URL}?action=studyCenter`);const data=await res.json();
+if(data.error){console.error("Apps Script Error:",data.error);return;}
+const centers=data.studyCenter||[];const tbody=document.querySelector("#studyCenterTable tbody");tbody.innerHTML="";
+centers.forEach(row=>{const tr=document.createElement("tr");
+tr.setAttribute('data-provinces',row.province.split(',').map(p=>p.trim()).join('|'));
+tr.innerHTML=`<td class="align-left"><span class="center-name-link">${row.name}</span></td>
+<td class="align-center">${formatNumber(row.index)}</td>
+<td class="align-left">${row.province}</td>`;tbody.appendChild(tr);});
 
-    // Card 2
-    document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
-    document.getElementById('recovered-principal').textContent = formatNumber(overview.G2);
-    document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
-
-    // Card 3
-    document.getElementById('mediation').textContent = formatNumber(overview.H2);
-    document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
-    document.getElementById('court-filed').textContent = formatNumber(overview.J2);
-    document.getElementById('court-judgement').textContent = formatNumber(overview.K2);
-    document.getElementById('court-consent').textContent = formatNumber(overview.L2);
-    document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
-    document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
-
-    // Card 4
-    document.getElementById('legal-card4').textContent = formatNumber(overview.O2);
-    document.getElementById('principal-legal').textContent = formatNumber(overview.P2); 
-    document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
-
-    // Card 5
-    document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
-    document.getElementById('percent-overdue-card5').textContent = formatPercent(overview.S2);
-
-    // Card 6
-    document.getElementById('contract-end-debt').textContent = formatNumber(overview.T2);
-    document.getElementById('over-5-percent').textContent = formatPercent(overview.U2); // แก้เป็น formatPercent ตามชื่อหัวข้อ
-
-    // Card 'right' section (ดึงข้อมูลซ้ำจาก Card อื่น)
-    document.getElementById('approved-money').textContent = formatNumber(overview.C2);
-    document.getElementById('not-due').textContent = formatNumber(overview.F2);
-    document.getElementById('legal').textContent = formatNumber(overview.O2);
-
-    // === Donut Chart (10 อันดับ ร้อยละหนี้เกินกำหนดชำระ) ===
-    if (donutChartInstance) donutChartInstance.destroy();
-    const donutCtx = document.getElementById('donutChart').getContext('2d');
-    donutChartInstance = new Chart(donutCtx, {
-      type: 'doughnut',
-      data: {
-        labels: pieChartData.map(p => p.province),
-        datasets: [{
-          // ใช้ค่า percent ที่ดึงมา
-          data: pieChartData.map(p => parseFloat(p.percent) || 0), 
-          backgroundColor: pastelColors.slice(0, pieChartData.length)
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 14 } } },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return `${context.label || ''}: ${parseFloat(context.raw).toFixed(2)}%`;
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // === Province Table (ตารางจังหวัด) ===
-    const tbody = document.querySelector("#provinceTable tbody");
-    tbody.innerHTML = "";
-    provinces.forEach(p => {
-      const provinceEncoded = encodeURIComponent(p.province);
-      const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${provinceEncoded}`;
-      // ใช้ค่าที่ถูกต้องตามโครงสร้างข้อมูลที่ Apps Script ส่งมา
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="align-left"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${p.province}</a></td>
-        <td class="align-right">${formatNumber(p.totalProjects)}</td>
-        <td class="align-right">${formatNumber(p.approvedAmount)}</td>
-        <td class="align-right">${formatNumber(p.debtStart)}</td>
-        <td class="align-right">${formatNumber(p.debtNow)}</td>
-        <td class="align-right">${formatNumber(p.legalAction)}</td>
-        <td class="align-right">${formatNumber(p.overdue)}</td>
-        <td class="align-right">${formatPercent(p.overduePercent)}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    // ตรวจสอบและสร้าง DataTables
-    if ($.fn.DataTable.isDataTable('#provinceTable')) {
-      $('#provinceTable').DataTable().clear().destroy();
-    }
-    provinceDataTable = $('#provinceTable').DataTable({
-      paging: false,
-      scrollY: '400px',
-      scrollCollapse: true,
-      order: [[ 7, 'desc' ]], // เรียงตามร้อยละหนี้เกินกำหนดชำระ (Column 8, index 7)
-      language: { search: "ค้นหา:", info: "แสดง _TOTAL_ รายการ", infoEmpty: "ไม่มีข้อมูล", zeroRecords: "ไม่พบข้อมูล" }
-    });
-
-  } catch (error) {
-    console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
-  }
-}
-
-async function fetchStudyCenterData() {
-  try {
-    // ดึงข้อมูลศูนย์ศึกษา โดยระบุ action=studyCenter
-    const res = await fetch(`${API_URL}?action=studyCenter`);
-    const data = await res.json();
-    
-    if (data.error) {
-      console.error("Apps Script Error (Study Center):", data.error);
-      return;
-    }
-
-    const centers = data.studyCenter || [];
-    const tbody = document.querySelector("#studyCenterTable tbody");
-    tbody.innerHTML = "";
-
-    centers.forEach(row => {
-      const tr = document.createElement("tr");
-      // แยกชื่อจังหวัดด้วย | เพื่อให้ DataTables ใช้ในการกรอง (Regular Expression)
-      tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
-      
-      tr.innerHTML = `
-        <td class="align-left"><span class="center-name-link">${row.name}</span></td>
-        <td class="align-center">${formatNumber(row.index)}</td>
-        <td class="align-left">${row.province}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    // ตรวจสอบและสร้าง DataTables
-    if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
-  $('#studyCenterTable').DataTable().clear().destroy();
-}
-
-const studyTable = $('#studyCenterTable').DataTable({
-  paging: false,
-  scrollY: '300px',
-  scrollCollapse: true,
-  autoWidth: false,
-  searching: true,
-  info: false,
-  ordering: false,
-  language: {
-    search: "ค้นหา:",
-    info: "แสดง _TOTAL_ รายการ",
-    infoEmpty: "ไม่มีข้อมูล",
-    zeroRecords: "ไม่พบข้อมูล"
-  },
-  initComplete: function () {
-    // ✅ ปรับขนาดคอลัมน์ใหม่หลังโหลด
-    this.api().columns.adjust();
-  }
+if($.fn.DataTable.isDataTable('#studyCenterTable'))$('#studyCenterTable').DataTable().clear().destroy();
+const studyTable=$('#studyCenterTable').DataTable({
+paging:false,
+scrollY:'300px',
+scrollCollapse:true,
+scrollX:true, /* ✅ เพิ่มเพื่อแก้หัวตารางไม่ตรง */
+autoWidth:false,
+searching:true,
+info:false,
+ordering:false,
+language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
+initComplete:function(){this.api().columns.adjust();}
 });
+setTimeout(()=>{studyTable.columns.adjust().draw(false);},300);
 
-// ✅ บังคับให้ DataTables ปรับหัวคอลัมน์หลัง render แล้ว
-setTimeout(() => {
-  studyTable.columns.adjust().draw(false);
-}, 300);
+const body=$('#studyCenterTable tbody');
+body.off('click').on('click','tr',function(){
+if(!provinceDataTable)return;
+const isSelected=$(this).hasClass('selected-row');
+body.find('tr').removeClass('selected-row');
+if(!isSelected){$(this).addClass('selected-row');
+const provinces=$(this).data('provinces');
+provinceDataTable.column(0).search(`^(${provinces})$`,true,false).draw();}
+else{provinceDataTable.column(0).search('').draw();}
+});
+$('.clickable-header').off('click').on('click',()=>{if(!provinceDataTable)return;body.find('tr').removeClass('selected-row');provinceDataTable.column(0).search('').draw();});
+}catch(e){console.error(e);}}
 
-    // การจัดการ Click Event สำหรับการกรองตารางจังหวัด
-    const studyCenterTableBody = $('#studyCenterTable tbody');
-    studyCenterTableBody.off('click').on('click', 'tr', function() {
-      if (!provinceDataTable) return;
-      
-      // จัดการสถานะการเลือก
-      const isSelected = $(this).hasClass('selected-row');
-      studyCenterTableBody.find('tr').removeClass('selected-row');
-      
-      if (!isSelected) {
-        $(this).addClass('selected-row');
-        const provincesToFilter = $(this).data('provinces');
-        // กรองตารางจังหวัดโดยใช้ Regular Expression เพื่อหาชื่อจังหวัดที่ตรงกันหลายรายการ
-        provinceDataTable.column(0).search(`^(${provincesToFilter})$`, true, false).draw();
-      } else {
-        // ยกเลิกการกรอง
-        provinceDataTable.column(0).search('').draw();
-      }
-    });
-
-    // การจัดการ Click Event สำหรับ Header เพื่อยกเลิกการกรอง
-    $('.clickable-header').off('click').on('click', function() {
-      if (!provinceDataTable) return;
-      studyCenterTableBody.find('tr').removeClass('selected-row');
-      provinceDataTable.column(0).search('').draw(); // ล้างการกรอง
-    });
-
-  } catch (error) {
-    console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลศูนย์ศึกษา:", error);
-  }
-}
-
-fetchData();
-fetchStudyCenterData();
+fetchData();fetchStudyCenterData();
 </script>
 </body>
 </html>
