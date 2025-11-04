@@ -25,13 +25,7 @@
       min-height: 100vh;
     }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
+    .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
     .header-text h1 { margin: 0; font-size: 2.5rem; }
     .header-text h2 { margin: 0; font-size: 1.5rem; }
     .logo-container img { height: 60px; margin-left: 10px; }
@@ -75,7 +69,7 @@
 
     .center img { width: 250px; display: block; margin: 0 auto 10px; }
 
-    /* ✅ ตารางจังหวัด (ปรับให้แสดงข้อมูลครบและขยายอัตโนมัติ) */
+    /* ✅ ตารางจังหวัด */
     .province-table-wrapper {
       margin-top: 30px;
       margin-left: 3cm;
@@ -109,20 +103,15 @@
       color: black;
       text-align: center;
       vertical-align: middle;
-      white-space: normal;  /* ✅ ให้ข้อมูลบรรทัดใหม่ได้ */
-      overflow: visible;    /* ✅ แสดงข้อมูลเต็ม */
-      width: max-content;   /* ✅ ขยายพอดีกับข้อมูล */
+      white-space: normal;
+      overflow: visible;
+      width: max-content;
     }
 
-    /* ✅ สลับสีแถว */
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
 
-    .province-link {
-      color: blue;
-      text-decoration: underline;
-      cursor: pointer;
-    }
+    .province-link { color: blue; text-decoration: underline; cursor: pointer; }
     .province-link:hover { color: darkblue; }
 
     #log {
@@ -151,9 +140,7 @@
       <div class="header-text">
         <h1><span style="color: navy;">CDD</span><span style="color: deeppink;">Women</span><span style="color: red;">Fund</span></h1>
         <h2><span style="color: black;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ </span><span style="color: red;" id="province-title">รายจังหวัด</span></h2>
-        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">
-          ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
-        </div>
+        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ</div>
       </div>
       <div class="logo-container">
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
@@ -167,50 +154,6 @@
 
     <div id="log">🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...</div>
 
-    <!-- 🟣 Cards -->
-    <div class="cards">
-      <div class="card pink">
-        จำนวนโครงการ<div class="value" id="num-projects">-</div>
-        เงินที่อนุมัติ<div class="value" id="approved-money-card1">-</div>
-        ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568<div class="value" id="debt-start-card1">-</div>
-      </div>
-      <div class="card light-pink">
-        ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now-card2">-</div>
-        รับคืนเงินต้น<div class="value" id="recovered-principal">-</div>
-        หนี้ยังไม่ถึงกำหนดชำระ (ข)<div class="value" id="not-due-card2">-</div>
-      </div>
-      <div class="card orange">
-        การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)<div class="value" id="mediation">-</div>
-        พนักงานอัยการรับเรื่อง(ง1)<div class="value" id="prosecutor">-</div>
-        ศาลประทับรับฟ้อง(ง2)<div class="value" id="court-filed">-</div>
-        ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)<div class="value" id="court-judgement">-</div>
-        ศาลมีคำพิพากษาตามยอม(ง4)<div class="value" id="court-consent">-</div>
-        ป.วิ แพ่ง มาตรา 20 ตรี(ง5)<div class="value" id="civil-law-20">-</div>
-        ดำเนินคดีอาญา(ง6)<div class="value" id="criminal-action">-</div>
-      </div>
-      <div class="card pastel-pink">
-        ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal-card4">-</div>
-        เงินต้นตามที่ได้รับดำเนินคดี<div class="value" id="principal-legal">-</div>
-        จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ<div class="value" id="overdue-legal">-</div>
-      </div>
-      <div class="card deep-pastel-pink">
-        หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue-card5">-</div>
-        ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue-card5">-</div>
-        จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน<div class="value" id="contract-end-debt">-</div>
-        มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด<div class="value" id="over-5-percent">-</div>
-      </div>
-    </div>
-
-    <div class="main-visuals">
-      <div class="left">
-        <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
-        <canvas id="donutChart"></canvas>
-      </div>
-      <div class="center">
-        <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
-      </div>
-    </div>
-
     <div class="province-table-wrapper">
       <table class="summary-table" id="provinceTable" style="width:100%;">
         <thead></thead>
@@ -221,9 +164,9 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
-let donutChartInstance = null;
 let provinceDataTable = null;
 
+/* ✅ ใช้ columnMap แบบเต็ม */
 const columnMap = {
   province: "จังหวัด",
   totalProjects: "จำนวนโครงการ",
@@ -232,57 +175,81 @@ const columnMap = {
   debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
   notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
   recoveredPrincipal: "รับคืนเงินต้น",
+  recoveredInterest: "รับคืนดอกเบี้ย",
+  recoveredFine: "รับคืนเบี้ยปรับ",
+  recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
+  recoveredOverpay: "รับเงินเกิน",
+  recoveredTotal: "รับคืนรวม",
+  debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
   mediation: "การไกล่เกลี่ย (ค)",
+  prosecutor: "พนักงานอัยการรับเรื่อง (ง1)",
+  courtFiled: "ศาลประทับรับฟ้อง (ง2)",
+  courtJudgement: "ศาลพิพากษา (ง3)",
+  courtConsent: "ศาลพิพากษาตามยอม (ง4)",
+  civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
+  criminalAction: "ดำเนินคดีอาญา (ง6)",
+  legalAction: "ลูกหนี้ดำเนินการตามกฎหมาย (ง)",
+  principalLegal: "เงินต้นดำเนินคดี",
+  overdueLegal: "จำนวนหนี้เข้ามาตรการ",
   overdue: "หนี้เกินกำหนดชำระ (B)",
-  overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)"
+  overduePercent: "ร้อยละหนี้เกินกำหนด (C)",
+  contractEndDebt: "จบสัญญามีหนี้ค้าง (D)",
+  over5Percent: "หนี้เกินร้อยละ 5 (E)",
+  notes: "หมายเหตุ"
 };
-
 const orderedColumns = Object.keys(columnMap);
 
-function formatNumber(n){return isNaN(n)?'-':Number(n).toLocaleString('th-TH');}
+function formatNumber(num){
+  if(num===null||num===undefined||num==="") return "-";
+  const n=Number(String(num).replace(/[^0-9.-]/g,''));
+  return isFinite(n)?n.toLocaleString("th-TH"):"-";
+}
 
 async function fetchData(){
-  const logEl=document.getElementById("log");
-  logEl.textContent="🔄 กำลังโหลดข้อมูล...";
-  const res=await fetch(API_URL);
-  const data=await res.json();
-  const provinces=data.provinces||[];
-  const thead=document.querySelector("#provinceTable thead");
-  const tbody=document.querySelector("#provinceTable tbody");
-  tbody.innerHTML="";
-  thead.innerHTML="<tr>"+orderedColumns.map(k=>`<th>${columnMap[k]}</th>`).join("")+"</tr>";
+  const log=document.getElementById("log");
+  log.textContent="🔄 กำลังโหลดข้อมูล...";
+  try{
+    const res=await fetch(API_URL);
+    const data=await res.json();
+    const provinces=data.provinces||[];
 
-  provinces.forEach(p=>{
-    const row=orderedColumns.map(k=>{
-      let v=p[k];
-      if(k==="province") return `<td><a href="#" class="province-link">${v}</a></td>`;
-      if(!v) v="-";
-      if(!isNaN(v)) v=formatNumber(v);
-      return `<td>${v}</td>`;
-    }).join("");
-    tbody.innerHTML+=`<tr>${row}</tr>`;
-  });
+    const thead=document.querySelector("#provinceTable thead");
+    const tbody=document.querySelector("#provinceTable tbody");
+    tbody.innerHTML="";
+    thead.innerHTML="<tr>"+orderedColumns.map(k=>`<th>${columnMap[k]}</th>`).join("")+"</tr>";
 
-  if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
-  provinceDataTable = $('#provinceTable').DataTable({
-    paging: false,
-    scrollX: true,
-    scrollY: '400px',
-    scrollCollapse: true,
-    order: [],
-    language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
-    autoWidth: false,
-    initComplete: function () {
-      const api = this.api();
-      setTimeout(() => {
-        api.columns.adjust().draw(false);
-        document.querySelectorAll('#provinceTable td').forEach(td => {
-          td.style.width = "auto";
-        });
-      }, 300);
-    }
-  });
-  logEl.textContent="✅ โหลดข้อมูลสำเร็จ";
+    provinces.forEach(p=>{
+      const row=orderedColumns.map(k=>{
+        const raw=p[k];
+        if(k==="province") return `<td><a href="#" class="province-link">${raw||"-"}</a></td>`;
+        if(k.toLowerCase().includes("percent")) return `<td>${parseFloat(raw||0).toFixed(2)}%</td>`;
+        return `<td>${formatNumber(raw)}</td>`;
+      }).join("");
+      tbody.innerHTML+=`<tr>${row}</tr>`;
+    });
+
+    if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
+    provinceDataTable=$('#provinceTable').DataTable({
+      paging:false,
+      scrollX:true,
+      scrollY:'450px',
+      scrollCollapse:true,
+      order:[],
+      autoWidth:false,
+      language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
+      initComplete:function(){
+        const api=this.api();
+        setTimeout(()=>{
+          api.columns.adjust().draw(false);
+          document.querySelectorAll('#provinceTable td').forEach(td=>td.style.width="auto");
+        },300);
+      }
+    });
+    log.textContent="✅ โหลดข้อมูลจังหวัดสำเร็จ";
+  }catch(e){
+    console.error(e);
+    log.textContent="❌ โหลดข้อมูลล้มเหลว";
+  }
 }
 fetchData();
 </script>
