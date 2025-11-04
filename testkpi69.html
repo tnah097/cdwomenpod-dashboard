@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CDDWomenfund Dashboard</title> 
+  <title>CDDWomenfund Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
@@ -19,13 +19,19 @@
       color: #000;
     }
 
-    .dashboard-container { 
-      padding: 40px; 
+    .dashboard-container {
+      padding: 40px;
       background-color: rgba(255, 255, 255, 0.9);
       min-height: 100vh;
     }
 
-    .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
     .header-text h1 { margin: 0; font-size: 2.5rem; }
     .header-text h2 { margin: 0; font-size: 1.5rem; }
     .logo-container img { height: 60px; margin-left: 10px; }
@@ -33,12 +39,19 @@
     /* Cards */
     .cards { display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
     .card {
-      flex: 1; min-width: 250px; padding: 20px; border-radius: 12px;
-      color: white; font-weight: bold;
+      flex: 1;
+      min-width: 250px;
+      padding: 20px;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
     }
     .card .value {
-      font-size: 1.75rem; color: black; margin-top: 10px;
-      font-weight: normal; white-space: nowrap;
+      font-size: 1.75rem;
+      color: black;
+      margin-top: 10px;
+      font-weight: normal;
+      white-space: nowrap;
     }
     .card.pink { background-color: #e91e63; flex: 0 0 auto; width: auto; }
     .card.light-pink { background-color: #f8bbd0; }
@@ -47,7 +60,11 @@
     .card.deep-pastel-pink { background-color: #f06292; }
 
     .main-visuals {
-      display: flex; margin-top: 30px; gap: 20px; flex-wrap: wrap; align-items: flex-start;
+      display: flex;
+      margin-top: 30px;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-start;
     }
     .left, .center, .right { flex: 1; min-width: 300px; }
     .center { text-align: center; }
@@ -58,7 +75,7 @@
 
     .center img { width: 250px; display: block; margin: 0 auto 10px; }
 
-    /* ✅ ปรับตารางจังหวัดใหม่ */
+    /* ✅ ตารางจังหวัด (ปรับให้แสดงข้อมูลครบและขยายอัตโนมัติ) */
     .province-table-wrapper {
       margin-top: 30px;
       margin-left: 3cm;
@@ -68,7 +85,7 @@
     .summary-table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: auto; /* ✅ ให้ขนาดช่องขยายอัตโนมัติตามเนื้อหา */
+      table-layout: auto;
       font-size: 0.85rem;
       color: black;
     }
@@ -92,15 +109,20 @@
       color: black;
       text-align: center;
       vertical-align: middle;
-      white-space: nowrap;
+      white-space: normal;  /* ✅ ให้ข้อมูลบรรทัดใหม่ได้ */
+      overflow: visible;    /* ✅ แสดงข้อมูลเต็ม */
+      width: max-content;   /* ✅ ขยายพอดีกับข้อมูล */
     }
 
-    /* ✅ สลับสีพื้นหลัง */
+    /* ✅ สลับสีแถว */
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
 
-    /* ✅ ลิงก์จังหวัด */
-    .province-link { color: blue; text-decoration: underline; cursor: pointer; }
+    .province-link {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
     .province-link:hover { color: darkblue; }
 
     #log {
@@ -129,7 +151,9 @@
       <div class="header-text">
         <h1><span style="color: navy;">CDD</span><span style="color: deeppink;">Women</span><span style="color: red;">Fund</span></h1>
         <h2><span style="color: black;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ </span><span style="color: red;" id="province-title">รายจังหวัด</span></h2>
-        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ</div>
+        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">
+          ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
+        </div>
       </div>
       <div class="logo-container">
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
@@ -240,7 +264,24 @@ async function fetchData(){
   });
 
   if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
-  provinceDataTable=$('#provinceTable').DataTable({paging:false,scrollX:true,order:[],language:{search:"ค้นหา:"}});
+  provinceDataTable = $('#provinceTable').DataTable({
+    paging: false,
+    scrollX: true,
+    scrollY: '400px',
+    scrollCollapse: true,
+    order: [],
+    language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
+    autoWidth: false,
+    initComplete: function () {
+      const api = this.api();
+      setTimeout(() => {
+        api.columns.adjust().draw(false);
+        document.querySelectorAll('#provinceTable td').forEach(td => {
+          td.style.width = "auto";
+        });
+      }, 300);
+    }
+  });
   logEl.textContent="✅ โหลดข้อมูลสำเร็จ";
 }
 fetchData();
