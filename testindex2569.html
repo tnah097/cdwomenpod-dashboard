@@ -238,13 +238,16 @@ function formatPercent(val){const num=parseFloat(String(val).replace(/[^0-9.-]/g
 async function fetchData(){
   const logEl = document.getElementById("log");
   logEl.textContent = "🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...";
-  try{
-    const res=await fetch(API_URL);
-    const data=await res.json();
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
     if(data.error){console.error("Apps Script Error:",data.error);logEl.textContent="❌ โหลดข้อมูลไม่สำเร็จ";return;}
 
-    const overview=data.overview||{};const pieChartData=data.topOverdue||[];const provinces=data.provinces||[];
+    const overview = data.overview || {};
+    const pieChartData = data.topOverdue || [];
+    const provinces = data.provinces || [];
 
+    // ✅ อัปเดตค่าใน Cards
     document.getElementById('num-projects').textContent=formatNumber(overview.B2);
     document.getElementById('approved-money-card1').textContent=formatNumber(overview.C2);
     document.getElementById('debt-start-card1').textContent=formatNumber(overview.D2);
@@ -266,35 +269,69 @@ async function fetchData(){
     document.getElementById('contract-end-debt').textContent=formatNumber(overview.T2);
     document.getElementById('over-5-percent').textContent=formatPercent(overview.U2);
 
-    if(donutChartInstance)donutChartInstance.destroy();
-    const ctx=document.getElementById('donutChart').getContext('2d');
-    donutChartInstance=new Chart(ctx,{type:'doughnut',data:{labels:pieChartData.map(p=>p.province),datasets:[{data:pieChartData.map(p=>parseFloat(p.percent)||0),backgroundColor:['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']}]},options:{responsive:true,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>`${c.label}: ${parseFloat(c.raw).toFixed(2)}%`}}}}});
-
-    const tbody=document.querySelector("#provinceTable tbody");
-    tbody.innerHTML="";
-    provinces.forEach(p=>{
-      const tr=document.createElement("tr");
-      const url=`https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${encodeURIComponent(p.province)}`;
-      tr.innerHTML=`
-        <td class="align-left"><a href="${url}" class="province-link" target="_blank">${p.province}</a></td>
-        <td class="align-right">${formatNumber(p.totalProjects)}</td>
-        <td class="align-right">${formatNumber(p.approvedAmount)}</td>
-        <td class="align-right">${formatNumber(p.debtStart)}</td>
-        <td class="align-right">${formatNumber(p.debtNow)}</td>
-        <td class="align-right">${formatNumber(p.legalAction)}</td>
-        <td class="align-right">${formatNumber(p.overdue)}</td>
-        <td class="align-right">${formatPercent(p.overduePercent)}</td>`;
-      tbody.appendChild(tr);
+    // ✅ วาด Donut Chart
+    if(donutChartInstance) donutChartInstance.destroy();
+    const ctx = document.getElementById('donutChart').getContext('2d');
+    donutChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: pieChartData.map(p => p.province),
+        datasets: [{
+          data: pieChartData.map(p => parseFloat(p.percent) || 0),
+          backgroundColor: ['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: c => `${c.label}: ${parseFloat(c.raw).toFixed(2)}%` } }
+        }
+      }
     });
 
-    if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
-    provinceDataTable=$('#provinceTable').DataTable({paging:false,scrollY:'400px',scrollCollapse:true,order:[[7,'desc']],language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"}});
+    // ✅ ดึงหัวข้อแบบ Dynamic จากคีย์ของ object
+    const table = document.querySelector("#provinceTable");
+    const thead = table.querySelector("thead");
+    const tbody = table.querySelector("tbody");
+    tbody.innerHTML = "";
+
+    // ดึงชื่อคีย์ทั้งหมดจาก object แรก (Dynamic columns)
+    const keys = Object.keys(provinces[0] || {});
+    const headers = keys.map(k => `<th>${k}</th>`).join("");
+    thead.innerHTML = `<tr>${headers}</tr>`;
+
+    // ✅ แสดงข้อมูลในแต่ละแถว
+    provinces.forEach(p => {
+      const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${encodeURIComponent(p.province)}`;
+      const rowHTML = keys.map(k => {
+        const value = (p[k] === undefined || p[k] === "") ? "-" : p[k];
+        if (k === "province") {
+          return `<td class="align-left"><a href="${url}" class="province-link" target="_blank">${p[k]}</a></td>`;
+        }
+        return `<td class="align-right">${isNaN(value) ? value : formatNumber(value)}</td>`;
+      }).join("");
+      tbody.innerHTML += `<tr>${rowHTML}</tr>`;
+    });
+
+    // ✅ เปิดใช้งาน DataTable
+    if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
+    provinceDataTable = $('#provinceTable').DataTable({
+      paging: false,
+      scrollX: true,
+      scrollY: '400px',
+      scrollCollapse: true,
+      order: [],
+      language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" }
+    });
+
     logEl.textContent = "✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
-  }catch(e){
+  } catch (e) {
     console.error(e);
     document.getElementById("log").textContent = "❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
   }
 }
+
 fetchData();
 </script>
 </body>
