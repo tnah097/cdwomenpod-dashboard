@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CDDWomenfund Dashboard</title>
+  <title>CDDWomenfund Dashboard</title> 
+
+  <!-- ✅ Library -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/3.3.2/js/dataTables.fixedHeader.min.js"></script>
+
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.3.2/css/fixedHeader.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
+    /* 🌸 พื้นหลังพาสเทลชมพู-ม่วง */
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
@@ -25,13 +32,24 @@
       min-height: 100vh;
     }
 
-    .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
     .header-text h1 { margin: 0; font-size: 2.5rem; }
     .header-text h2 { margin: 0; font-size: 1.5rem; }
     .logo-container img { height: 60px; margin-left: 10px; }
 
     /* Cards */
-    .cards { display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
+    .cards {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
     .card {
       flex: 1;
       min-width: 250px;
@@ -47,6 +65,7 @@
       font-weight: normal;
       white-space: nowrap;
     }
+
     .card.pink { background-color: #e91e63; flex: 0 0 auto; width: auto; }
     .card.light-pink { background-color: #f8bbd0; }
     .card.orange { background-color: #ff9800; }
@@ -66,18 +85,17 @@
     #donutChart { height: 500px !important; }
 
     .section-title { text-align: center; font-weight: bold; margin: 10px 0; font-size: 1.2rem; }
-
     .center img { width: 250px; display: block; margin: 0 auto 10px; }
 
     /* ✅ ตารางจังหวัด */
     .province-table-wrapper {
       margin-top: 30px;
       margin-left: 3cm;
-      text-align: left !important;
+      overflow-x: auto;
     }
 
     .summary-table {
-      width: 100%;
+      width: max-content;
       border-collapse: collapse;
       table-layout: auto;
       font-size: 0.85rem;
@@ -87,31 +105,35 @@
     .summary-table th {
       background-color: #f06292;
       color: black;
-      padding: 8px 6px;
+      padding: 8px 10px;
       border: 1px solid #f8bbd0;
       font-weight: bold;
       text-align: center;
       vertical-align: middle;
       white-space: normal;
-      word-wrap: break-word;
       line-height: 1.3;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
     .summary-table td {
-      padding: 6px 8px;
+      padding: 6px 10px;
       border: 1px solid #f8bbd0;
       color: black;
-      text-align: center;
-      vertical-align: middle;
-      white-space: normal;
+      text-align: right;
+      white-space: nowrap;
       overflow: visible;
-      width: max-content;
     }
 
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
 
-    .province-link { color: blue; text-decoration: underline; cursor: pointer; }
+    .province-link {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
     .province-link:hover { color: darkblue; }
 
     #log {
@@ -126,8 +148,8 @@
       .header-text h1 { font-size: 2rem; }
       .header-text h2 { font-size: 1.2rem; }
       .cards { flex-direction: column; }
-      .province-table-wrapper { margin-left: 0; overflow-x:auto; }
-      .summary-table th, .summary-table td { padding: 4px; font-size: 0.75rem; height: 60px; }
+      .province-table-wrapper { margin-left: 0; overflow-x: auto; }
+      .summary-table th, .summary-table td { padding: 4px; font-size: 0.75rem; }
     }
 
     .dataTables_scrollHeadInner { width: 100% !important; }
@@ -140,7 +162,9 @@
       <div class="header-text">
         <h1><span style="color: navy;">CDD</span><span style="color: deeppink;">Women</span><span style="color: red;">Fund</span></h1>
         <h2><span style="color: black;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ </span><span style="color: red;" id="province-title">รายจังหวัด</span></h2>
-        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ</div>
+        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">
+          ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
+        </div>
       </div>
       <div class="logo-container">
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
@@ -155,7 +179,7 @@
     <div id="log">🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...</div>
 
     <div class="province-table-wrapper">
-      <table class="summary-table" id="provinceTable" style="width:100%;">
+      <table class="summary-table" id="provinceTable">
         <thead></thead>
         <tbody></tbody>
       </table>
@@ -166,89 +190,72 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
 let provinceDataTable = null;
 
-/* ✅ ใช้ columnMap แบบเต็ม */
 const columnMap = {
-  province: "จังหวัด",
-  totalProjects: "จำนวนโครงการ",
-  approvedAmount: "เงินที่อนุมัติ",
-  debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
-  debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
-  notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
-  recoveredPrincipal: "รับคืนเงินต้น",
-  recoveredInterest: "รับคืนดอกเบี้ย",
-  recoveredFine: "รับคืนเบี้ยปรับ",
-  recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
-  recoveredOverpay: "รับเงินเกิน",
-  recoveredTotal: "รับคืนรวม",
-  debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
-  mediation: "การไกล่เกลี่ย (ค)",
-  prosecutor: "พนักงานอัยการรับเรื่อง (ง1)",
-  courtFiled: "ศาลประทับรับฟ้อง (ง2)",
-  courtJudgement: "ศาลพิพากษา (ง3)",
-  courtConsent: "ศาลพิพากษาตามยอม (ง4)",
-  civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
-  criminalAction: "ดำเนินคดีอาญา (ง6)",
-  legalAction: "ลูกหนี้ดำเนินการตามกฎหมาย (ง)",
-  principalLegal: "เงินต้นดำเนินคดี",
-  overdueLegal: "จำนวนหนี้เข้ามาตรการ",
-  overdue: "หนี้เกินกำหนดชำระ (B)",
-  overduePercent: "ร้อยละหนี้เกินกำหนด (C)",
-  contractEndDebt: "จบสัญญามีหนี้ค้าง (D)",
-  over5Percent: "หนี้เกินร้อยละ 5 (E)",
-  notes: "หมายเหตุ"
+  province: "จังหวัด", totalProjects: "จำนวนโครงการ", approvedAmount: "เงินที่อนุมัติ",
+  debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568", debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
+  notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)", recoveredPrincipal: "รับคืนเงินต้น",
+  recoveredInterest: "รับคืนดอกเบี้ย", recoveredFine: "รับคืนเบี้ยปรับ",
+  recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด", recoveredOverpay: "รับเงินเกิน",
+  recoveredTotal: "รับคืนรวม", debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
+  mediation: "การไกล่เกลี่ย (ค)", prosecutor: "พนักงานอัยการ (ง1)", courtFiled: "ศาลประทับรับฟ้อง (ง2)",
+  courtJudgement: "ศาลพิพากษา (ง3)", courtConsent: "ศาลพิพากษาตามยอม (ง4)",
+  civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)", criminalAction: "ดำเนินคดีอาญา (ง6)",
+  legalAction: "ลูกหนี้ดำเนินคดี (ง)", principalLegal: "เงินต้นดำเนินคดี",
+  overdueLegal: "จำนวนหนี้เข้ามาตรการ", overdue: "หนี้เกินกำหนดชำระ (B)",
+  overduePercent: "ร้อยละหนี้เกินกำหนด (C)", contractEndDebt: "จบสัญญามีหนี้ค้าง (D)",
+  over5Percent: "หนี้เกินร้อยละ 5 (E)", notes: "หมายเหตุ"
 };
+
 const orderedColumns = Object.keys(columnMap);
 
-function formatNumber(num){
-  if(num===null||num===undefined||num==="") return "-";
-  const n=Number(String(num).replace(/[^0-9.-]/g,''));
-  return isFinite(n)?n.toLocaleString("th-TH"):"-";
+function formatNumber(num) {
+  if (num === null || num === undefined || num === "") return "-";
+  const n = Number(String(num).replace(/[^0-9.-]/g, ""));
+  return isFinite(n) ? n.toLocaleString("th-TH") : "-";
 }
 
-async function fetchData(){
-  const log=document.getElementById("log");
-  log.textContent="🔄 กำลังโหลดข้อมูล...";
-  try{
-    const res=await fetch(API_URL);
-    const data=await res.json();
-    const provinces=data.provinces||[];
+async function fetchData() {
+  const log = document.getElementById("log");
+  log.textContent = "🔄 กำลังโหลดข้อมูล...";
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    const provinces = data.provinces || [];
+    const thead = document.querySelector("#provinceTable thead");
+    const tbody = document.querySelector("#provinceTable tbody");
+    thead.innerHTML = "<tr>" + orderedColumns.map(k => `<th>${columnMap[k]}</th>`).join("") + "</tr>";
+    tbody.innerHTML = "";
 
-    const thead=document.querySelector("#provinceTable thead");
-    const tbody=document.querySelector("#provinceTable tbody");
-    tbody.innerHTML="";
-    thead.innerHTML="<tr>"+orderedColumns.map(k=>`<th>${columnMap[k]}</th>`).join("")+"</tr>";
-
-    provinces.forEach(p=>{
-      const row=orderedColumns.map(k=>{
-        const raw=p[k];
-        if(k==="province") return `<td><a href="#" class="province-link">${raw||"-"}</a></td>`;
-        if(k.toLowerCase().includes("percent")) return `<td>${parseFloat(raw||0).toFixed(2)}%</td>`;
+    provinces.forEach(p => {
+      const row = orderedColumns.map(k => {
+        const raw = p[k];
+        if (k === "province") return `<td class="align-left"><a href="#" class="province-link">${raw || "-"}</a></td>`;
+        if (k.toLowerCase().includes("percent")) return `<td>${parseFloat(raw || 0).toFixed(2)}%</td>`;
         return `<td>${formatNumber(raw)}</td>`;
       }).join("");
-      tbody.innerHTML+=`<tr>${row}</tr>`;
+      tbody.innerHTML += `<tr>${row}</tr>`;
     });
 
-    if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
-    provinceDataTable=$('#provinceTable').DataTable({
-      paging:false,
-      scrollX:true,
-      scrollY:'450px',
-      scrollCollapse:true,
-      order:[],
-      autoWidth:false,
-      language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
-      initComplete:function(){
-        const api=this.api();
-        setTimeout(()=>{
-          api.columns.adjust().draw(false);
-          document.querySelectorAll('#provinceTable td').forEach(td=>td.style.width="auto");
-        },300);
+    if ($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
+    provinceDataTable = $('#provinceTable').DataTable({
+      paging: false,
+      scrollX: true,
+      scrollY: '450px',
+      scrollCollapse: true,
+      fixedHeader: true,
+      autoWidth: false,
+      order: [],
+      language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
+      initComplete: function () {
+        const api = this.api();
+        setTimeout(() => api.columns.adjust().draw(false), 300);
       }
     });
-    log.textContent="✅ โหลดข้อมูลจังหวัดสำเร็จ";
-  }catch(e){
+
+    log.textContent = "✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
+  } catch (e) {
     console.error(e);
-    log.textContent="❌ โหลดข้อมูลล้มเหลว";
+    log.textContent = "❌ โหลดข้อมูลไม่สำเร็จ";
   }
 }
 fetchData();
