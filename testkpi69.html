@@ -69,42 +69,34 @@
        -------------------- */
 
     .province-table-wrapper {
-      margin-top: 30px;
-      margin-left: 3cm;
-      /* ให้ wrapper รับผิดชอบการสกอลล์ ทั้งแนวนอนและแนวตั้ง */
-      overflow: auto;
-      max-width: calc(100% - 3cm);
-      /* กำหนดความสูงเพื่อให้มี scrollY เมื่อเนื้อหายาว */
-      max-height: 520px;
-      border: 0;
-    }
+  overflow: auto;
+  max-height: 520px;
+  position: relative; /* เพิ่มบรรทัดนี้ เพื่อให้ sticky ทำงานในกรอบนี้ */
+}
 
-    /* ให้ตารางขยายความกว้างตามข้อมูลจริง */
-    .summary-table {
-      width: max-content; /* ขยายตามเนื้อหา */
-      border-collapse: collapse; /* เส้นตรงกัน */
-      table-layout: auto; /* ให้ขนาดคอลัมน์ตามเนื้อหา */
-      font-size: 0.85rem;
-      color: black;
-      white-space: nowrap; /* ไม่ให้ wrap ในตารางโดยรวม */
-    }
+.summary-table {
+  width: max-content;
+  border-collapse: separate; /* เปลี่ยนจาก collapse เป็น separate เพื่อให้ sticky header ใช้งานได้เต็มที่ */
+  border-spacing: 0;
+  table-layout: auto;
+  font-size: 0.85rem;
+  color: black;
+  white-space: nowrap;
+}
 
-    /* หัวตาราง — กึ่งกลาง, สูงสองแถว (ถ้าคำยาว), sticky บนสุด */
-    .summary-table thead th {
-      background-color: #f06292;
-      color: black;
-      padding: 10px 12px;
-      border: 1px solid #f8bbd0;
-      font-weight: bold;
-      text-align: center;
-      vertical-align: middle;
-      white-space: normal; /* หัวข้ออาจห้อยเป็น 2 บรรทัดได้ ถาจำเป็น */
-      word-wrap: break-word;
-      line-height: 1.2;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
+.summary-table thead th {
+  background-color: #f06292;
+  color: black;
+  padding: 10px 12px;
+  border: 1px solid #f8bbd0;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+  position: sticky;
+  top: 0;
+  z-index: 10; /* เพิ่ม z-index ให้สูงขึ้นนิดนึง */
+}
 
     /* เนื้อหาเซลล์ — กึ่งกลางทั้งแนวนอนและแนวตั้ง, แสดงเต็ม 1 แถว */
     .summary-table tbody td {
