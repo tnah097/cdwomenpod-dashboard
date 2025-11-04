@@ -2,31 +2,43 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CDDWomenfund Dashboard</title> 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+
   <style>
+    /* 🌸 พื้นหลังพาสเทลชมพู-ม่วง */
     body {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
-      background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
+      background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5, #e1bee7);
       background-attachment: fixed;
       color: #000;
     }
-    .dashboard-container { padding: 40px; background-color: rgba(255, 255, 255, 0.9); }
+
+    .dashboard-container { 
+      padding: 40px; 
+      background-color: rgba(255, 255, 255, 0.9);
+      min-height: 100vh;
+    }
     .scale-control { font-size: 1rem; }
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       flex-wrap: wrap;
     }
+
     .header-text h1 { margin: 0; font-size: 2.5rem; }
     .header-text h2 { margin: 0; font-size: 1.5rem; }
     .logo-container img { height: 60px; margin-left: 10px; }
+
+    /* Cards */
     .cards {
       display: flex;
       gap: 20px;
@@ -48,12 +60,13 @@
       font-weight: normal;
       white-space: nowrap;
     }
+
     .card.pink { background-color: #e91e63; flex: 0 0 auto; width: auto; }
     .card.light-pink { background-color: #f8bbd0; }
     .card.orange { background-color: #ff9800; }
     .card.pastel-pink { background-color: #fce4ec; }
     .card.deep-pastel-pink { background-color: #f06292; }
-    
+
     .main-visuals {
       display: flex;
       margin-top: 30px;
@@ -61,29 +74,32 @@
       flex-wrap: wrap;
       align-items: flex-start;
     }
-    .left, .center, .right {
-      flex: 1;
-      min-width: 300px;
-    }
+    .left, .center, .right { flex: 1; min-width: 300px; }
     .center { text-align: center; }
+
     canvas { max-width: 100%; }
     #donutChart { height: 500px !important; }
+
     .section-title {
       text-align: center;
       font-weight: bold;
       margin: 10px 0;
       font-size: 1.2rem;
     }
+
     .center img {
       width: 250px;
       display: block;
       margin: 0 auto 10px;
     }
+
+    /* Table */
     .province-table-wrapper {
       margin-top: 30px;
       margin-left: 3cm;
       text-align: left !important;
     }
+
     .summary-table {
       width: 100% !important;
       border-collapse: separate;
@@ -92,6 +108,8 @@
       color: black;
       table-layout: fixed;
     }
+
+    /* ✅ ปรับหัวตารางให้สูง 2 แถว ตัดคำสวยงาม */
     .summary-table th {
       background-color: #f06292;
       color: black;
@@ -99,7 +117,14 @@
       border: 1px solid #f8bbd0;
       font-weight: bold;
       text-align: center;
+      vertical-align: middle;
+      white-space: normal;
+      word-wrap: break-word;
+      line-height: 1.3;
+      height: 70px;
+      min-height: 70px;
     }
+
     .summary-table td {
       padding: 6px;
       border: 1px solid #f8bbd0;
@@ -108,26 +133,34 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
+
     .province-link {
       color: blue;
       text-decoration: underline;
       cursor: pointer;
     }
+
     .province-link:hover { color: darkblue; }
+
     #studyCenterTable tbody tr { cursor: pointer; }
     #studyCenterTable tbody tr:hover { background-color: #e0e0e0 !important; }
     #studyCenterTable tbody tr.selected-row {
       background-color: #d1e7fd !important;
       font-weight: bold;
     }
+
     .clickable-header { cursor: pointer; }
     .clickable-header:hover { color: #555; }
+
     .center-name-link { color: blue; text-decoration: underline; }
+
     .align-left { text-align: left !important; }
     .align-center { text-align: center !important; }
     .align-right { text-align: right !important; }
+
     #log {
       color: navy;
       font-weight: bold;
@@ -141,12 +174,13 @@
       .header-text h2 { font-size: 1.2rem; }
       .cards { flex-direction: column; }
       .province-table-wrapper { margin-left: 0; overflow-x:auto; }
-      .summary-table th, .summary-table td { padding: 4px; font-size: 0.75rem; }
+      .summary-table th, .summary-table td { padding: 4px; font-size: 0.75rem; height: 60px; }
     }
-    /* ensure DataTables header text wraps less aggressively */
+
     .dataTables_scrollHeadInner { width: 100% !important; }
   </style>
 </head>
+
 <body>
   <div class="dashboard-container scale-control">
     <div class="header">
@@ -225,11 +259,14 @@
   </div>
 
 <script>
+/* ==============================
+   🧠 ระบบ Dashboard ฉบับเต็ม
+   ============================== */
 const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
 let donutChartInstance = null;
 let provinceDataTable = null;
 
-// === mapping คีย์ -> ชื่อภาษาไทย ===
+/* === Mapping คีย์ → ชื่อภาษาไทย === */
 const columnMap = {
   province: "จังหวัด",
   totalProjects: "จำนวนโครงการ",
@@ -263,7 +300,7 @@ const columnMap = {
   notes: "หมายเหตุ"
 };
 
-// ถ้าต้องการลำดับคอลัมน์เฉพาะ ให้ใส่ในนี้ (จะใช้เฉพาะคีย์ที่มีจริงใน response)
+/* === ลำดับคอลัมน์ที่ต้องการ === */
 const orderedColumns = [
   "province","totalProjects","approvedAmount",
   "debtStart","debtNow","notDue","recoveredPrincipal",
@@ -273,28 +310,31 @@ const orderedColumns = [
   "contractEndDebt","over5Percent","statusPayment","projectStatus","notes"
 ];
 
+/* === ฟังก์ชัน format ตัวเลขและเปอร์เซ็นต์ === */
 function formatNumber(num){
-  // พยายามแปลงเป็น number แล้ว format เป็นไทย ถ้าไม่ใช่ตัวเลขคืนค่าเดิม
   if (num === null || num === undefined || String(num).trim() === "") return "-";
-  const n = Number(String(num).toString().replace(/[^0-9.-]/g,''));
+  const n = Number(String(num).replace(/[^0-9.-]/g,'')); 
   if (!isFinite(n)) return String(num);
   return n.toLocaleString("th-TH");
 }
-function formatPercent(val){const num=parseFloat(String(val).replace(/[^0-9.-]/g,''));return isNaN(num)?"-":num.toFixed(2)+"%";}
+function formatPercent(val){
+  const num=parseFloat(String(val).replace(/[^0-9.-]/g,''));
+  return isNaN(num)?"-":num.toFixed(2)+"%";
+}
 
+/* === ดึงข้อมูลหลัก === */
 async function fetchData(){
-  const logEl = document.getElementById("log");
-  logEl.textContent = "🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...";
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
+  const logEl=document.getElementById("log");
+  logEl.textContent="🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...";
+  try{
+    const res=await fetch(API_URL);
+    const data=await res.json();
     if(data.error){console.error("Apps Script Error:",data.error);logEl.textContent="❌ โหลดข้อมูลไม่สำเร็จ";return;}
+    const overview=data.overview||{};
+    const pieChartData=data.topOverdue||[];
+    const provinces=data.provinces||[];
 
-    const overview = data.overview || {};
-    const pieChartData = data.topOverdue || [];
-    const provinces = data.provinces || [];
-
-    // === อัปเดต Cards ===
+    /* === Update Cards === */
     document.getElementById('num-projects').textContent=formatNumber(overview.B2);
     document.getElementById('approved-money-card1').textContent=formatNumber(overview.C2);
     document.getElementById('debt-start-card1').textContent=formatNumber(overview.D2);
@@ -316,107 +356,82 @@ async function fetchData(){
     document.getElementById('contract-end-debt').textContent=formatNumber(overview.T2);
     document.getElementById('over-5-percent').textContent=formatPercent(overview.U2);
 
-    // === Donut chart ===
+    /* === Donut Chart === */
     if(donutChartInstance) donutChartInstance.destroy();
-    const ctx = document.getElementById('donutChart').getContext('2d');
-    donutChartInstance = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: pieChartData.map(p => p.province),
-        datasets: [{
-          data: pieChartData.map(p => parseFloat(p.percent) || 0),
-          backgroundColor: ['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']
-        }]
+    const ctx=document.getElementById('donutChart').getContext('2d');
+    donutChartInstance=new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:pieChartData.map(p=>p.province),
+        datasets:[{data:pieChartData.map(p=>parseFloat(p.percent)||0),
+        backgroundColor:['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']}]
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom' },
-          tooltip: { callbacks: { label: c => `${c.label}: ${parseFloat(c.raw).toFixed(2)}%` } }
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{position:'bottom'},
+          tooltip:{callbacks:{label:c=>`${c.label}: ${parseFloat(c.raw).toFixed(2)}%`}}
         }
       }
     });
 
-    // === สร้างหัวตารางเป็นภาษาไทย (ใช้ orderedColumns เป็นหลัก) ===
-    const table = document.querySelector("#provinceTable");
-    const thead = table.querySelector("thead");
-    const tbody = table.querySelector("tbody");
-    tbody.innerHTML = "";
+    /* === สร้างตาราง === */
+    const table=document.querySelector("#provinceTable");
+    const thead=table.querySelector("thead");
+    const tbody=table.querySelector("tbody");
+    tbody.innerHTML="";
 
-    // ถ้าผู้ให้ข้อมูลส่ง object เปล่า ให้โชว์ข้อความ
-    if (!provinces || provinces.length === 0) {
-      thead.innerHTML = `<tr><th>จังหวัด</th><th>ไม่มีข้อมูล</th></tr>`;
-      logEl.textContent = "⚠️ ไม่มีข้อมูลจังหวัด";
+    if(!provinces||provinces.length===0){
+      thead.innerHTML="<tr><th>จังหวัด</th><th>ไม่มีข้อมูล</th></tr>";
+      logEl.textContent="⚠️ ไม่มีข้อมูลจังหวัด";
       return;
     }
 
-    // ตรวจสอบ keys จริงจาก response (ใช้ keys ของแถวแรกเป็นตัวกำหนด)
-    const responseKeys = Object.keys(provinces[0] || {});
-    // สร้างลำดับคอลัมน์ที่จะโชว์: เก็บเฉพาะที่อยู่ใน responseKeys ตาม orderedColumns และตามด้วย keys อื่นๆ ที่เหลือ
-    const orderedPresent = orderedColumns.filter(k => responseKeys.includes(k));
-    const remaining = responseKeys.filter(k => !orderedPresent.includes(k));
-    const finalColumns = [...orderedPresent, ...remaining];
+    const responseKeys=Object.keys(provinces[0]);
+    const orderedPresent=orderedColumns.filter(k=>responseKeys.includes(k));
+    const remaining=responseKeys.filter(k=>!orderedPresent.includes(k));
+    const finalColumns=[...orderedPresent,...remaining];
 
-    // สร้าง <th> โดยใช้ columnMap ถ้ามี ถ้าไม่มีใช้ key เดิม
-    const headerHtml = finalColumns.map(k => {
-      const label = columnMap[k] || k;
+    const headerHtml=finalColumns.map(k=>{
+      const label=columnMap[k]||k;
       return `<th>${label}</th>`;
     }).join("");
-    thead.innerHTML = `<tr>${headerHtml}</tr>`;
+    thead.innerHTML=`<tr>${headerHtml}</tr>`;
 
-    // แสดงแต่ละแถว
-    provinces.forEach(p => {
-      const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${encodeURIComponent(p.province)}`;
-      const rowHTML = finalColumns.map(k => {
-        const raw = p[k];
-        // province cell = ลิงก์
-        if (k === "province") {
-          const display = (raw === null || raw === undefined || raw === "") ? "-" : raw;
+    provinces.forEach(p=>{
+      const url=`https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${encodeURIComponent(p.province)}`;
+      const rowHTML=finalColumns.map(k=>{
+        const raw=p[k];
+        if(k==="province"){
+          const display=(raw===null||raw===undefined||raw==="")?"-":raw;
           return `<td class="align-left"><a href="${url}" class="province-link" target="_blank">${display}</a></td>`;
         }
-        // กรณีค่าที่เป็นเปอร์เซนต์
-        if (k === "overduePercent" || String(k).toLowerCase().includes("percent")) {
+        if(k==="overduePercent"||String(k).toLowerCase().includes("percent")){
           return `<td class="align-right">${formatPercent(raw)}</td>`;
         }
-        // เรียก formatNumber กับค่าที่เป็นตัวเลข
-        if (raw === null || raw === undefined || raw === "") return `<td class="align-right">-</td>`;
-        const numericCandidate = Number(String(raw).toString().replace(/[^0-9.-]/g,''));
-        if (isFinite(numericCandidate)) {
+        if(raw===null||raw===undefined||raw==="")return `<td class="align-right">-</td>`;
+        const numericCandidate=Number(String(raw).replace(/[^0-9.-]/g,''));
+        if(isFinite(numericCandidate)){
           return `<td class="align-right">${formatNumber(numericCandidate)}</td>`;
-        } else {
+        }else{
           return `<td class="align-right">${String(raw)}</td>`;
         }
       }).join("");
-      tbody.innerHTML += `<tr>${rowHTML}</tr>`;
+      tbody.innerHTML+=`<tr>${rowHTML}</tr>`;
     });
 
-    // === DataTables init (responsive with horizontal scroll) ===
-    if ($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
-    provinceDataTable = $('#provinceTable').DataTable({
-      paging: false,
-      scrollX: true,
-      scrollY: '400px',
-      scrollCollapse: true,
-      order: [], // ไม่มีการเรียงค่าเริ่มต้น
-      language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
-      initComplete: function() {
-        // ให้ DataTables ปรับขนาดคอลัมน์หลัง render เสร็จ
-        this.api().columns.adjust();
-      }
+    if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
+    provinceDataTable=$('#provinceTable').DataTable({
+      paging:false,scrollX:true,scrollY:'400px',scrollCollapse:true,
+      order:[],language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
+      initComplete:function(){this.api().columns.adjust();}
     });
 
-    // ปรับ header ของ DataTables ให้ตรงขนาด
-    setTimeout(()=> {
-      if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust().draw(false);
-    }, 200);
+    setTimeout(()=>{if(provinceDataTable&&provinceDataTable.columns)provinceDataTable.columns.adjust().draw(false);},200);
 
-    logEl.textContent = "✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
-  } catch (e) {
-    console.error(e);
-    document.getElementById("log").textContent = "❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
-  }
+    logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
+  }catch(e){console.error(e);document.getElementById("log").textContent="❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";}
 }
-
 fetchData();
 </script>
 </body>
