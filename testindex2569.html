@@ -1,330 +1,283 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CDDWomenfund Dashboard</title> 
-  <!-- Chart.js, jQuery, DataTables -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CDDWomenfund Dashboard — พร้อมรัน (Realtime Polling 5s)</title>
+
+  <!-- Libraries (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
+  <!--
+    ======= NOTES =======
+    - โค้ดฉบับนี้ "พร้อมรันทันที" — แค่บันทึกเป็นไฟล์ .html แล้วเปิดกับเบราว์เซอร์
+    - Polling (Realtime จำลอง) ถูกตั้งเป็น 5000 ms (5 วินาที)
+    - หัวตาราง: สูง ~70px (ประมาณ 2 บรรทัด) และจัดกึ่งกลางทั้งแนวตั้งและแนวนอน
+    - ข้อมูลตัวเลขในเซลล์เป็น 1 แถว (nowrap + ellipsis)
+    - ไม่เปลี่ยนแปลงโลโก้, สี, layout หลัก ตามเงื่อนไขผู้ใช้
+    - ใช้ Apps Script API URL ที่ผู้ให้มา (ตัวแปร API_URL ด้านล่าง) เพื่อดึง JSON
+    ======================
+  -->
+
   <style>
-    /* ===========================
-       Theme & layout (user requested)
-       - Pastel pink-purple gradient background
-       - Cards, donut chart, province table
-       - Header and logos unchanged
-       - Table header locked to approx 2 lines (height ~70px)
-       - Header text centered vertically and horizontally
-       =========================== */
-
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    /* ========= Theme (pastel pink-purple) ========= */
+    :root{
+      --pink-1:#ffe6f0;
+      --pink-2:#f3e5f5;
+      --pink-3:#e1bee7;
+      --card-pink:#e91e63;
+      --card-light-pink:#f8bbd0;
+      --accent:#f06292;
+      --border:#f8bbd0;
+      --text-dark:#111;
+    }
+    html,body{height:100%;margin:0;padding:0}
+    body{
+      font-family: "Sarabun", Arial, sans-serif;
+      background: linear-gradient(135deg,var(--pink-1) 0%, var(--pink-2) 50%, var(--pink-3) 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      margin:0;
+      color:var(--text-dark);
     }
 
-    body {
-      font-family: 'Sarabun', sans-serif;
-      margin: 0;
-      background: linear-gradient(135deg, #ffe6f0 0%, #f3e5f5 50%, #e1bee7 100%);
-      background-attachment: fixed;
-      color: #000;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      transition: background 0.6s ease;
+    /* container */
+    .dashboard-container{
+      max-width:1500px;
+      margin:16px auto;
+      background: rgba(255,255,255,0.94);
+      border-radius:14px;
+      padding:22px 22px 36px 22px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.08);
+      min-height:calc(100vh - 48px);
+      box-sizing:border-box;
     }
-
-    /* container that holds entire dashboard */
-    .dashboard-container {
-      padding: 28px 28px 60px 28px;
-      background-color: rgba(255,255,255,0.92);
-      max-width: 1500px;
-      margin: 18px auto;
-      border-radius: 12px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-      min-height: calc(100vh - 36px);
-      box-sizing: border-box;
-    }
-
-    .scale-control { font-size: 1rem; }
 
     /* header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      flex-wrap: wrap;
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .header-text{display:flex;flex-direction:column}
+    h1{margin:0;font-size:2.3rem;line-height:1}
+    h2{margin:4px 0 0 0;font-size:1.05rem;color:#333;line-height:1}
+    .logo-container{display:flex;align-items:center;gap:12px}
+    .logo-container img{height:60px}
+
+    .info-line{
+      color:navy;font-weight:700;text-align:right;margin-top:8px;font-size:0.95rem;
     }
 
-    .header-text {
-      display: flex;
-      flex-direction: column;
+    /* cards */
+    .cards{display:flex;gap:14px;margin-top:18px;flex-wrap:wrap}
+    .card{
+      border-radius:10px;padding:12px 12px;min-width:210px;box-sizing:border-box;color:#000;font-weight:700;
+      display:flex;flex-direction:column;
+    }
+    .card .subtitle{font-size:0.95rem;margin:4px 0 0 0;color:#000;font-weight:700}
+    .card .value{font-size:1.5rem;margin-top:6px;color:#000;font-weight:600;white-space:nowrap}
+    .card.pink{background:linear-gradient(180deg,var(--card-pink),#d81b60);color:#fff}
+    .card.light-pink{background:linear-gradient(180deg,var(--card-light-pink),#f3a9c6);color:#000}
+    .card.orange{background:linear-gradient(180deg,#ff9800,#ffb24d);color:#000}
+    .card.pastel-pink{background:linear-gradient(180deg,#fce4ec,#f6cfe0);color:#000}
+    .card.deep-pastel-pink{background:linear-gradient(180deg,#f06292,#ec6790);color:#fff}
+
+    /* visuals */
+    .main-visuals{display:flex;gap:16px;align-items:flex-start;margin-top:20px;flex-wrap:wrap}
+    .left,.center{flex:1;min-width:300px}
+    .center img{max-width:100%;width:320px;display:block;margin:0 auto}
+
+    /* donut chart size */
+    #donutChart{width:100%!important;height:420px!important;max-height:520px}
+
+    .section-title{text-align:center;font-weight:700;margin-bottom:6px}
+
+    /* table wrapper */
+    .province-table-wrapper{margin-top:18px;overflow:hidden}
+
+    /* summary table base */
+    .summary-table{
+      width:100%!important;border-collapse:separate;border-spacing:0;font-size:0.88rem;color:var(--text-dark);
+      table-layout:fixed;min-width:1100px;
     }
 
-    .header-text h1 { margin: 0; font-size: 2.4rem; line-height: 1; }
-    .header-text h2 { margin: 0; font-size: 1.2rem; line-height: 1; color: #333; }
-
-    .logo-container {
+    /*
+      IMPORTANT: header must be two lines tall (~70px), center aligned both vertically & horizontally,
+      and wrap automatically to form two lines when necessary.
+    */
+    .summary-table thead th{
+      background-color:var(--accent);
+      color:#000;
+      padding:10px;
+      border:1px solid var(--border);
+      font-weight:700;
+      text-align:center;
+      vertical-align:middle;
+      white-space:normal;         /* allow wrapping */
+      word-break:break-word;
+      line-height:1.15;
+      height:70px;                /* fixed height to be two lines */
+      min-height:70px;
+      box-sizing:border-box;
       display:flex;
       align-items:center;
-      gap: 10px;
-    }
-    .logo-container img { height: 60px; }
-
-    /* small info line (date) */
-    .info-line {
-      color: navy;
-      font-weight: bold;
-      text-align: right;
-      font-size: 1rem;
-      margin-top: 6px;
+      justify-content:center;
+      padding-left:8px;
+      padding-right:8px;
     }
 
-    /* ===== cards ===== */
-    .cards {
-      display: flex;
-      gap: 16px;
-      margin-top: 22px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      flex: 1;
-      min-width: 240px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      color: white;
-      font-weight: 700;
-      box-sizing: border-box;
-    }
-
-    .card .subtitle { font-size: 0.95rem; color: #000; font-weight: 600; }
-    .card .value { font-size: 1.6rem; color: #000; margin-top: 8px; font-weight: 500; white-space: nowrap; }
-
-    .card.pink { background: linear-gradient(180deg,#e91e63,#d81b60); }
-    .card.light-pink { background: linear-gradient(180deg,#f8bbd0,#f3a9c6); color: #000; }
-    .card.orange { background: linear-gradient(180deg,#ff9800,#ffb24d); color: #000; }
-    .card.pastel-pink { background: linear-gradient(180deg,#fce4ec,#f6cfe0); color: #000; }
-    .card.deep-pastel-pink { background: linear-gradient(180deg,#f06292,#ec6790); color: #000; }
-
-    /* responsive card layout */
-    @media (max-width: 900px) {
-      .card .value { font-size: 1.25rem; }
-      .cards { gap: 10px; }
-    }
-
-    /* ===== visuals (left: donut, center image) ===== */
-    .main-visuals {
-      display: flex;
-      margin-top: 24px;
-      gap: 18px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .left, .center, .right { flex: 1; min-width: 300px; box-sizing: border-box; }
-    .center { text-align: center; }
-
-    #donutChart { width: 100% !important; height: 420px !important; max-height: 520px; }
-
-    .section-title {
+    /* Wrap container inside th for nicer hyphenation/line break control */
+    .summary-table thead th .th-wrap{
+      display:block;
+      width:100%;
       text-align:center;
-      font-weight: 700;
-      margin-bottom: 8px;
+      line-height:1.15;
+      max-height:calc(2 * 1.15em); /* approx two lines */
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
     }
 
-    .center img { width: 320px; max-width: 80%; display: block; margin: 0 auto; }
-
-    /* ===== province table wrapper and base styles ===== */
-    .province-table-wrapper {
-      margin-top: 26px;
-      margin-left: 0;
-      text-align: left !important;
-      overflow: hidden;
+    /* data cells — numeric single line */
+    .summary-table td{
+      padding:8px 10px;border:1px solid var(--border);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;
+      color:var(--text-dark);
     }
 
-    .summary-table {
-      width: 100% !important;
-      border-collapse: separate;
-      border-spacing: 0;
-      font-size: 0.85rem;
-      color: #111;
-      table-layout: fixed;
-      min-width: 1100px; /* allow horizontal scroll on small screens */
+    .summary-table tr:nth-child(even){background:#fce4ec}
+    .summary-table tr:nth-child(odd){background:#fff}
+
+    .province-link{color:#0645AD;text-decoration:underline;cursor:pointer}
+    .province-link:hover{color:#042a66}
+
+    /* DataTables and responsiveness */
+    .dataTables_scrollHeadInner{width:100%!important}
+    table.dataTable thead th{white-space:normal;word-break:break-word}
+
+    @media (max-width:1200px){
+      #donutChart{height:360px!important}
+      .summary-table{min-width:900px}
+      .summary-table thead th{height:64px;min-height:64px}
+    }
+    @media (max-width:900px){
+      .header h1{font-size:1.5rem}
+      .header h2{font-size:1rem}
+      .cards{flex-direction:column}
+      .main-visuals{flex-direction:column}
+      .summary-table{min-width:740px;font-size:0.78rem}
+      .summary-table thead th{height:60px;min-height:60px}
+      .summary-table td{padding:6px;font-size:0.78rem}
+      #donutChart{height:320px!important}
     }
 
-    /* HEADERS: locked height ~70px (approx 2 text lines), center vertical/horizontal */
-    .summary-table thead th {
-      background-color: #f06292;
-      color: #000;
-      padding: 8px 10px;
-      border: 1px solid #f8bbd0;
-      font-weight: 700;
-      text-align: center;
-      vertical-align: middle;
-      white-space: normal; /* allow wrapping */
-      word-break: break-word;
-      line-height: 1.25;
-      height: 70px;
-      min-height: 70px;
-      box-sizing: border-box;
-    }
-
-    /* Data cells: keep one-line overflow with ellipsis */
-    .summary-table td {
-      padding: 6px 8px;
-      border: 1px solid #f8bbd0;
-      color: #111;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      vertical-align: middle;
-    }
-
-    .summary-table tr:nth-child(even) { background-color: #fce4ec; }
-    .summary-table tr:nth-child(odd) { background-color: #fff; }
-
-    /* Link style for province */
-    .province-link { color: #0645AD; text-decoration: underline; cursor: pointer; }
-    .province-link:hover { color: #042a66; }
-
-    /* Study center table (if used) */
-    #studyCenterTable tbody tr { cursor: pointer; }
-    #studyCenterTable tbody tr:hover { background-color: #e9eefb !important; }
-    #studyCenterTable tbody tr.selected-row { background-color: #d1e7fd !important; font-weight: bold; }
-
-    .clickable-header { cursor: pointer; }
-    .clickable-header:hover { color: #444; }
-
-    .align-left { text-align: left !important; }
-    .align-center { text-align: center !important; }
-    .align-right { text-align: right !important; }
-
-    #log {
-      color: navy;
-      font-weight: bold;
-      margin-top: 14px;
-      text-align: center;
-      font-size: 1.0rem;
-    }
-
-    /* DataTables scroll head inner width fix */
-    .dataTables_scrollHeadInner { width: 100% !important; }
-
-    /* responsive adjustments */
-    @media (max-width: 1200px) {
-      .province-table-wrapper { margin-left: 0; }
-      #donutChart { height: 360px !important; }
-    }
-
-    @media (max-width: 900px) {
-      .header-text h1 { font-size: 1.6rem; }
-      .header-text h2 { font-size: 1rem; }
-      .cards { flex-direction: column; gap: 8px; }
-      .main-visuals { flex-direction: column; }
-      .summary-table { min-width: 900px; font-size: 0.8rem; }
-      .summary-table thead th { height: 60px; min-height: 60px; font-size: 0.78rem; }
-      .summary-table td { padding: 4px; font-size: 0.78rem; }
-    }
-
-    /* small tweak to allow datatables header to wrap cleanly */
-    table.dataTable thead th { white-space: normal; word-break: break-word; }
-
-    /* utility */
-    .nowrap { white-space: nowrap; }
-    .muted { color: #666; font-weight: 500; }
+    /* small helper classes */
+    .align-left{text-align:left!important}
+    .align-right{text-align:right!important}
+    .align-center{text-align:center!important}
+    #log{color:navy;font-weight:700;text-align:center;margin-top:10px;margin-bottom:6px}
   </style>
 </head>
-
 <body>
-  <div class="dashboard-container scale-control" role="main" aria-label="CDD Women Fund Dashboard">
-    <!-- Header -->
+  <div class="dashboard-container" role="main" aria-label="CDD Women Fund Dashboard">
+    <!-- header -->
     <div class="header" role="banner">
-      <div class="header-text" aria-hidden="false">
-        <h1><span style="color: navy;">CDD</span><span style="color: deeppink;">Women</span><span style="color: red;">Fund</span></h1>
-        <h2><span style="color: #333;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ</span></h2>
-        <div style="color: navy; font-weight: bold; margin-top: 6px;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ</div>
+      <div class="header-text" role="heading" aria-level="1">
+        <h1><span style="color:navy">CDD</span><span style="color:deeppink">Women</span><span style="color:red">Fund</span></h1>
+        <h2><span>ฐานข้อมูล</span> <span style="color:deeppink">ระดับประเทศ</span></h2>
+        <div style="margin-top:8px;font-weight:700;color:navy">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ</div>
       </div>
 
       <div class="logo-container" aria-hidden="true">
-        <!-- logos unchanged as requested -->
         <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
       </div>
     </div>
 
     <div class="info-line" aria-live="polite">ข้อมูล ณ วันที่ 30 กันยายน 2568</div>
-
     <div id="log">🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...</div>
 
-    <!-- Cards -->
+    <!-- KPI cards -->
     <div class="cards" role="region" aria-label="Key KPIs">
-      <div class="card pink" role="note" aria-label="จำนวนโครงการ">
+      <div class="card pink" role="note">
         <div class="subtitle">จำนวนโครงการ</div>
         <div class="value" id="num-projects">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">เงินที่อนุมัติ</div>
         <div class="value" id="approved-money-card1">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568</div>
         <div class="value" id="debt-start-card1">-</div>
       </div>
 
-      <div class="card light-pink" role="note" aria-label="ลูกหนี้ ณ ปัจจุบัน">
+      <div class="card light-pink" role="note">
         <div class="subtitle">ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)</div>
         <div class="value" id="debt-now-card2">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">รับคืนเงินต้น</div>
         <div class="value" id="recovered-principal">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">หนี้ยังไม่ถึงกำหนดชำระ (ข)</div>
         <div class="value" id="not-due-card2">-</div>
       </div>
 
-      <div class="card orange" role="note" aria-label="กระบวนการทางกฎหมาย">
+      <div class="card orange" role="note">
         <div class="subtitle">การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)</div>
         <div class="value" id="mediation">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">พนักงานอัยการรับเรื่อง (ง1)</div>
         <div class="value" id="prosecutor">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">ศาลประทับรับฟ้อง (ง2)</div>
         <div class="value" id="court-filed">-</div>
       </div>
 
-      <div class="card pastel-pink" role="note" aria-label="ดำเนินการตามกฎหมาย">
+      <div class="card pastel-pink" role="note">
         <div class="subtitle">ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)</div>
         <div class="value" id="legal-card4">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">เงินต้นตามที่ได้รับดำเนินคดี</div>
         <div class="value" id="principal-legal">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ</div>
         <div class="value" id="overdue-legal">-</div>
       </div>
 
-      <div class="card deep-pastel-pink" role="note" aria-label="หนี้เกินกำหนด">
+      <div class="card deep-pastel-pink" role="note">
         <div class="subtitle">หนี้ที่เกินกำหนดชำระ (B)</div>
         <div class="value" id="overdue-card5">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">ร้อยละหนี้เกินกำหนดชำระ</div>
         <div class="value" id="percent-overdue-card5">-</div>
-        <div style="height:8px"></div>
+
+        <div style="height:6px"></div>
         <div class="subtitle">มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด</div>
         <div class="value" id="over-5-percent">-</div>
       </div>
     </div>
 
     <!-- visuals -->
-    <div class="main-visuals" role="region" aria-label="Charts and visuals">
-      <div class="left">
+    <div class="main-visuals" role="region" aria-label="Charts">
+      <div class="left" aria-hidden="false">
         <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
-        <canvas id="donutChart" aria-label="Donut chart showing top overdue percentage" role="img"></canvas>
+        <canvas id="donutChart" role="img" aria-label="Donut chart"></canvas>
       </div>
 
       <div class="center" aria-hidden="false">
@@ -334,251 +287,335 @@
 
     <!-- province table -->
     <div class="province-table-wrapper" role="region" aria-label="ตารางภาพรวมจังหวัด">
-      <table class="summary-table" id="provinceTable" style="width:100%;">
-        <thead>
-          <!-- dynamic -->
-        </thead>
-        <tbody>
-          <!-- dynamic -->
-        </tbody>
+      <table class="summary-table" id="provinceTable" aria-describedby="log" role="table">
+        <thead></thead>
+        <tbody></tbody>
       </table>
     </div>
   </div>
 
+  <!-- =========================
+       JAVASCRIPT: Dashboard logic
+       - Polling every 5 seconds (real-time simulation)
+       - Column mapping to Thai (two-line headers)
+       - Numeric formatting, single-line numeric cells
+       - DataTables integration
+       ========================= -->
   <script>
-  /* ================================
-     Dashboard JS (complete, ready-to-run)
-     - Fetches from provided Apps Script URL
-     - Renders cards, donut chart, and province table
-     - Translates column keys to Thai using columnMap
-     - Forces table header to be two lines by CSS height (70px)
-     - Keeps logos, colors, layout unchanged
-     ================================ */
+    // ---------- CONFIG ----------
+    const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
+    const POLLING_INTERVAL_MS = 5000; // 5 seconds (user requested realtime simulation)
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
-  let donutChartInstance = null;
-  let provinceDataTable = null;
+    // Column mapping (English key -> Thai label)
+    const columnMap = {
+      province: "จังหวัด",
+      totalProjects: "จำนวนโครงการ",
+      approvedAmount: "เงินที่อนุมัติ",
+      debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
+      debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
+      notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
+      recoveredPrincipal: "รับคืนเงินต้น",
+      recoveredInterest: "รับคืนดอกเบี้ย",
+      recoveredFine: "รับคืนเบี้ยปรับ",
+      recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
+      recoveredOverpay: "รับเงินเกิน",
+      recoveredTotal: "รับคืนรวม",
+      debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
+      mediation: "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)",
+      prosecutor: "พนักงานอัยการรับเรื่อง (ง1)",
+      courtFiled: "ศาลประทับรับฟ้อง (ง2)",
+      courtJudgement: "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้ (ง3)",
+      courtConsent: "ศาลมีคำพิพากษาตามยอม (ง4)",
+      civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
+      criminalAction: "ดำเนินคดีอาญา (ง6)",
+      legalAction: "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
+      principalLegal: "เงินต้นตามที่ได้รับดำเนินคดี",
+      overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
+      overdue: "หนี้ที่เกินกำหนดชำระ (B)",
+      overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)",
+      contractEndDebt: "จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน (D)",
+      over5Percent: "มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด (E)",
+      statusPayment: "สถานะการชำระหนี้",
+      projectStatus: "สถานะโครงการ",
+      notes: "หมายเหตุ"
+    };
 
-  /* mapping key -> ไทย */
-  const columnMap = {
-    province: "จังหวัด",
-    totalProjects: "จำนวนโครงการ",
-    approvedAmount: "เงินที่อนุมัติ",
-    debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
-    debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
-    notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
-    recoveredPrincipal: "รับคืนเงินต้น",
-    recoveredInterest: "รับคืนดอกเบี้ย",
-    recoveredFine: "รับคืนเบี้ยปรับ",
-    recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
-    recoveredOverpay: "รับเงินเกิน",
-    recoveredTotal: "รับคืนรวม",
-    debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
-    mediation: "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)",
-    prosecutor: "พนักงานอัยการรับเรื่อง (ง1)",
-    courtFiled: "ศาลประทับรับฟ้อง (ง2)",
-    courtJudgement: "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้ (ง3)",
-    courtConsent: "ศาลมีคำพิพากษาตามยอม (ง4)",
-    civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
-    criminalAction: "ดำเนินคดีอาญา (ง6)",
-    legalAction: "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
-    principalLegal: "เงินต้นตามที่ได้รับดำเนินคดี",
-    overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
-    overdue: "หนี้ที่เกินกำหนดชำระ (B)",
-    overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)",
-    contractEndDebt: "จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน (D)",
-    over5Percent: "มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด (E)",
-    statusPayment: "สถานะการชำระหนี้",
-    projectStatus: "สถานะโครงการ",
-    notes: "หมายเหตุ"
-  };
+    // Desired column order (keys). Any keys returned by API but not in this list will be appended.
+    const orderedColumns = [
+      "province","totalProjects","approvedAmount",
+      "debtStart","debtNow","notDue","recoveredPrincipal",
+      "recoveredInterest","recoveredFine","recoveredPenaltyInterest","recoveredOverpay","recoveredTotal","debtAsOf30968",
+      "mediation","prosecutor","courtFiled","courtJudgement","courtConsent","civilLaw20","criminalAction",
+      "legalAction","principalLegal","overdueLegal","overdue","overduePercent",
+      "contractEndDebt","over5Percent","statusPayment","projectStatus","notes"
+    ];
 
-  /* desired column order; missing keys will be appended after these */
-  const orderedColumns = [
-    "province","totalProjects","approvedAmount",
-    "debtStart","debtNow","notDue","recoveredPrincipal",
-    "recoveredInterest","recoveredFine","recoveredPenaltyInterest","recoveredOverpay","recoveredTotal","debtAsOf30968",
-    "mediation","prosecutor","courtFiled","courtJudgement","courtConsent","civilLaw20","criminalAction",
-    "legalAction","principalLegal","overdueLegal","overdue","overduePercent",
-    "contractEndDebt","over5Percent","statusPayment","projectStatus","notes"
-  ];
+    // Chart and DataTable instances
+    let donutChartInstance = null;
+    let provinceDataTable = null;
 
-  /* formatting helpers */
-  function formatNumber(num) {
-    if (num === null || num === undefined || String(num).trim() === "") return "-";
-    const n = Number(String(num).replace(/[^0-9.-]/g, ''));
-    if (!isFinite(n)) return String(num);
-    return n.toLocaleString('th-TH');
-  }
-  function formatPercent(val) {
-    const n = parseFloat(String(val).replace(/[^0-9.-]/g, ''));
-    return isNaN(n) ? "-" : n.toFixed(2) + "%";
-  }
+    // ---------- helpers ----------
+    function formatNumber(num){
+      if (num === null || num === undefined || String(num).trim() === "") return "-";
+      // Remove any non-numeric except minus and dot
+      const cleaned = String(num).replace(/[^0-9.-]/g,'');
+      const n = Number(cleaned);
+      if (!isFinite(n)) return String(num);
+      return n.toLocaleString('th-TH');
+    }
 
-  async function fetchData() {
-    const logEl = document.getElementById('log');
-    logEl.textContent = "🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...";
-    try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error('ไม่สามารถเชื่อมต่อ API ได้');
-      const data = await res.json();
-      if (data.error) {
-        console.error('Apps Script Error:', data.error);
-        logEl.textContent = "❌ โหลดข้อมูลไม่สำเร็จ (Apps Script error)";
-        return;
-      }
+    function formatPercent(val){
+      if (val === null || val === undefined || String(val).trim() === "") return "-";
+      const cleaned = String(val).replace(/[^0-9.-]/g,'');
+      const n = parseFloat(cleaned);
+      if (isNaN(n)) return String(val);
+      return n.toFixed(2) + "%";
+    }
 
-      const overview = data.overview || {};
-      const pieChartData = data.topOverdue || [];
-      const provinces = data.provinces || [];
+    function clearElement(el){
+      while(el.firstChild) el.removeChild(el.firstChild);
+    }
 
-      // update cards
-      document.getElementById('num-projects').textContent = formatNumber(overview.B2);
-      document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
-      document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
-      document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
-      document.getElementById('recovered-principal').textContent = formatNumber(overview.G2);
-      document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
-      document.getElementById('mediation').textContent = formatNumber(overview.H2);
-      document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
-      document.getElementById('court-filed').textContent = formatNumber(overview.J2);
-      document.getElementById('court-judgement').textContent = formatNumber(overview.K2);
-      document.getElementById('court-consent').textContent = formatNumber(overview.L2);
-      document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
-      document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
-      document.getElementById('legal-card4').textContent = formatNumber(overview.O2);
-      document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
-      document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
-      document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
-      document.getElementById('percent-overdue-card5').textContent = formatPercent(overview.S2);
-      document.getElementById('contract-end-debt').textContent = formatNumber(overview.T2);
-      document.getElementById('over-5-percent').textContent = formatPercent(overview.U2);
+    // Build header cell (wrap text into 2-line container)
+    function buildHeaderCell(label){
+      // create th element with inner div .th-wrap for two-line clamp
+      const th = document.createElement('th');
+      const wrap = document.createElement('div');
+      wrap.className = 'th-wrap';
+      wrap.textContent = label;
+      th.appendChild(wrap);
+      return th;
+    }
 
-      // donut chart
-      if (donutChartInstance) donutChartInstance.destroy();
-      const ctx = document.getElementById('donutChart').getContext('2d');
-      donutChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: pieChartData.map(p => p.province),
-          datasets: [{
-            data: pieChartData.map(p => parseFloat(p.percent) || 0),
-            backgroundColor: ['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom' },
-            tooltip: {
-              callbacks: {
-                label: ctx => {
-                  const label = ctx.label || '';
-                  const value = (parseFloat(ctx.raw) || 0).toFixed(2);
-                  return `${label}: ${value}%`;
+    // ---------- main fetch & render ----------
+    async function fetchAndRender(){
+      const logEl = document.getElementById('log');
+      logEl.textContent = "🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...";
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('ไม่สามารถเรียก API ได้ (HTTP ' + res.status + ')');
+        const json = await res.json();
+
+        if (json.error){
+          console.error('Apps Script error:', json.error);
+          logEl.textContent = "❌ โหลดข้อมูลไม่สำเร็จ (Apps Script)"; 
+          return;
+        }
+
+        // expected keys: overview, provinces (array), topOverdue (array)
+        const overview = json.overview || {};
+        const provinces = json.provinces || [];
+        const pieData = json.topOverdue || [];
+
+        // update KPI cards (overview uses exact keys B2/C2 etc as in Apps Script)
+        document.getElementById('num-projects').textContent = formatNumber(overview.B2);
+        document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
+        document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
+        document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
+        document.getElementById('recovered-principal').textContent = formatNumber(overview.G2);
+        document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
+        document.getElementById('mediation').textContent = formatNumber(overview.H2);
+        document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
+        document.getElementById('court-filed').textContent = formatNumber(overview.J2);
+        document.getElementById('court-judgement').textContent = formatNumber(overview.K2);
+        document.getElementById('court-consent').textContent = formatNumber(overview.L2);
+        document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
+        document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
+        document.getElementById('legal-card4').textContent = formatNumber(overview.O2);
+        document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
+        document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
+        document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
+        document.getElementById('percent-overdue-card5').textContent = formatPercent(overview.S2);
+        document.getElementById('contract-end-debt').textContent = formatNumber(overview.T2);
+        document.getElementById('over-5-percent').textContent = formatPercent(overview.U2);
+
+        // ---------- Donut chart ----------
+        if (donutChartInstance){
+          try{ donutChartInstance.destroy(); }catch(e){/* ignore */ }
+          donutChartInstance = null;
+        }
+        const ctx = document.getElementById('donutChart').getContext('2d');
+        const colors = ['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500'];
+        donutChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: pieData.map(p => p.province || '-'),
+            datasets: [{
+              data: pieData.map(p => parseFloat(String(p.percent || 0).replace(/[^0-9.-]/g,'')) || 0),
+              backgroundColor: colors
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom' },
+              tooltip: {
+                callbacks: {
+                  label: function(context){
+                    const label = context.label || '';
+                    const raw = context.raw || 0;
+                    const val = (parseFloat(raw) || 0).toFixed(2);
+                    return label + ': ' + val + '%';
+                  }
                 }
               }
             }
           }
+        });
+
+        // ---------- Table rendering ----------
+        const table = document.getElementById('provinceTable');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+
+        // clear
+        clearElement(thead);
+        clearElement(tbody);
+
+        if (!Array.isArray(provinces) || provinces.length === 0){
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          const wrap = document.createElement('div');
+          wrap.className = 'th-wrap';
+          wrap.textContent = 'ไม่มีข้อมูล';
+          th.appendChild(wrap);
+          tr.appendChild(th);
+          thead.appendChild(tr);
+          logEl.textContent = '⚠️ ไม่มีข้อมูลจังหวัด';
+        } else {
+          // determine keys (columns)
+          const responseKeys = Object.keys(provinces[0] || {});
+          const orderedPresent = orderedColumns.filter(k => responseKeys.includes(k));
+          const remaining = responseKeys.filter(k => !orderedPresent.includes(k));
+          const finalColumns = [...orderedPresent, ...remaining];
+
+          // build thead
+          const headRow = document.createElement('tr');
+          finalColumns.forEach(k => {
+            const label = columnMap[k] || k;
+            const th = buildHeaderCell(label);
+            headRow.appendChild(th);
+          });
+          thead.appendChild(headRow);
+
+          // build rows
+          provinces.forEach(rowObj => {
+            const tr = document.createElement('tr');
+
+            finalColumns.forEach(k => {
+              const td = document.createElement('td');
+              td.className = (k === 'province') ? 'align-left' : 'align-right';
+              let raw = rowObj[k];
+
+              // province -> link
+              if (k === 'province') {
+                const link = document.createElement('a');
+                link.className = 'province-link';
+                link.target = '_blank';
+                // link to the user's province page (keeps existing behavior)
+                link.href = 'https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=' + encodeURIComponent(raw || '');
+                link.textContent = (raw === null || raw === undefined || raw === '') ? '-' : String(raw);
+                td.appendChild(link);
+                tr.appendChild(td);
+                return;
+              }
+
+              // percentage columns
+              if (String(k).toLowerCase().includes('percent') || k === 'overduePercent') {
+                td.textContent = formatPercent(raw);
+                tr.appendChild(td);
+                return;
+              }
+
+              // numbers -> format, ensure one-line
+              if (raw === null || raw === undefined || String(raw).trim() === '') {
+                td.textContent = '-';
+                tr.appendChild(td);
+                return;
+              }
+              const cleaned = String(raw).replace(/[^0-9.-]/g,'');
+              const numericCandidate = Number(cleaned);
+              if (isFinite(numericCandidate)) {
+                td.textContent = formatNumber(numericCandidate);
+              } else {
+                // not numeric, show as-is but keep in single line
+                td.textContent = String(raw);
+              }
+              tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+          });
+
+          // initialize/refresh DataTable
+          // destroy previous instance if exists
+          if ($.fn.DataTable.isDataTable('#provinceTable')) {
+            try {
+              $('#provinceTable').DataTable().clear().destroy();
+            } catch(e){
+              // swallow
+            }
+          }
+
+          // init DataTable with horizontal scroll and fixed header height preserved
+          provinceDataTable = $('#provinceTable').DataTable({
+            paging: false,
+            searching: true,
+            scrollX: true,
+            scrollY: '420px',
+            scrollCollapse: true,
+            order: [],
+            language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
+            initComplete: function(){
+              try { this.api().columns.adjust(); } catch(e) {}
+            }
+          });
+
+          // small delay to re-adjust columns (fix header misalignment)
+          setTimeout(function(){
+            try { if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust().draw(false); } catch(e){}
+          }, 200);
+
+          logEl.textContent = '✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ';
         }
-      });
-
-      // table rendering
-      const table = document.getElementById('provinceTable');
-      const thead = table.querySelector('thead');
-      const tbody = table.querySelector('tbody');
-      tbody.innerHTML = '';
-
-      if (!provinces || provinces.length === 0) {
-        thead.innerHTML = '<tr><th>จังหวัด</th><th>ไม่มีข้อมูล</th></tr>';
-        logEl.textContent = '⚠️ ไม่มีข้อมูลจังหวัด';
-        return;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('log').textContent = '❌ เกิดข้อผิดพลาดในการโหลดข้อมูล';
       }
+    } // end fetchAndRender
 
-      // determine columns: use orderedColumns as base, append any extra keys from data
-      const responseKeys = Object.keys(provinces[0] || {});
-      const orderedPresent = orderedColumns.filter(k => responseKeys.includes(k));
-      const remaining = responseKeys.filter(k => !orderedPresent.includes(k));
-      const finalColumns = [...orderedPresent, ...remaining];
+    // ---------- Start polling ----------
+    (function startPolling(){
+      // initial
+      fetchAndRender();
 
-      // build header HTML using columnMap for Thai labels
-      const headerHtml = finalColumns.map(k => {
-        const label = columnMap[k] || k;
-        // wrap label with <div> to allow nicer line-break control; CSS limits height
-        return `<th><div style="display:block;width:100%;">${label}</div></th>`;
-      }).join('');
-      thead.innerHTML = `<tr>${headerHtml}</tr>`;
+      // Polling every POLLING_INTERVAL_MS milliseconds
+      setInterval(function(){
+        fetchAndRender();
+      }, POLLING_INTERVAL_MS);
+    })();
 
-      // populate rows
-      provinces.forEach(rowObj => {
-        const url = `https://tnah097.github.io/cdwomenpod-dashboard/province.html?province=${encodeURIComponent(rowObj.province || '')}`;
-        const rowHtml = finalColumns.map(k => {
-          const raw = rowObj[k];
-          if (k === 'province') {
-            const disp = (raw === null || raw === undefined || raw === '') ? '-' : raw;
-            return `<td class="align-left"><a class="province-link" target="_blank" href="${url}">${disp}</a></td>`;
-          }
-          if (k === 'overduePercent' || String(k).toLowerCase().includes('percent')) {
-            return `<td class="align-right">${formatPercent(raw)}</td>`;
-          }
-          if (raw === null || raw === undefined || raw === '') return `<td class="align-right">-</td>`;
-          const numericCandidate = Number(String(raw).replace(/[^0-9.-]/g, ''));
-          if (isFinite(numericCandidate)) {
-            return `<td class="align-right">${formatNumber(numericCandidate)}</td>`;
-          } else {
-            // text/string
-            return `<td class="align-right">${String(raw)}</td>`;
-          }
-        }).join('');
-        tbody.insertAdjacentHTML('beforeend', `<tr>${rowHtml}</tr>`);
-      });
-
-      // initialize DataTable with horizontal scroll
-      if ($.fn.DataTable.isDataTable('#provinceTable')) {
-        $('#provinceTable').DataTable().clear().destroy();
-      }
-
-      provinceDataTable = $('#provinceTable').DataTable({
-        paging: false,
-        searching: true,
-        scrollX: true,
-        scrollY: '420px',
-        scrollCollapse: true,
-        order: [],
-        language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
-        initComplete: function() {
-          // adjust columns so header alignment is correct
-          this.api().columns.adjust();
+    // ---------- Accessibility & small UX ----------
+    // allow pressing '/' to focus the DataTables search box (if exists)
+    document.addEventListener('keydown', function(e){
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const search = document.querySelector('#provinceTable_filter input');
+        if (search) {
+          e.preventDefault();
+          search.focus();
+          search.select();
         }
-      });
+      }
+    });
 
-      // small delay to ensure datatables header sizing correct
-      setTimeout(() => {
-        if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust().draw(false);
-      }, 260);
-
-      logEl.textContent = '✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ';
-    } catch (err) {
-      console.error(err);
-      document.getElementById('log').textContent = '❌ เกิดข้อผิดพลาดในการโหลดข้อมูล';
-    }
-  }
-
-  // initial fetch
-  fetchData();
-
-  // optional: poll for changes (auto-refresh) — user requested "เมื่อแก้ไขให้รันอัตโนมัติ"
-  // Note: polling every 90 seconds (adjust as needed). This is client-side auto-refresh.
-  // If you prefer server push or caching, modify Apps Script to create JSON cache.
-  (function autoRefresh() {
-    // run every 90s to reflect sheet changes automatically
-    const INTERVAL_MS = 90000;
-    setInterval(() => {
-      // silently fetch and re-render
-      fetchData();
-    }, INTERVAL_MS);
-  })();
+    // Ensure charts resize when window changes
+    window.addEventListener('resize', function(){
+      if (donutChartInstance) donutChartInstance.resize();
+      if (provinceDataTable && provinceDataTable.columns) {
+        try { provinceDataTable.columns.adjust().draw(false); } catch(e){}
+      }
+    });
 
   </script>
 </body>
