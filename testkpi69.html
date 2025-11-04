@@ -8,6 +8,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
@@ -388,18 +390,19 @@ async function fetchData(){
     /* === DataTable initialization (ใช้ DataTables แต่ไม่ใช้ scrollX/scrollY เพื่อให้เส้นตรงกัน) === */
     if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
 
-    provinceDataTable = $('#provinceTable').DataTable({
-      paging:false,
-      autoWidth:false,      // ปิด autoWidth เพื่อให้เราควบคุมขนาดตาม table-layout
-      order:[],
-      language:{ search:"ค้นหา:", zeroRecords:"ไม่พบข้อมูล" },
-      // ไม่เปิด scrollX/scrollY ของ DataTables เพราะจะทำให้ header แยกตารางและ alignment ผิด
-      initComplete:function(){
-        // ปรับคอลัมน์ (ถ้าจำเป็น)
-        const api=this.api();
-        setTimeout(()=>{ try{ api.columns().adjust().draw(false); }catch(e){} }, 100);
-      }
-    });
+provinceDataTable = $('#provinceTable').DataTable({
+  paging:false,
+  autoWidth:false,      // ปิด autoWidth เพื่อให้เราควบคุมขนาดตาม table-layout
+  order:[],
+  fixedHeader:true,     // ✅ หัวตารางล็อกเมื่อเลื่อนลง
+  language:{ search:"ค้นหา:", zeroRecords:"ไม่พบข้อมูล" },
+  initComplete:function(){
+    const api=this.api();
+    setTimeout(()=>{ 
+      try{ api.columns().adjust().draw(false); }catch(e){} 
+    }, 100);
+  }
+});
 
     // หลัง render ให้แน่ใจว่า wrapper เลื่อนและ header sticky ทำงาน
     // ลองเลื่อน wrapper เพื่อให้ browser คำนวณ sticky
