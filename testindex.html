@@ -546,7 +546,7 @@
 
    ============================== */
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz7p42v9kmXv3ypoqU1dmPLZFDgC_yDeXRN6jHw0zIJ70QAIALDVeX5CXtKMIlIW0Jdaw/exec";
 
 let donutChartInstance = null;
 
@@ -730,7 +730,9 @@ async function fetchData(){
 
     document.getElementById('contract-end-debt').textContent=formatNumber(overview.T2);
 
-    document.getElementById('over-5-percent').textContent=formatPercent(overview.U2);
+    document.getElementById('over-5-percent').textContent = Number(overview.U2)
+                            .toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 
 
 
