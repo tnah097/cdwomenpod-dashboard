@@ -251,9 +251,22 @@
   box-sizing: border-box; 
 }
 
-.dataTables_scrollHeadInner {
-  overflow: visible !important;
+.dataTables_scrollHeadInner,
+.dataTables_scrollHeadInner table {
+  width: 100% !important;
+  table-layout: fixed !important; /* ให้คำนวณความกว้างคอลัมน์แบบแน่นอน */
 }
+
+.dataTables_scrollBody table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.dataTables_scrollBody {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
 
 
     .summary-table td {
@@ -890,20 +903,19 @@ setTimeout(() => {
       provinceDataTable.columns.adjust().draw(false);
     }
 
-    // ซิงค์ความกว้าง head-inner กับ body (ช่วยแก้กรณี miscalculation)
+    // 🔧 ซิงค์ความกว้าง head กับ body แบบละเอียด
     const headInner = document.querySelector('.dataTables_scrollHeadInner');
-    const bodyWrapper = document.querySelector('.dataTables_scrollBody');
-    if (headInner && bodyWrapper) {
-      // ใช้ offsetWidth ของ body (รวม scrollbar) เป็นตัวกำหนด
-      headInner.style.width = bodyWrapper.offsetWidth + 'px';
-      // บังคับให้ DataTables คำนวณอีกครั้ง
-      if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust().draw(false);
+    const headTable = headInner?.querySelector('table');
+    const bodyTable = document.querySelector('.dataTables_scrollBody table');
+    if (headTable && bodyTable) {
+      const bodyWidth = bodyTable.offsetWidth + 'px';
+      headTable.style.width = bodyWidth;
+      headInner.style.width = bodyWidth;
     }
   } catch (ex) {
     console.error('Adjusting table widths error:', ex);
   }
-}, 300); // ปรับเป็น 400ms ถ้าจำเป็น (เครื่องช้า)
-
+}, 400);
     logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
 
   }catch(e){console.error(e);document.getElementById("log").textContent="❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";}
