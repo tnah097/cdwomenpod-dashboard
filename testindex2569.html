@@ -130,7 +130,7 @@
 
     .card.orange { background-color: #ff9800; }
 
-    .card.pastel-pink { background-color: #fce4ec; }
+    .card.pastel-pink { background-color: #FF0033; }
 
     .card.deep-pastel-pink { background-color: #f06292; }
 
@@ -191,84 +191,53 @@
     /* Table */
 
     .province-table-wrapper {
+  margin-top: 30px;
+  margin-left: 0;            /* ✅ ปรับเป็น 0 */
+  text-align: left !important;
+  overflow-x: auto;          /* ✅ เพิ่มบรรทัดนี้เพื่อให้ตาราง scroll แนวนอนได้ */
+}
 
-      margin-top: 30px;
+.summary-table {
+  width: 100%;                  /* ✅ ให้เต็ม container เพื่อให้ DataTable sync header ได้ */
+  border-collapse: collapse;
+  table-layout: auto;           /* ✅ ใช้ auto เพื่อให้ header/body align ตรง */
+  font-size: 0.9rem;
+  color: black;
+}
 
-      margin-left: 3cm;
+.summary-table th {
+  background-color: #f06292;
+  color: black;
+  padding: 10px 12px;
+  border: 1px solid #f8bbd0;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.4;
+  min-width: 130px;             /* ✅ เพิ่มความกว้างขั้นต่ำ */
+}
 
-      text-align: left !important;
+.summary-table td {
+  padding: 8px 10px;
+  border: 1px solid #f8bbd0;
+  color: black;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 130px;
+}
 
-    }
-
-
-
-    .summary-table {
-
-      width: 100% !important;
-
-      border-collapse: separate;
-
-      border-spacing: 0;
-
-      font-size: 0.85rem;
-
-      color: black;
-
-      table-layout: fixed;
-
-    }
-
-
-
-    /* ✅ ปรับหัวตารางให้สูง 2 แถว ตัดคำสวยงาม */
-
-    .summary-table th {
-
-      background-color: #f06292;
-
-      color: black;
-
-      padding: 8px;
-
-      border: 1px solid #f8bbd0;
-
-      font-weight: bold;
-
-      text-align: center;
-
-      vertical-align: middle;
-
-      white-space: normal;
-
-      word-wrap: break-word;
-
-      line-height: 1.3;
-
-      height: 70px;
-
-      min-height: 70px;
-
-    }
-
-
-
-    .summary-table td {
-
-      padding: 6px;
-
-      border: 1px solid #f8bbd0;
-
-      color: black;
-
-      white-space: nowrap;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-    }
-
-
+.province-table-wrapper {
+  margin-top: 40px;
+  margin-left: 0;
+  text-align: left !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+}
 
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
 
@@ -357,6 +326,24 @@
 
 
     .dataTables_scrollHeadInner { width: 100% !important; }
+
+    /* ✅ Fix เส้นหัวตารางไม่ตรง */
+.dataTables_scrollHeadInner,
+.dataTables_scrollHeadInner table {
+  width: 100% !important;
+}
+
+.dataTables_scrollBody table {
+  width: 100% !important;
+}
+
+.dataTables_scrollBody {
+  overflow-y: auto !important;   /* ✅ เปิด scroll แนวตั้งกลับมา */
+}
+
+table.dataTable {
+  border-collapse: collapse !important;  /* ✅ ช่วยให้เส้นตรงกัน */
+}
 
   </style>
 
@@ -866,15 +853,24 @@ async function fetchData(){
 
     if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
 
-    provinceDataTable=$('#provinceTable').DataTable({
+    provinceDataTable = $('#provinceTable').DataTable({
+  paging: false,
+  scrollX: true,
+  scrollY: '400px',
+  scrollCollapse: true,
+  autoWidth: true,              // ✅ เปิด autoWidth กลับมาเพื่อ sync header/body
+  ordering: false,              // ✅ ปิด sorting ช่วยให้คง alignment
+  order: [],
+  fixedHeader: false,
+  language: {
+    search: "ค้นหา:",
+    zeroRecords: "ไม่พบข้อมูล"
+  },
+  initComplete: function () {
+    this.api().columns.adjust();
+  }
+});
 
-      paging:false,scrollX:true,scrollY:'400px',scrollCollapse:true,
-
-      order:[],language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
-
-      initComplete:function(){this.api().columns.adjust();}
-
-    });
 
 
 
