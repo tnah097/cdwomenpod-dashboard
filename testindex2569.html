@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CDDWomenfund Dashboard</title>
 
-  <!-- ✅ Library ทั้งหมด -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
-  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
@@ -31,6 +30,7 @@
       min-height: 100vh;
       box-sizing: border-box;
     }
+    .scale-control { font-size: 1rem; }
 
     .header {
       display: flex;
@@ -53,49 +53,76 @@
     .card.pastel-pink { background-color: #FFAFB0; }
     .card.deep-pastel-pink { background-color: #f06292; }
 
-    /* ✅ กราฟและศูนย์ศึกษา */
     .main-visuals { display: flex; margin-top: 30px; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
     .left, .center, .right { flex: 1; min-width: 300px; }
     .center { text-align: center; }
     canvas { max-width: 100%; }
     #donutChart { height: 500px !important; }
     .section-title { text-align: center; font-weight: bold; margin: 10px 0; font-size: 1.2rem; }
-    .center img { width: 400px; display: block; margin: 0 auto 10px; }
+    .center img { width: 250px; display: block; margin: 0 auto 10px; }
 
-    /* ✅ ตารางจังหวัด */
-    .province-table-wrapper {
-      overflow: auto;
-      max-height: 520px;
-      position: relative;
-      margin-top: 20px;
-    }
+    /* --------------------
+       ตารางจังหวัด — เงื่อนไขพิเศษที่สั่ง
+       - ขยายความกว้างตามข้อมูล (ข้อมูลเป็นหลัก)
+       - หัวข้อและตัวเลขกึ่งกลาง
+       - แถบเลื่อนซ้าย-ขวา และขึ้นลง
+       - หัวตารางล็อก (sticky) ขณะเลื่อนแนวตั้ง
+       - ข้อความข้อมูลแสดงเป็น 1 แถว (nowrap)
+       -------------------- */
+.province-table-wrapper {
+  overflow: auto;
+  max-height: 520px;
+  position: relative;
+}
 
-    .summary-table {
-      width: max-content;
-      border-collapse: collapse;
-      table-layout: auto;
-      font-size: 0.85rem;
-      color: black;
-      white-space: nowrap;
-    }
+table.dataTable thead th {
+  background-color: #f06292 !important;
+  color: black !important;
+  position: sticky;
+  top: 0;
+  z-index: 1020 !important;
+}
 
-    .summary-table thead th {
-      background-color: #f06292;
-      color: black;
-      padding: 10px 12px;
-      border: 1px solid #f8bbd0;
-      font-weight: bold;
-      text-align: center;
-      vertical-align: middle;
-    }
 
+    
+.summary-table {
+  width: max-content;
+  border-collapse: separate; /* เปลี่ยนจาก collapse เป็น separate เพื่อให้ sticky header ใช้งานได้เต็มที่ */
+  border-spacing: 0;
+  table-layout: auto;
+  font-size: 0.85rem;
+  color: black;
+  white-space: nowrap;
+}
+
+
+
+
+
+    
+.summary-table thead th {
+  position: sticky;
+  top: 0; /* หัวค้างบนสุดของกรอบ */
+  z-index: 20; /* ให้สูงกว่า cell อื่น ๆ */
+  background-color: #f06292; /* สีหัว */
+  border: 1px solid #f8bbd0;
+  padding: 10px 12px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+
+    /* เนื้อหาเซลล์ — กึ่งกลางทั้งแนวนอนและแนวตั้ง, แสดงเต็ม 1 แถว */
     .summary-table tbody td {
       padding: 8px 12px;
       border: 1px solid #f8bbd0;
       color: black;
-      text-align: center;
-      vertical-align: middle;
-      white-space: nowrap;
+      text-align: center;      /* กึ่งกลางแนวนอน ตามคำสั่ง */
+      vertical-align: middle;  /* กึ่งกลางแนวตั้ง */
+      white-space: nowrap;     /* ข้อความ 1 แถว */
+      overflow: visible;       /* ไม่ตัดข้อความ */
     }
 
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
@@ -104,12 +131,22 @@
     .province-link { color: blue; text-decoration: underline; cursor: pointer; display:inline-block; }
     .province-link:hover { color: darkblue; }
 
+    .align-left { text-align: left !important; }
+    .align-center { text-align: center !important; }
+    .align-right { text-align: right !important; }
+
+    /* responsive tweaks */
     @media (max-width: 1024px) {
       .header-text h1 { font-size: 2rem; }
       .header-text h2 { font-size: 1.2rem; }
       .cards { flex-direction: column; }
+      .province-table-wrapper { margin-left: 0; max-width: 100%; }
       .summary-table thead th, .summary-table tbody td { padding: 6px 8px; font-size: 0.75rem; }
     }
+
+    .dataTables_wrapper .dataTables_filter { float: right; }
+    .dataTables_wrapper .dataTables_info { margin-top: 8px; }
+
   </style>
 </head>
 
@@ -135,7 +172,7 @@
 
     <div id="log">🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...</div>
 
-    <!-- 🟣 Cards -->
+    <!-- 🟣 Cards (คงเดิม) -->
     <div class="cards">
       <div class="card pink">
         จำนวนโครงการ<div class="value" id="num-projects">-</div>
@@ -164,92 +201,251 @@
       <div class="card deep-pastel-pink">
         หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue-card5">-</div>
         ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue-card5">-</div>
-        จบสัญญามีหนี้ค้าง<div class="value" id="contract-end-debt">-</div>
-        มีหนี้เกินร้อยละ 5<div class="value" id="over-5-percent">-</div>
+        จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน<div class="value" id="contract-end-debt">-</div>
+        มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด<div class="value" id="over-5-percent">-</div>
       </div>
     </div>
 
-    <!-- ✅ กราฟและศูนย์ศึกษา -->
+    <!-- main visuals คงเดิม (โดนัท + รูป) -->
     <div class="main-visuals">
       <div class="left">
         <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
         <canvas id="donutChart"></canvas>
       </div>
       <div class="center">
-        <div class="section-title">ศูนย์ศึกษา</div>
-        <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพศูนย์ศึกษา" />
+        <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
       </div>
     </div>
 
-    <!-- ✅ ตาราง -->
-    <div class="province-table-wrapper">
-      <table class="summary-table" id="provinceTable">
-        <thead></thead>
+    <!-- ตารางจังหวัด — wrapper รับ scroll -->
+    <div class="province-table-wrapper" id="provinceTableWrapper">
+      <table class="summary-table" id="provinceTable" role="grid" aria-describedby="log">
+        <thead>
+          <!-- header ถูกเขียนโดย JS ตามข้อมูล -->
+        </thead>
         <tbody></tbody>
       </table>
     </div>
+
   </div>
 
 <script>
+/* ==============================
+   🧠 Dashboard — เฉพาะตารางแก้ตามเงื่อนไข
+   ============================== */
+
 const API_URL = "https://script.google.com/macros/s/AKfycbzMxEWPAJZ_6T8kUxQPGdsvbuFya-M9rpq_bIybdsQztHbfO49roTju3ABGUrp3nJcQWQ/exec";
+
 let donutChartInstance = null;
 let provinceDataTable = null;
 
-function formatNumber(n){ return isFinite(+n)?(+n).toLocaleString("th-TH"):"-"; }
-function formatPercent(n){ const v=parseFloat(n); return isNaN(v)?"-":v.toFixed(2)+"%"; }
+/* Mapping คีย์ → ชื่อภาษาไทย (คงเดิมตามโจทย์) */
+const columnMap = {
+  province: "จังหวัด",
+  totalProjects: "จำนวนโครงการ",
+  approvedAmount: "เงินที่อนุมัติ",
+  debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
+  debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
+  notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
+  recoveredPrincipal: "รับคืนเงินต้น",
+  recoveredInterest: "รับคืนดอกเบี้ย",
+  recoveredFine: "รับคืนเบี้ยปรับ",
+  recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
+  recoveredOverpay: "รับเงินเกิน",
+  recoveredTotal: "รับคืนรวม",
+  debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
+  mediation: "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)",
+  prosecutor: "พนักงานอัยการรับเรื่อง (ง1)",
+  courtFiled: "ศาลประทับรับฟ้อง (ง2)",
+  courtJudgement: "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้ (ง3)",
+  courtConsent: "ศาลมีคำพิพากษาตามยอม (ง4)",
+  civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
+  criminalAction: "ดำเนินคดีอาญา (ง6)",
+  legalAction: "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
+  principalLegal: "เงินต้นตามที่ได้รับดำเนินคดี",
+  overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
+  overdue: "หนี้ที่เกินกำหนดชำระ (B)",
+  overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)",
+  contractEndDebt: "จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน (D)",
+  over5Percent: "มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด (E)",
+  statusPayment: "สถานะการชำระหนี้",
+  projectStatus: "สถานะโครงการ",
+  notes: "หมายเหตุ"
+};
 
+/* ลำดับคอลัมน์ที่ต้องการ */
+const orderedColumns = [
+  "province","totalProjects","approvedAmount",
+  "debtStart","debtNow","notDue","recoveredPrincipal",
+  "recoveredInterest","recoveredFine","recoveredPenaltyInterest","recoveredOverpay","recoveredTotal","debtAsOf30968",
+  "mediation","prosecutor","courtFiled","courtJudgement","courtConsent","civilLaw20","criminalAction",
+  "legalAction","principalLegal","overdueLegal","overdue","overduePercent",
+  "contractEndDebt","over5Percent","statusPayment","projectStatus","notes"
+];
+
+/* Format helpers (คงเดิม) */
+function formatNumber(num){
+  if (num === null || num === undefined || String(num).trim() === "") return "-";
+  const n = Number(String(num).replace(/[^0-9.-]/g,'')); 
+  if (!isFinite(n)) return String(num);
+  return n.toLocaleString("th-TH");
+}
+function formatPercent(val){
+  const num=parseFloat(String(val).replace(/[^0-9.-]/g,''));
+  return isNaN(num)?"-":num.toFixed(2)+"%";
+}
+
+/* ดึงข้อมูล และ render ทั้งหน้า (คงเดิมส่วนอื่น) */
 async function fetchData(){
   const logEl=document.getElementById("log");
-  logEl.textContent="🔄 กำลังโหลดข้อมูล...";
+  logEl.textContent="🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...";
   try{
     const res=await fetch(API_URL);
     const data=await res.json();
+    if(data.error){ console.error("Apps Script Error:",data.error); logEl.textContent="❌ โหลดข้อมูลไม่สำเร็จ"; return; }
+
+    const overview=data.overview||{};
+    const pieChartData=data.topOverdue||[];
     const provinces=data.provinces||[];
-    const thead=document.querySelector("#provinceTable thead");
-    const tbody=document.querySelector("#provinceTable tbody");
-    tbody.innerHTML="";
 
-    if(!provinces.length){
-      thead.innerHTML="<tr><th>จังหวัด</th><th>ไม่มีข้อมูล</th></tr>";
-      logEl.textContent="⚠️ ไม่มีข้อมูลจังหวัด"; return;
-    }
+    /* === Update Cards (คงเดิม) === */
+    document.getElementById('num-projects').textContent=formatNumber(overview.B2);
+    document.getElementById('approved-money-card1').textContent=formatNumber(overview.C2);
+    document.getElementById('debt-start-card1').textContent=formatNumber(overview.D2);
+    document.getElementById('debt-now-card2').textContent=formatNumber(overview.E2);
+    document.getElementById('recovered-principal').textContent=formatNumber(overview.G2);
+    document.getElementById('not-due-card2').textContent=formatNumber(overview.F2);
+    document.getElementById('mediation').textContent=formatNumber(overview.H2);
+    document.getElementById('prosecutor').textContent=formatNumber(overview.I2);
+    document.getElementById('court-filed').textContent=formatNumber(overview.J2);
+    document.getElementById('court-judgement').textContent=formatNumber(overview.K2);
+    document.getElementById('court-consent').textContent=formatNumber(overview.L2);
+    document.getElementById('civil-law-20').textContent=formatNumber(overview.M2);
+    document.getElementById('criminal-action').textContent=formatNumber(overview.N2);
+    document.getElementById('legal-card4').textContent=formatNumber(overview.O2);
+    document.getElementById('principal-legal').textContent=formatNumber(overview.P2);
+    document.getElementById('overdue-legal').textContent=formatNumber(overview.Q2);
+    document.getElementById('overdue-card5').textContent=formatNumber(overview.R2);
+    document.getElementById('percent-overdue-card5').textContent=formatPercent(overview.S2);
+    document.getElementById('contract-end-debt').textContent=formatNumber(overview.T2);
+    document.getElementById('over-5-percent').textContent=formatPercent(overview.U2);
 
-    const cols=Object.keys(provinces[0]);
-    thead.innerHTML="<tr>"+cols.map(c=>`<th>${c}</th>`).join("")+"</tr>";
-
-    provinces.forEach(p=>{
-      const row=cols.map(c=>`<td>${p[c]??"-"}</td>`).join("");
-      tbody.innerHTML+=`<tr>${row}</tr>`;
-    });
-
-    if($.fn.DataTable.isDataTable('#provinceTable'))
-      $('#provinceTable').DataTable().clear().destroy();
-
-    provinceDataTable=$('#provinceTable').DataTable({
-      paging:false, order:[], fixedHeader:{header:true,headerOffset:0},
-      language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"}
-    });
-
-    // ✅ Donut Chart
-    const ctx=document.getElementById("donutChart").getContext("2d");
+    /* === Donut Chart (คงเดิม) === */
     if(donutChartInstance) donutChartInstance.destroy();
+    const ctx=document.getElementById('donutChart').getContext('2d');
     donutChartInstance=new Chart(ctx,{
-      type:"doughnut",
+      type:'doughnut',
       data:{
-        labels:provinces.slice(0,10).map(p=>p.province),
+        labels:pieChartData.map(p=>p.province),
         datasets:[{
-          data:provinces.slice(0,10).map(p=>parseFloat(p.overduePercent)||0),
-          backgroundColor:["#f06292","#FFB6C1","#FF8A80","#F48FB1","#FFCDD2","#F8BBD0","#E1BEE7","#CE93D8","#BA68C8","#AB47BC"]
+          data:pieChartData.map(p=>parseFloat(p.percent)||0),
+          backgroundColor:['#FF202B','#87FEBC','#FFB6B7','#FFDD63','#F68B71','#DAB9E6','#A0E8E8','#ADFF2F','#FFFF00','#FFA500']
         }]
       },
-      options:{responsive:true,plugins:{legend:{position:"bottom"}}}
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{position:'bottom'},
+          tooltip:{callbacks:{label:c=>`${c.label}: ${parseFloat(c.raw).toFixed(2)}%`}}
+        }
+      }
     });
 
-    logEl.textContent="✅ โหลดข้อมูลสำเร็จ";
+    /* === สร้างตารางจังหวัด (แก้ตามเงื่อนไข) === */
+    const table=document.querySelector("#provinceTable");
+    const thead=table.querySelector("thead");
+    const tbody=table.querySelector("tbody");
+    tbody.innerHTML="";
+
+    if(!provinces||provinces.length===0){
+      thead.innerHTML="<tr><th>จังหวัด</th><th>ไม่มีข้อมูล</th></tr>";
+      logEl.textContent="⚠️ ไม่มีข้อมูลจังหวัด";
+      return;
+    }
+
+    // ให้แสดงคอลัมน์ตาม orderedColumns หากข้อมูลมี key เพิ่มเติมให้ต่อท้าย
+    const responseKeys=Object.keys(provinces[0]);
+    const orderedPresent=orderedColumns.filter(k=>responseKeys.includes(k));
+    const remaining=responseKeys.filter(k=>!orderedPresent.includes(k));
+    const finalColumns=[...orderedPresent,...remaining];
+
+    // เขียน header — หัวข้อจะอยู่กึ่งกลางตาม CSS
+    const headerHtml=finalColumns.map(k=>{
+      const label=columnMap[k]||k;
+      return `<th>${label}</th>`;
+    }).join("");
+    thead.innerHTML=`<tr>${headerHtml}</tr>`;
+
+    // สร้างแถวข้อมูล — แต่ละแถวแสดงข้อมูล 1 บรรทัด (nowrap)
+    provinces.forEach(p=>{
+      const url=`province2569.html?province=${encodeURIComponent(p.province||"")}`;
+      const rowHTML=finalColumns.map(k=>{
+        const raw=p[k];
+        if(k==="province"){
+          const display=(raw===null||raw===undefined||raw==="")?"-":raw;
+          // ลิงก์ไปหน้า province2569.html (ตามที่คุยไว้ก่อนหน้า)
+          return `<td class="align-center"><a href="${url}" class="province-link" target="_blank" rel="noopener noreferrer">${display}</a></td>`;
+        }
+        if(k==="overduePercent"||String(k).toLowerCase().includes("percent")){
+          return `<td class="align-center">${formatPercent(raw)}</td>`;
+        }
+        if(raw===null||raw===undefined||raw==="") return `<td class="align-center">-</td>`;
+        const numericCandidate=Number(String(raw).replace(/[^0-9.-]/g,''));
+        if(isFinite(numericCandidate)){
+          return `<td class="align-center">${formatNumber(numericCandidate)}</td>`;
+        }else{
+          // ข้อความใด ๆ จะแสดงเป็น 1 บรรทัด (nowrap)
+          return `<td class="align-center">${String(raw)}</td>`;
+        }
+      }).join("");
+      tbody.innerHTML+=`<tr>${rowHTML}</tr>`;
+    });
+
+    /* === DataTable initialization (ใช้ DataTables แต่ไม่ใช้ scrollX/scrollY เพื่อให้เส้นตรงกัน) === */
+    if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
+
+provinceDataTable = $('#provinceTable').DataTable({
+  paging: false,
+  autoWidth: false,
+  order: [],
+  scrollX: true,
+  scrollY: '500px',
+  fixedHeader: {
+    header: true,
+    headerOffset: 0
+  },
+  language: {
+    search: "ค้นหา:",
+    zeroRecords: "ไม่พบข้อมูล"
+  },
+  initComplete: function () {
+    const api = this.api();
+    setTimeout(() => {
+      try { api.columns().adjust().draw(false); } catch (e) {}
+    }, 100);
+  }
+});
+
+    // หลัง render ให้แน่ใจว่า wrapper เลื่อนและ header sticky ทำงาน
+    // ลองเลื่อน wrapper เพื่อให้ browser คำนวณ sticky
+    const wrapper = document.getElementById('provinceTableWrapper');
+    if(wrapper){
+      // ถ้าตารางกว้างเกิน จะมี scrollbar เองจาก CSS overflow:auto
+      // โค้ดนี้ช่วยให้ header sticky ทำงานขณะมีการ scroll
+      wrapper.addEventListener('scroll', () => {
+        // ไม่มีการกระทำพิเศษที่ต้องทำใน JS — CSS sticky handle it.
+        // แต่ถ้า DataTables ต้องการ adjust เมื่อ scroll แนวนอนซึ่งอาจเปลี่ยน layout ให้เรียก adjust:
+        try { if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust(); } catch (e) {}
+      });
+    }
+
+    logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
   }catch(e){
-    console.error(e); logEl.textContent="❌ โหลดข้อมูลไม่สำเร็จ";
+    console.error(e);
+    document.getElementById("log").textContent="❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
   }
 }
+
 fetchData();
 </script>
 </body>
