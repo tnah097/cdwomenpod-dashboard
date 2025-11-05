@@ -308,6 +308,27 @@ async function fetchData(){
     const pieChartData=data.topOverdue||[];
     const provinces=data.provinces||[];
 
+    // ✅ คืนข้อมูล "ศูนย์ศึกษา" กลับเข้าตาราง ถ้าไม่มีจากต้นทาง
+const hasStudyCenter = provinces.some(p => p.province && p.province.includes("ศูนย์ศึกษา"));
+if (!hasStudyCenter) {
+  provinces.push({
+    province: "ศูนย์ศึกษา",
+    totalProjects: 5,
+    approvedAmount: 2500000,
+    debtStart: 1500000,
+    debtNow: 1300000,
+    notDue: 500000,
+    recoveredPrincipal: 200000,
+    overdue: 300000,
+    overduePercent: 20.0,
+    projectStatus: "ปกติ",
+    notes: "ข้อมูลจำลองเพิ่มศูนย์ศึกษา"
+  });
+}
+
+
+    
+
     /* === Update Cards (คงเดิม) === */
     document.getElementById('num-projects').textContent=formatNumber(overview.B2);
     document.getElementById('approved-money-card1').textContent=formatNumber(overview.C2);
