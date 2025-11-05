@@ -214,8 +214,6 @@
 
       color: black;
 
-      table-layout: fixed;
-
     }
 
 
@@ -866,18 +864,20 @@ async function fetchData(){
 
     provinceDataTable=$('#provinceTable').DataTable({
 
-      paging:false,scrollX:true,scrollY:'400px',scrollCollapse:true,
-
-      order:[],language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
-
+      paging:false,scrollX:true,scrollY:'400px',
+      scrollCollapse:true,
+      autoWidth:true,   
+      order:[],language:{search:"ค้นหา:",
+      zeroRecords:"ไม่พบข้อมูล"},
       initComplete:function(){this.api().columns.adjust();}
 
     });
 
-
-
-    setTimeout(()=>{if(provinceDataTable&&provinceDataTable.columns)provinceDataTable.columns.adjust().draw(false);},200);
-
+   setTimeout(() => {
+  if (provinceDataTable && provinceDataTable.columns) {
+    provinceDataTable.columns.adjust().draw(false);
+  }
+}, 400);
 
 
     logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
