@@ -75,6 +75,16 @@
   position: relative;
 }
 
+table.dataTable thead th {
+  background-color: #f06292 !important;
+  color: black !important;
+  position: sticky;
+  top: 0;
+  z-index: 1020 !important;
+}
+
+
+    
 .summary-table {
   width: max-content;
   border-collapse: separate; /* เปลี่ยนจาก collapse เป็น separate เพื่อให้ sticky header ใช้งานได้เต็มที่ */
@@ -85,6 +95,11 @@
   white-space: nowrap;
 }
 
+
+
+
+
+    
 .summary-table thead th {
   position: sticky;
   top: 0; /* หัวค้างบนสุดของกรอบ */
@@ -200,6 +215,23 @@
       <div class="center">
         <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
       </div>
+
+<div class="card deep-pastel-pink">
+  <div style="font-weight: bold; color: white;">ศูนย์ศึกษาและพัฒนาชุมชน</div>
+  <br />
+  <table class="summary-table" id="studyCenterTable" style="color: black; width: 100%;">
+    <thead>
+      <tr>
+        <th class="clickable-header" title="คลิกเพื่อแสดงทุกจังหวัด">ศูนย์ศึกษาและพัฒนาชุมชน</th>
+        <th>จำนวนจังหวัด</th>
+        <th>จังหวัด</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+      
     </div>
 
     <!-- ตารางจังหวัด — wrapper รับ scroll -->
@@ -292,6 +324,27 @@ async function fetchData(){
     const overview=data.overview||{};
     const pieChartData=data.topOverdue||[];
     const provinces=data.provinces||[];
+
+    // ✅ คืนข้อมูล "ศูนย์ศึกษา" กลับเข้าตาราง ถ้าไม่มีจากต้นทาง
+const hasStudyCenter = provinces.some(p => p.province && p.province.includes("ศูนย์ศึกษา"));
+if (!hasStudyCenter) {
+  provinces.push({
+    province: "ศูนย์ศึกษา",
+    totalProjects: 5,
+    approvedAmount: 2500000,
+    debtStart: 1500000,
+    debtNow: 1300000,
+    notDue: 500000,
+    recoveredPrincipal: 200000,
+    overdue: 300000,
+    overduePercent: 20.0,
+    projectStatus: "ปกติ",
+    notes: "ข้อมูลจำลองเพิ่มศูนย์ศึกษา"
+  });
+}
+
+
+    
 
     /* === Update Cards (คงเดิม) === */
     document.getElementById('num-projects').textContent=formatNumber(overview.B2);
@@ -390,14 +443,23 @@ async function fetchData(){
     if($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
 
 provinceDataTable = $('#provinceTable').DataTable({
-  paging:false,
-  autoWidth:false,
-  order:[],
-  language:{ search:"ค้นหา:", zeroRecords:"ไม่พบข้อมูล" },
-  initComplete:function(){
-    const api=this.api();
-    setTimeout(()=>{ 
-      try{ api.columns().adjust().draw(false); }catch(e){} 
+  paging: false,
+  autoWidth: false,
+  order: [],
+  scrollX: true,
+  scrollY: '500px',
+  fixedHeader: {
+    header: true,
+    headerOffset: 0
+  },
+  language: {
+    search: "ค้นหา:",
+    zeroRecords: "ไม่พบข้อมูล"
+  },
+  initComplete: function () {
+    const api = this.api();
+    setTimeout(() => {
+      try { api.columns().adjust().draw(false); } catch (e) {}
     }, 100);
   }
 });
@@ -423,6 +485,69 @@ provinceDataTable = $('#provinceTable').DataTable({
 }
 
 fetchData();
+fetchStudyCenterData();
+
+async function fetchStudyCenterData() {
+  try {
+    const res = await fetch(`${API_URL}?action=studyCenter`);
+    const data = await res.json();
+    if (data.error) { console.error("Apps Script Error:", data.error); return; }
+
+    const centers = data.studyCenter || [];
+    const tbody = document.querySelector("#studyCenterTable tbody");
+    tbody.innerHTML = "";
+
+    centers.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.setAttribute('data-provinces', row.province.split(',').map(p => p.trim()).join('|'));
+      tr.innerHTML = `
+        <td class="align-left"><span class="center-name-link">${row.name}</span></td>
+        <td class="align-center">${Number(row.index || 0).toLocaleString("th-TH")}</td>
+        <td class="align-left">${row.province}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if ($.fn.DataTable.isDataTable('#studyCenterTable')) $('#studyCenterTable').DataTable().clear().destroy();
+
+    const studyTable = $('#studyCenterTable').DataTable({
+      paging: false,
+      scrollY: '300px',
+      scrollCollapse: true,
+      scrollX: true,
+      autoWidth: false,
+      searching: true,
+      info: false,
+      ordering: false,
+      language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
+      initComplete: function() { this.api().columns.adjust(); }
+    });
+
+    setTimeout(() => { studyTable.columns.adjust().draw(false); }, 300);
+
+    const body = $('#studyCenterTable tbody');
+    body.off('click').on('click', 'tr', function() {
+      if (!provinceDataTable) return;
+      const isSelected = $(this).hasClass('selected-row');
+      body.find('tr').removeClass('selected-row');
+      if (!isSelected) {
+        $(this).addClass('selected-row');
+        const provinces = $(this).data('provinces');
+        provinceDataTable.column(0).search(`^(${provinces})$`, true, false).draw();
+      } else {
+        provinceDataTable.column(0).search('').draw();
+      }
+    });
+
+    $('.clickable-header').off('click').on('click', () => {
+      if (!provinceDataTable) return;
+      body.find('tr').removeClass('selected-row');
+      provinceDataTable.column(0).search('').draw();
+    });
+
+  } catch (e) { console.error(e); }
+}
+  
 </script>
 </body>
 </html>
