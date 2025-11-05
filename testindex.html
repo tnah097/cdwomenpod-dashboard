@@ -262,9 +262,10 @@
 
       white-space: nowrap;
 
-   
+      overflow: hidden;
 
-    
+      text-overflow: ellipsis;
+
     }
 
 
@@ -862,14 +863,17 @@ async function fetchData(){
 
 
     if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
-    provinceDataTable=$('#provinceTable').DataTable({
-      paging:false,
-      **scrollX:true,**       scrollY:'400px',
-      **scrollCollapse:true,**       **autoWidth: false,** // 💡 สำคัญ: เพิ่มบรรทัดนี้
-      order:[],
-      language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
-      initComplete:function(){this.api().columns.adjust();}
-    });
+
+    provinceDataTable=$('#provinceTable').DataTable({
+
+      paging:false,scrollX:true,scrollY:'400px',scrollCollapse:true,
+
+      order:[],language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
+
+      initComplete:function(){this.api().columns.adjust();}
+
+    });
+
 
 
     setTimeout(()=>{if(provinceDataTable&&provinceDataTable.columns)provinceDataTable.columns.adjust().draw(false);},200);
