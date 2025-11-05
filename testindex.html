@@ -202,19 +202,22 @@
 
 
 
-    .summary-table {
+   .summary-table {
+  table-layout: auto !important; /* ✅ ให้คอลัมน์ขยายอัตโนมัติตามข้อมูล */
+  width: 100% !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  color: black;
+}
 
-      width: 100% !important;
-
-      border-collapse: separate;
-
-      border-spacing: 0;
-
-      font-size: 0.85rem;
-
-      color: black;
-
-    }
+.summary-table th, 
+.summary-table td {
+  white-space: nowrap;   /* ✅ ไม่ตัดบรรทัดในเซลล์ */
+  overflow: visible;     /* ✅ ให้ข้อมูลแสดงเต็ม */
+  text-overflow: clip;   /* ✅ ไม่ใส่ ... */
+  max-width: none !important;
+}
 
 
 
@@ -254,12 +257,11 @@
 .dataTables_scrollHeadInner,
 .dataTables_scrollHeadInner table {
   width: 100% !important;
-  table-layout: fixed !important; /* ให้คำนวณความกว้างคอลัมน์แบบแน่นอน */
+ 
 }
 
 .dataTables_scrollBody table {
   width: 100% !important;
-  table-layout: fixed !important;
 }
 
 .dataTables_scrollBody {
