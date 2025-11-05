@@ -247,7 +247,13 @@
       min-height: 70px;
 
     }
+.summary-table, .summary-table th, .summary-table td {
+  box-sizing: border-box; 
+}
 
+.dataTables_scrollHeadInner {
+  overflow: visible !important;
+}
 
 
     .summary-table td {
@@ -862,23 +868,41 @@ async function fetchData(){
 
     if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
 
-    provinceDataTable=$('#provinceTable').DataTable({
-
-      paging:false,scrollX:true,scrollY:'400px',
-      scrollCollapse:true,
-      autoWidth:true,   
-      order:[],language:{search:"ค้นหา:",
-      zeroRecords:"ไม่พบข้อมูล"},
-      initComplete:function(){this.api().columns.adjust();}
-
-    });
-
-   setTimeout(() => {
-  if (provinceDataTable && provinceDataTable.columns) {
-    provinceDataTable.columns.adjust().draw(false);
+    provinceDataTable = $('#provinceTable').DataTable({
+  paging: false,
+  scrollX: true,
+  scrollY: '400px',
+  scrollCollapse: true,
+  autoWidth: true,
+  order: [],
+  language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
+  initComplete: function () {
+    // เบื้องต้นให้ DataTables ปรับคอลัมน์
+    try { this.api().columns.adjust(); } catch (e) {}
   }
-}, 400);
+});
 
+// หลัง init ให้รอ DOM/ภาพ/กราฟทั้งหมดเรียบร้อย แล้วปรับ header ให้เท่ากับ body
+// slight delay เพื่อให้ browser คำนวณ scrollbar/width เสร็จ
+setTimeout(() => {
+  try {
+    if (provinceDataTable && provinceDataTable.columns) {
+      provinceDataTable.columns.adjust().draw(false);
+    }
+
+    // ซิงค์ความกว้าง head-inner กับ body (ช่วยแก้กรณี miscalculation)
+    const headInner = document.querySelector('.dataTables_scrollHeadInner');
+    const bodyWrapper = document.querySelector('.dataTables_scrollBody');
+    if (headInner && bodyWrapper) {
+      // ใช้ offsetWidth ของ body (รวม scrollbar) เป็นตัวกำหนด
+      headInner.style.width = bodyWrapper.offsetWidth + 'px';
+      // บังคับให้ DataTables คำนวณอีกครั้ง
+      if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust().draw(false);
+    }
+  } catch (ex) {
+    console.error('Adjusting table widths error:', ex);
+  }
+}, 300); // ปรับเป็น 400ms ถ้าจำเป็น (เครื่องช้า)
 
     logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
 
