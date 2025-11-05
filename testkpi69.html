@@ -212,12 +212,17 @@
   border: 1px solid #f8bbd0;
   font-weight: bold;
   text-align: center;
-  vertical-align: middle;
   white-space: normal;
   word-wrap: break-word;
   line-height: 1.4;
-  min-width: 130px;             /* ✅ เพิ่มความกว้างขั้นต่ำ */
+  min-width: 130px;
+  height: 60px;                 /* ✅ เพิ่มความสูงมาตรฐาน */
+  display: flex;                /* ✅ จัด layout ด้วย flex */
+  align-items: center;          /* ✅ จัดแนวดิ่งให้อยู่กลาง */
+  justify-content: center;      /* ✅ จัดแนวนอนให้อยู่กลาง */
+  box-sizing: border-box;       /* ✅ ป้องกัน header สั่นเวลา scroll */
 }
+
 
 .summary-table td {
   padding: 8px 10px;
