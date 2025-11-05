@@ -198,38 +198,46 @@
 }
 
 .summary-table {
-  width: 95%;                /* ✅ ลดจาก 100% เป็น 95% เพื่อให้มี margin ด้านข้าง */
-  border-collapse: collapse; /* ✅ เปลี่ยนจาก separate */
-  font-size: 0.85rem;
+  width: 100%;                  /* ✅ ให้เต็ม container เพื่อให้ DataTable sync header ได้ */
+  border-collapse: collapse;
+  table-layout: auto;           /* ✅ ใช้ auto เพื่อให้ header/body align ตรง */
+  font-size: 0.9rem;
   color: black;
 }
 
-
-
-    /* ✅ ปรับหัวตารางให้สูง 2 แถว ตัดคำสวยงาม */
-
-    .summary-table th {
+.summary-table th {
   background-color: #f06292;
   color: black;
-  padding: 8px;
+  padding: 10px 12px;
   border: 1px solid #f8bbd0;
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
   white-space: normal;
   word-wrap: break-word;
+  line-height: 1.4;
+  min-width: 130px;             /* ✅ เพิ่มความกว้างขั้นต่ำ */
 }
 
 .summary-table td {
-  padding: 6px;
+  padding: 8px 10px;
   border: 1px solid #f8bbd0;
   color: black;
-  text-align: right;        /* ✅ ค่าตัวเลขชิดขวา */
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 130px;
 }
 
+.province-table-wrapper {
+  margin-top: 40px;
+  margin-left: 0;
+  text-align: left !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+}
 
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
 
@@ -318,6 +326,24 @@
 
 
     .dataTables_scrollHeadInner { width: 100% !important; }
+
+    /* ✅ Fix เส้นหัวตารางไม่ตรง */
+.dataTables_scrollHeadInner,
+.dataTables_scrollHeadInner table {
+  width: 100% !important;
+}
+
+.dataTables_scrollBody table {
+  width: 100% !important;
+}
+
+.dataTables_scrollBody {
+  overflow-y: hidden !important;  /* ป้องกัน scrollbar แนวตั้งซ้อน */
+}
+
+table.dataTable {
+  border-collapse: collapse !important;  /* ✅ ช่วยให้เส้นตรงกัน */
+}
 
   </style>
 
@@ -832,8 +858,10 @@ async function fetchData(){
   scrollX: true,
   scrollY: '400px',
   scrollCollapse: true,
-  autoWidth: false,                // ✅ ปิด auto width เพื่อให้คอลัมน์ไม่ยืด
+  autoWidth: true,              // ✅ เปิด autoWidth กลับมาเพื่อ sync header/body
+  ordering: false,              // ✅ ปิด sorting ช่วยให้คง alignment
   order: [],
+  fixedHeader: false,
   language: {
     search: "ค้นหา:",
     zeroRecords: "ไม่พบข้อมูล"
