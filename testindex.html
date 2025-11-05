@@ -256,52 +256,30 @@
 
 .dataTables_scrollHeadInner table,
 .dataTables_scrollBody table {
-  table-layout: fixed !important; /* คอลัมน์จับคู่แน่น */
-  width: 100% !important;
-  min-width: max-content;
+  table-layout: auto !important;
+  width: auto !important;
+  min-width: 100%;
 }
 
-/* ✅ ป้องกันการเบี้ยวจาก scroll bar */
+/* ✅ ป้องกัน scrollbar ดัน header */
 .dataTables_scrollHead {
   overflow: hidden !important;
 }
 
-/* ✅ จัดการ padding ให้เท่ากันทุกคอลัมน์ */
+/* ✅ ให้ header/body ใช้ padding และ border-box เดียวกัน */
 .dataTables_scrollHead th,
 .dataTables_scrollBody td {
-  padding: 8px 10px !important;
   box-sizing: border-box;
+  padding: 8px 10px !important;
 }
 
- 
-
-
-.dataTables_scrollBody table {
-  width: 100% !important;
-}
-
-.dataTables_scrollBody {
-  overflow-x: auto !important;
-  overflow-y: auto !important;
+/* ✅ ปรับให้ตารางแนบกันแบบเนียน */
+.summary-table {
+  border-collapse: collapse !important;
+  border-spacing: 0;
 }
 
 
-
-    .summary-table td {
-
-      padding: 6px;
-
-      border: 1px solid #f8bbd0;
-
-      color: black;
-
-      white-space: nowrap;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-    }
 
 
 
@@ -920,13 +898,13 @@ async function fetchData(){
 
 // หลัง init ให้รอ DOM/ภาพ/กราฟทั้งหมดเรียบร้อย แล้วปรับ header ให้เท่ากับ body
 // slight delay เพื่อให้ browser คำนวณ scrollbar/width เสร็จ
+    
 setTimeout(() => {
   try {
     if (provinceDataTable && provinceDataTable.columns) {
       provinceDataTable.columns.adjust().draw(false);
     }
 
-    // 🔧 ซิงค์ความกว้าง head กับ body แบบละเอียด
     const headInner = document.querySelector('.dataTables_scrollHeadInner');
     const headTable = headInner?.querySelector('table');
     const bodyTable = document.querySelector('.dataTables_scrollBody table');
@@ -939,7 +917,18 @@ setTimeout(() => {
     console.error('Adjusting table widths error:', ex);
   }
 }, 400);
-    logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
+
+// 🔧 Fix header alignment precisely (ใส่ตรงนี้เลย)
+const scrollBody = document.querySelector('.dataTables_scrollBody');
+const scrollHead = document.querySelector('.dataTables_scrollHead');
+if (scrollBody && scrollHead) {
+  scrollBody.addEventListener('scroll', () => {
+    scrollHead.scrollLeft = scrollBody.scrollLeft;
+  });
+}
+
+logEl.textContent = "✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
+
 
   }catch(e){console.error(e);document.getElementById("log").textContent="❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";}
 
