@@ -256,10 +256,25 @@
 
 .dataTables_scrollHeadInner table,
 .dataTables_scrollBody table {
-  min-width: max-content; /* 🔧 ป้องกันคอลัมน์ถูกบีบ */
+  table-layout: fixed !important; /* คอลัมน์จับคู่แน่น */
+  width: 100% !important;
+  min-width: max-content;
 }
+
+/* ✅ ป้องกันการเบี้ยวจาก scroll bar */
+.dataTables_scrollHead {
+  overflow: hidden !important;
+}
+
+/* ✅ จัดการ padding ให้เท่ากันทุกคอลัมน์ */
+.dataTables_scrollHead th,
+.dataTables_scrollBody td {
+  padding: 8px 10px !important;
+  box-sizing: border-box;
+}
+
  
-}
+
 
 .dataTables_scrollBody table {
   width: 100% !important;
@@ -896,6 +911,11 @@ async function fetchData(){
     // เบื้องต้นให้ DataTables ปรับคอลัมน์
     try { this.api().columns.adjust(); } catch (e) {}
   }
+});
+
+    $('.dataTables_scrollBody').on('scroll', function () {
+  const scrollLeft = $(this).scrollLeft();
+  $('.dataTables_scrollHead').scrollLeft(scrollLeft);
 });
 
 // หลัง init ให้รอ DOM/ภาพ/กราฟทั้งหมดเรียบร้อย แล้วปรับ header ให้เท่ากับ body
