@@ -69,11 +69,10 @@
        - หัวตารางล็อก (sticky) ขณะเลื่อนแนวตั้ง
        - ข้อความข้อมูลแสดงเป็น 1 แถว (nowrap)
        -------------------- */
-
-    .province-table-wrapper {
+.province-table-wrapper {
   overflow: auto;
   max-height: 520px;
-  position: relative; /* เพิ่มบรรทัดนี้ เพื่อให้ sticky ทำงานในกรอบนี้ */
+  position: relative;
 }
 
 .summary-table {
@@ -87,18 +86,18 @@
 }
 
 .summary-table thead th {
-  background-color: #f06292;
-  color: black;
-  padding: 10px 12px;
+  position: sticky;
+  top: 0; /* หัวค้างบนสุดของกรอบ */
+  z-index: 20; /* ให้สูงกว่า cell อื่น ๆ */
+  background-color: #f06292; /* สีหัว */
   border: 1px solid #f8bbd0;
+  padding: 10px 12px;
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
   white-space: normal;
-  position: sticky;
-  top: 0;
-  z-index: 10; /* เพิ่ม z-index ให้สูงขึ้นนิดนึง */
 }
+
 
     /* เนื้อหาเซลล์ — กึ่งกลางทั้งแนวนอนและแนวตั้ง, แสดงเต็ม 1 แถว */
     .summary-table tbody td {
@@ -392,9 +391,8 @@ async function fetchData(){
 
 provinceDataTable = $('#provinceTable').DataTable({
   paging:false,
-  autoWidth:false,      // ปิด autoWidth เพื่อให้เราควบคุมขนาดตาม table-layout
+  autoWidth:false,
   order:[],
-
   language:{ search:"ค้นหา:", zeroRecords:"ไม่พบข้อมูล" },
   initComplete:function(){
     const api=this.api();
