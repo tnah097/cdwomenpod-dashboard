@@ -130,7 +130,7 @@
 
     .card.orange { background-color: #ff9800; }
 
-    .card.pastel-pink { background-color: #FBC23F; }
+    .card.pastel-pink { background-color: #fce4ec; }
 
     .card.deep-pastel-pink { background-color: #f06292; }
 
@@ -202,22 +202,21 @@
 
 
 
-   .summary-table {
-  table-layout: auto !important; /* ✅ ให้คอลัมน์ขยายอัตโนมัติตามข้อมูล */
-  width: 100% !important;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.85rem;
-  color: black;
-}
+    .summary-table {
 
-.summary-table th, 
-.summary-table td {
-  white-space: nowrap;   /* ✅ ไม่ตัดบรรทัดในเซลล์ */
-  overflow: visible;     /* ✅ ให้ข้อมูลแสดงเต็ม */
-  text-overflow: clip;   /* ✅ ไม่ใส่ ... */
-  max-width: none !important;
-}
+      width: 100% !important;
+
+      border-collapse: separate;
+
+      border-spacing: 0;
+
+      font-size: 0.85rem;
+
+      color: black;
+
+      table-layout: fixed;
+
+    }
 
 
 
@@ -250,36 +249,23 @@
       min-height: 70px;
 
     }
-.summary-table, .summary-table th, .summary-table td {
-  box-sizing: border-box; 
-}
-
-.dataTables_scrollHeadInner table,
-.dataTables_scrollBody table {
-  table-layout: auto !important;
-  width: auto !important;
-  min-width: 100%;
-}
-
-/* ✅ ป้องกัน scrollbar ดัน header */
-.dataTables_scrollHead {
-  overflow: hidden !important;
-}
-
-/* ✅ ให้ header/body ใช้ padding และ border-box เดียวกัน */
-.dataTables_scrollHead th,
-.dataTables_scrollBody td {
-  box-sizing: border-box;
-  padding: 8px 10px !important;
-}
-
-/* ✅ ปรับให้ตารางแนบกันแบบเนียน */
-.summary-table {
-  border-collapse: collapse !important;
-  border-spacing: 0;
-}
 
 
+
+    .summary-table td {
+
+      padding: 6px;
+
+      border: 1px solid #f8bbd0;
+
+      color: black;
+
+      white-space: nowrap;
+
+   
+
+    
+    }
 
 
 
@@ -876,59 +862,21 @@ async function fetchData(){
 
 
     if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
+    provinceDataTable=$('#provinceTable').DataTable({
+      paging:false,
+      **scrollX:true,**       scrollY:'400px',
+      **scrollCollapse:true,**       **autoWidth: false,** // 💡 สำคัญ: เพิ่มบรรทัดนี้
+      order:[],
+      language:{search:"ค้นหา:",zeroRecords:"ไม่พบข้อมูล"},
+      initComplete:function(){this.api().columns.adjust();}
+    });
 
-    provinceDataTable = $('#provinceTable').DataTable({
-  paging: false,
-  scrollX: true,
-  scrollY: '400px',
-  scrollCollapse: true,
-  autoWidth: true,
-  order: [],
-  language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
-  initComplete: function () {
-    // เบื้องต้นให้ DataTables ปรับคอลัมน์
-    try { this.api().columns.adjust(); } catch (e) {}
-  }
-});
 
-    $('.dataTables_scrollBody').on('scroll', function () {
-  const scrollLeft = $(this).scrollLeft();
-  $('.dataTables_scrollHead').scrollLeft(scrollLeft);
-});
+    setTimeout(()=>{if(provinceDataTable&&provinceDataTable.columns)provinceDataTable.columns.adjust().draw(false);},200);
 
-// หลัง init ให้รอ DOM/ภาพ/กราฟทั้งหมดเรียบร้อย แล้วปรับ header ให้เท่ากับ body
-// slight delay เพื่อให้ browser คำนวณ scrollbar/width เสร็จ
-    
-setTimeout(() => {
-  try {
-    if (provinceDataTable && provinceDataTable.columns) {
-      provinceDataTable.columns.adjust().draw(false);
-    }
 
-    const headInner = document.querySelector('.dataTables_scrollHeadInner');
-    const headTable = headInner?.querySelector('table');
-    const bodyTable = document.querySelector('.dataTables_scrollBody table');
-    if (headTable && bodyTable) {
-      const bodyWidth = bodyTable.offsetWidth + 'px';
-      headTable.style.width = bodyWidth;
-      headInner.style.width = bodyWidth;
-    }
-  } catch (ex) {
-    console.error('Adjusting table widths error:', ex);
-  }
-}, 400);
 
-// 🔧 Fix header alignment precisely (ใส่ตรงนี้เลย)
-const scrollBody = document.querySelector('.dataTables_scrollBody');
-const scrollHead = document.querySelector('.dataTables_scrollHead');
-if (scrollBody && scrollHead) {
-  scrollBody.addEventListener('scroll', () => {
-    scrollHead.scrollLeft = scrollBody.scrollLeft;
-  });
-}
-
-logEl.textContent = "✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
-
+    logEl.textContent="✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
 
   }catch(e){console.error(e);document.getElementById("log").textContent="❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";}
 
