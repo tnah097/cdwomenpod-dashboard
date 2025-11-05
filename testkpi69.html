@@ -325,9 +325,9 @@ async function fetchData(){
     const pieChartData=data.topOverdue||[];
     const provinces=data.provinces||[];
 
-    // ✅ คืนข้อมูล "ศูนย์ศึกษา" กลับเข้าตาราง ถ้าไม่มีจากต้นทาง
-const hasStudyCenter = provinces.some(p => p.province && p.province.includes("ศูนย์ศึกษา"));
-if (!hasStudyCenter) {
+   
+
+    
   provinces.push({
     province: "ศูนย์ศึกษา",
     totalProjects: 5,
@@ -446,12 +446,7 @@ provinceDataTable = $('#provinceTable').DataTable({
   paging: false,
   autoWidth: false,
   order: [],
-  scrollX: true,
-  scrollY: '500px',
-  fixedHeader: {
-    header: true,
-    headerOffset: 0
-  },
+  fixedHeader: true,
   language: {
     search: "ค้นหา:",
     zeroRecords: "ไม่พบข้อมูล"
