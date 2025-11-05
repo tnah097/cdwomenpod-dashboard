@@ -1,183 +1,527 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>CD Women POD Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Sarabun', sans-serif;
-      margin: 0;
-      background: url('https://www.dga.or.th/wp-content/uploads/2025/06/20250612_074641550_iOS-1120x746.jpg') center/cover no-repeat;
-      background-attachment: fixed;
-      color: #000;
-    }
-    .dashboard-container {
-      padding: 40px;
-      background-color: rgba(255, 255, 255, 0.92);
-      width: 100%;
-      min-height: 100vh;
-      box-sizing: border-box;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-    .header-text h1 { margin: 0; font-size: 2.5rem; }
-    .header-text h2 { margin: 0; font-size: 1.5rem; }
-    .logo-container img { height: 60px; margin-left: 10px; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>รายงานผลกองทุนพัฒนาบทบาทสตรี — Mainpoints</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-main: #f8bbd0;
+    --pink-deep: #880e4f;
+    --pink-alt: rgba(255,182,193,0.12);
+    --table-border: #c97a9b;
+    --header-bg: rgba(255,255,255,0.95);
+  }
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 40px;
-    }
-    .card {
-      padding: 20px;
-      border-radius: 16px;
-      color: white;
-      font-weight: bold;
-      font-size: 1.2rem;
-      text-align: center;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Sarabun',sans-serif;
+    background: linear-gradient(to bottom right,#ffe6f0,#ffd1e6);
+    display:flex;
+    justify-content:center;
+    padding:20px;
+    min-height:100vh;
+  }
 
-    /* 🔹 สีพื้นหลังของแต่ละ card */
-    .pink { background-color: #e91e63; }
-    .orange { background-color: #ff9800; }
-    .deep-pastel-pink { background-color: #f06292; }
-    .red { background-color: #F26665; }       
-    .yellow { background-color: #FF9967; color: #fff; }
+  .container{
+    width:100%;
+    max-width:1400px;
+    background:var(--header-bg);
+    border-radius:20px;
+    padding:22px;
+    position:relative;
+    box-shadow:0 8px 25px rgba(233,30,99,0.15);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    min-height:70vh;
+  }
 
-    .dropdown {
-      margin-top: 10px;
-      padding: 6px;
-      border-radius: 6px;
-      border: none;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 1rem;
-      cursor: pointer;
-      width: 100%;
-    }
+  /* logos top-right */
+  .logos-top{
+    position:absolute;
+    right:22px;
+    top:18px;
+    display:flex;
+    gap:12px;
+  }
+  .logos-top img{height:56px; display:block;}
 
-    @media (max-width: 1024px) {
-      .header-text h1 { font-size: 2rem; }
-      .header-text h2 { font-size: 1.3rem; }
-    }
-    @media (max-width: 768px) {
-      .dashboard-container { padding: 20px; }
-      .header-text h1 { font-size: 1.8rem; }
-      .header-text h2 { font-size: 1.1rem; }
-      .logo-container img { height: 50px; }
-      .card { font-size: 1rem; padding: 16px; }
-    }
-    @media (max-width: 480px) {
-      .header { flex-direction: column; align-items: center; }
-      .header-text { text-align: center; }
-      .logo-container { display: flex; justify-content: center; flex-wrap: wrap; }
-      .logo-container img { margin: 5px; }
-      .card { font-size: 0.95rem; padding: 14px; }
-      .dropdown { font-size: 0.9rem; }
-    }
-  </style>
+  /* header (title + small info) sticky at top */
+  .header-block{
+    position:sticky;
+    top:0;
+    z-index:40;
+    background:transparent;
+    padding-top:6px;
+    padding-bottom:6px;
+  }
+  .title{
+    text-align:center;
+    margin:0;
+    color:var(--pink-deep);
+    font-size:28px;
+    font-weight:700;
+    line-height:1.05;
+  }
+  .subtitle{
+    text-align:center;
+    color:#880e4f;
+    margin-top:8px;
+    margin-bottom:4px;
+    font-weight:700;
+  }
+
+  /* report date at top-right (inside header-block) */
+  .report-meta{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:12px;
+    margin-top:6px;
+  }
+  .report-date{
+    color:var(--pink-deep);
+    font-weight:700;
+  }
+
+  /* toolbar: left home + right controls (dropdown, search, download) */
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-top:6px;
+    z-index:30;
+  }
+  .left-tools{display:flex; align-items:center; gap:8px;}
+  .left-tools button{
+    background:var(--pink-main);
+    color:var(--pink-deep);
+    border:0;
+    padding:8px 12px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex; gap:8px; align-items:center;
+  }
+  .left-tools button img{height:18px;}
+
+  .right-tools{display:flex; align-items:center; gap:8px;}
+  .right-tools select, .right-tools input, .right-tools button{
+    font-family:'Sarabun';
+    padding:7px 10px;
+    border-radius:8px;
+    border:1px solid #f48fb1;
+    font-size:0.95rem;
+  }
+  .right-tools input{width:220px;}
+  .download-btn{background:var(--pink-main); color:var(--pink-deep); border:0; cursor:pointer; font-weight:700;}
+
+  /* table area */
+  .table-wrapper{
+    background:white;
+    border-radius:12px;
+    overflow:auto;
+    box-shadow:0 4px 12px rgba(0,0,0,0.03);
+    padding:8px;
+    border:1px solid rgba(233,30,99,0.06);
+    flex:1;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.92rem;
+    min-width:1100px; /* keep layout */
+  }
+  th, td{
+    border:1px solid var(--table-border);
+    padding:8px 6px;
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  thead th{
+    background:var(--pink-main);
+    color:var(--pink-deep);
+    font-weight:700;
+  }
+
+  /* sticky for thead rows: row1 and row2 will be sticky with dynamic top */
+  thead tr th{ position:relative; } /* baseline */
+  thead tr.sticky-row-1 th{ position:sticky; top:0; z-index:30; }
+  thead tr.sticky-row-2 th{ position:sticky; z-index:29; }
+
+  tbody tr:nth-child(even) td{ background:var(--pink-alt); }
+  tbody tr:nth-child(odd) td{ background:rgba(255,192,203,0.05); }
+
+  .empty-row td{ text-align:center; color:#c62828; font-style:italic; padding:16px; }
+
+  /* small responsive */
+  @media (max-width:900px){
+    .right-tools input{width:140px;}
+    .title{font-size:22px;}
+  }
+</style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <div class="header">
-      <div class="header-text">
-        <h1><span style="color: navy;">CD</span><span style="color: deeppink;">Women</span><span style="color: red;">POD</span></h1>
-        <h2><span style="color: black;">ฐานข้อมูล</span> <span style="color: red;">ระดับประเทศ รายจังหวัด</span></h2>
-        <div style="color: navy; font-weight: bold; margin-top: 8px;">
-          <span style="font-size: 1.2rem;">ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ</span>
-        </div>
-      </div>
-      <div class="logo-container">
-        <img src="https://cddadg.cdd.go.th/wp-content/uploads/sites/101/2017/06/CDD-NEW-LOGO3.png" alt="CDD Logo" />
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+  <div class="container" id="container">
+    <div class="logos-top">
+      <!-- โลโก้ตามที่ขอ ใช้ url -->
+      <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo">
+    </div>
+
+    <div class="header-block">
+      <h1 class="title">รายงานผลระดับความสำเร็จการบริหารจัดการกองทุนพัฒนาบทบาทสตรี ประจำปีงบประมาณ พ.ศ.2569</h1>
+      <div class="subtitle">ข้อมูลระดับจังหวัดจากชีต "พ.ย.68"</div>
+      <div class="report-meta">
+        <div id="reportDate" class="report-date">กำลังโหลด...</div>
       </div>
     </div>
 
-    <div class="cards">
-      <div class="card pink" onclick="window.open('https://tnah097.github.io/cdwomenpod-dashboard/', '_blank')">
-        ตัวชี้วัด พจ. KPI68
+    <div class="toolbar">
+      <div class="left-tools">
+        <button id="btnHome" onclick="goHome()">
+          <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="home"> กลับสู่เมนูหลัก
+        </button>
       </div>
-      <div class="card orange" onclick="window.open('#', '_blank')">
-        รายงานเบิกจ่ายงบประมาณ พ.ศ. 2568
+
+      <div class="right-tools">
+        <label for="sheetSelect">เลือกเดือน:</label>
+        <select id="sheetSelect" onchange="onSheetChange(this.value)"></select>
+
+        <input id="searchInput" placeholder="ค้นหาข้อมูล... เช่น ชื่อจังหวัด" oninput="applyFilter()" />
+
+        <button id="downloadBtn" class="download-btn" onclick="downloadExcel()">📥 ดาวน์โหลด Excel</button>
       </div>
-      <div class="card deep-pastel-pink" onclick="window.open('#', '_blank')">
-        การประเมินของกองทุนพัฒนาบทบาทสตรี ประจำปีบัญชี 2568
-      </div>
-      <div class="card red">
-        จำนวนการสมัครสมาชิกกองทุนพัฒนาบทบาทสตรี
-        <br/>
-        <select class="dropdown" onchange="openMemberLink(this.value)">
-          <option value="">-- เลือกประเภท --</option>
-          <option value="person">บุคคลธรรมดา</option>
-          <option value="organization">องค์กรสตรี</option>
-        </select>
-      </div>
-      <div class="card yellow">
-        ทะเบียนคุมการรับ-จ่ายเงินกองทุนพัฒนาบทบาทสตรี
-        <br/>
-        <select class="dropdown" onchange="openERPLink(this.value)">
-          <option value="">-- เลือกรายการ --</option>
-          <option value="deposit">ทะเบียนคุมเงินฝากคลัง</option>
-          <option value="report">รายงานการรับ-จ่ายเงิน</option>
-          <optgroup label="ทะเบียนคุมเงินฝากธนาคาร">
-            <option value="ktb">ธนาคารกรุงไทย</option>
-            <option value="gsb">ธนาคารออมสิน</option>
-            <option value="baac">ธนาคารธกส.</option>
-          </optgroup>
-          <option value="allbanks">ทะเบียนรวม 3 ธนาคาร</option>
-        </select>
-      </div>
-<div class="card" style="background-color: #CC33FF;" onclick="window.open('#', '_blank')">
-    Q&A
-</div>
-<div class="card" style="background-color: #FF3366;">
-    โปรแกรมการคำนวณดอกเบี้ยผิดนัด
-    <br/>
-    <select class="dropdown" onchange="openCalcLink(this.value)">
-        <option value="">-- เลือกประเภท --</option>
-        <option value="missed_payment">กรณีผิดนัดในงวด</option>
-        <option value="incomplete_payment">กรณีชำระไม่ครบงวด</option>
-    </select>
-</div>
+    </div>
+
+    <div class="table-wrapper" id="tableWrapper">
+      <table id="mainTable" aria-describedby="reportDate">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody">
+          <tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
 <script>
-    function openCalcLink(option) {
-      if (option === "missed_payment") {
-        window.open('https://tnah097.github.io/cdwomenpod-dashboard/missed_payment.html', '_blank');
-      } else if (option === "incomplete_payment") {
-        window.open('https://tnah097.github.io/cdwomenpod-dashboard/incomplete_payment.html', '_blank');
+/*
+  mainpoints.html
+  - เก็บ API_URL ของ Apps Script ที่ทำหน้าที่อ่าน Google Sheet และส่ง JSON
+  - พยายามดึงชื่อชีตจาก endpoint (?listSheets=true) ถ้ามี หากไม่มีก็ fallback ไปใช้ DEFAULT_SHEET
+  - ค่าที่ต้องตั้งเอง: API_URL (Apps Script web app URL) และ DEFAULT_SHEET
+*/
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbxneTvdE1LnzOLqjiWyb0JdmNv35nwN-wzPKHDN26ZYYeNs2fdtosIUb3_5RQMJDZYQ_Q/exec';
+const DEFAULT_SHEET = 'พ.ย.68';
+
+// ตำแหน่งชีตใน sheet data (0-based)
+// ในไฟล์ชีตของคุณ แถวหัวรายงานคือ 1-2 (index 0,1 ใน data)
+// แถว header ของตารางคือ แถวที่ 4-5 ใน sheet → 0-based index = 3 และ 4
+const START_HEADER_ROW_INDEX = 3; // row 4
+const END_HEADER_ROW_INDEX = 4;   // row 5
+const START_BODY_ROW_INDEX = 5;   // row 6 เป็นต้นไป
+
+let currentSheet = DEFAULT_SHEET;
+let lastFetched = null;
+let currentData = null;
+let currentMerged = null;
+
+/* --- helper: fetch sheet list (try to call endpoint '?listSheets=true') --- */
+async function loadSheetList() {
+  try {
+    const res = await fetch(API_URL + '?listSheets=true');
+    if (!res.ok) throw new Error('no sheet list');
+    const json = await res.json();
+    // expect response like { sheets: ['พ.ย.68','ธ.ค.68', ...] } or something similar
+    if (Array.isArray(json.sheets) && json.sheets.length) return json.sheets;
+    // if server returns sheetName only, fallback
+    if (json.sheetName) return [json.sheetName];
+    return [DEFAULT_SHEET];
+  } catch(e){
+    // fallback: try to read default (single option)
+    return [DEFAULT_SHEET];
+  }
+}
+
+/* --- build dropdown of sheets --- */
+async function populateSheetSelect(){
+  const select = document.getElementById('sheetSelect');
+  select.innerHTML = '';
+  const sheets = await loadSheetList();
+  sheets.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    select.appendChild(opt);
+  });
+  // set current if exists
+  if (sheets.includes(DEFAULT_SHEET)) {
+    select.value = DEFAULT_SHEET;
+    currentSheet = DEFAULT_SHEET;
+  } else {
+    select.selectedIndex = 0;
+    currentSheet = select.value;
+  }
+}
+
+/* --- fetch data for a sheet --- */
+async function fetchSheetData(sheetName){
+  try {
+    const url = `${API_URL}?sheetName=${encodeURIComponent(sheetName)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('ไม่สามารถเชื่อมต่อ Apps Script');
+    const json = await res.json();
+    if (json.error) throw new Error(json.error || 'Error from server');
+    // expect { sheetName, data: [...], merged: [...] }
+    return json;
+  } catch (err) {
+    throw err;
+  }
+}
+
+/* --- apply merged cells to a 2D array region (header building) --- */
+/*
+  merged items expected: { row: <0-based>, col: <0-based>, height:, width:, value: }
+  We will pass headerData (slice) and merged filtered and adjusted (row offset subtracted)
+*/
+function buildHeaderHtml(headerData, mergedInfo){
+  if(!headerData || !headerData.length) return '<tr><th>ไม่มีหัวตาราง</th></tr>';
+  const rows = headerData.length;
+  const cols = Math.max(...headerData.map(r => r.length));
+  // prepare hidden map
+  const hidden = Array.from({length:rows}, () => Array(cols).fill(false));
+  let html = '';
+  for(let r=0;r<rows;r++){
+    html += '<tr' + (r===0 ? ' class="sticky-row-1"':'') + (r===1 ? ' class="sticky-row-2"':'') + '>';
+    for(let c=0;c<cols;c++){
+      if(hidden[r][c]) continue;
+      // find merge at this header local position
+      const merge = mergedInfo.find(m => m.row === r && m.col === c);
+      let attrs = '';
+      if(merge && (merge.height>1 || merge.width>1)){
+        attrs += ` rowspan="${merge.height}" colspan="${merge.width}"`;
+        for(let i=0;i<merge.height;i++){
+          for(let j=0;j<merge.width;j++){
+            if(i===0 && j===0) continue;
+            if(r+i < rows && c+j < cols) hidden[r+i][c+j] = true;
+          }
+        }
       }
+      const content = (headerData[r] && headerData[r][c] !== undefined && headerData[r][c] !== null) ? headerData[r][c] : '';
+      html += `<th ${attrs}>${escapeHtml(String(content))}</th>`;
     }
+    html += '</tr>';
+  }
+  return html;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* --- render body rows (no merged processing for body, but we honor full columns) --- */
+function buildBodyHtml(bodyData){
+  if(!bodyData || !bodyData.length) return '<tr class="empty-row"><td colspan="30">ไม่มีข้อมูล</td></tr>';
+  let html = '';
+  const cols = Math.max(...bodyData.map(r=>r.length));
+  bodyData.forEach((row, rIdx) => {
+    html += '<tr>';
+    for(let c=0;c<cols;c++){
+      const v = row[c] !== undefined && row[c] !== null ? row[c] : '';
+      // format numbers
+      const cellHtml = (typeof v === 'number') ? numberWithCommas(v) : escapeHtml(String(v));
+      html += `<td>${cellHtml}</td>`;
+    }
+    html += '</tr>';
+  });
+  return html;
+}
+function numberWithCommas(x){
+  return x.toLocaleString('th-TH');
+}
+
+/* --- main refresh function --- */
+async function loadAndRenderSheet(sheetName){
+  const headEl = document.getElementById('tableHead');
+  const bodyEl = document.getElementById('tableBody');
+  const reportDateEl = document.getElementById('reportDate');
+
+  headEl.innerHTML = '';
+  bodyEl.innerHTML = '<tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>';
+  try {
+    const json = await fetchSheetData(sheetName);
+    const allData = json.data || [];
+    const merged = json.merged || [];
+    currentData = allData;
+    currentMerged = merged;
+    lastFetched = new Date();
+
+    // headerPart: use rows 0..START_HEADER_ROW_INDEX-1 for info above table
+    // In your sheet the "report title lines" are typically rows 1-3, but we'll read row 0-2 (if exist)
+    const reportInfoRows = allData.slice(0, START_HEADER_ROW_INDEX);
+    // build small header text from reportInfoRows (concatenate each row's non-empty cells)
+    const headerText = reportInfoRows.map(r => r.filter(c => c !== null && c !== '').join(' ')).filter(s => s).join('<br>');
+    if(headerText) {
+      // replace subtitle line center
+      const subtitle = document.querySelector('.subtitle');
+      if(subtitle) subtitle.innerHTML = headerText;
+    }
+
+    // report date: look for "ข้อมูล ณ วันที่" in first 6 rows
+    let foundDate = '';
+    for(let i=0;i<Math.min(6, allData.length); i++){
+      const row = allData[i];
+      for(const cell of row){
+        if(typeof cell === 'string' && cell.includes('ข้อมูล ณ วันที่')){
+          foundDate = cell.trim();
+          break;
+        }
+      }
+      if(foundDate) break;
+    }
+    reportDateEl.textContent = foundDate || '';
+
+    // headerData slice (rows 4-5 in sheet -> indices START_HEADER_ROW_INDEX .. END_HEADER_ROW_INDEX)
+    const headerData = allData.slice(START_HEADER_ROW_INDEX, END_HEADER_ROW_INDEX + 1);
+    // adjust merged info relevant to header region
+    const headerMerged = merged
+      .filter(m => m.row >= START_HEADER_ROW_INDEX && m.row <= END_HEADER_ROW_INDEX)
+      .map(m => ({...m, row: m.row - START_HEADER_ROW_INDEX, col: m.col}));
+
+    headEl.innerHTML = buildHeaderHtml(headerData, headerMerged);
+
+    // body data
+    const bodyData = allData.slice(START_BODY_ROW_INDEX);
+    bodyEl.innerHTML = buildBodyHtml(bodyData);
+
+    // after rendering, compute sticky offsets dynamically:
+    applyStickyOffsets();
+
+    // store current sheet name
+    currentSheet = sheetName;
+
+  } catch(err){
+    headEl.innerHTML = '';
+    bodyEl.innerHTML = `<tr class="empty-row"><td colspan="30">❌ ${escapeHtml(err.message || String(err))}</td></tr>`;
+    document.getElementById('reportDate').textContent = '';
+    console.error(err);
+  }
+}
+
+/* --- compute header heights and set CSS top for sticky header rows --- */
+function applyStickyOffsets(){
+  // header-block height
+  const headerBlock = document.querySelector('.header-block');
+  const headerBlockRect = headerBlock ? headerBlock.getBoundingClientRect() : {height:0};
+  const headerHeight = headerBlock ? headerBlock.offsetHeight : 0;
+
+  // find first two rows of thead
+  const thead = document.getElementById('tableHead');
+  if(!thead) return;
+  const rows = thead.querySelectorAll('tr');
+  let row1 = rows[0];
+  let row2 = rows[1];
+
+  // set top offsets
+  if(row1){
+    // make sure class sticky-row-1 present
+    row1.classList.add('sticky-row-1');
+    // set style top = headerBlock height (so header-block stays above)
+    row1.style.top = headerBlock.offsetHeight + 'px';
+  }
+  if(row2){
+    row2.classList.add('sticky-row-2');
+    // top for second header should be headerBlock + row1 height
+    const r1h = row1 ? row1.getBoundingClientRect().height : 0;
+    row2.style.top = (headerBlock.offsetHeight + r1h) + 'px';
+  }
+
+  // also ensure table wrapper has appropriate z-index so header-block doesn't hide content
+  const tableWrapper = document.getElementById('tableWrapper');
+  if(tableWrapper) tableWrapper.style.zIndex = 10;
+}
+
+/* --- filter/search --- */
+function applyFilter(){
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const bodyRows = document.querySelectorAll('#tableBody tr');
+  bodyRows.forEach(tr => {
+    const text = tr.innerText.toLowerCase();
+    tr.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+/* --- change sheet handler --- */
+function onSheetChange(sheetName){
+  if(!sheetName) return;
+  loadAndRenderSheet(sheetName);
+}
+
+/* --- go home (user can change target as needed) --- */
+function goHome(){
+  // placeholder: if you have a menu page, put path here
+  // window.location.href = 'Menu.html';
+  alert('กลับสู่เมนูหลัก (ต้องตั้งค่า URL หน้าเมนูจริงถ้าต้องการ)');
+}
+
+/* --- download Excel using SheetJS (minimal styling for headers) --- */
+async function downloadExcel(){
+  try{
+    if(!currentData || !currentData.length){
+      alert('ไม่มีข้อมูลให้ดาวน์โหลด');
+      return;
+    }
+    // load SheetJS if not loaded
+    if(typeof XLSX === 'undefined'){
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    }
+    const ws = XLSX.utils.aoa_to_sheet(currentData);
+    // apply simple style to first few header rows (note: SheetJS community styling limited)
+    // append to workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, currentSheet || 'report');
+    const fileName = `ผลการดำเนินงาน_${(currentSheet||'report')}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  } catch(e){
+    console.error(e);
+    alert('เกิดข้อผิดพลาดขณะดาวน์โหลด: ' + e.message);
+  }
+}
+function loadScript(src){
+  return new Promise((resolve, reject)=>{
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = ()=>resolve();
+    s.onerror = (e)=>reject(e);
+    document.head.appendChild(s);
+  });
+}
+
+/* --- util: set up page on load --- */
+async function init(){
+  await populateSheetSelect();
+  // render default sheet
+  const select = document.getElementById('sheetSelect');
+  const initialSheet = select.value || DEFAULT_SHEET;
+  // set subtitle initial
+  const subtitle = document.querySelector('.subtitle');
+  if(subtitle) subtitle.textContent = `ข้อมูลระดับจังหวัดจากชีต "${initialSheet}"`;
+  await loadAndRenderSheet(initialSheet);
+
+  // watch resize to recompute sticky offsets
+  window.addEventListener('resize', applyStickyOffsets);
+  // ensure offsets after fonts load
+  setTimeout(applyStickyOffsets, 400);
+}
+
+/* --- helper: escape and number formatting already above --- */
+document.addEventListener('DOMContentLoaded', init);
 </script>
-
-  <script>
-    function openMemberLink(type) {
-      if (type === "person") {
-        window.open("#บุคคล", "_blank");
-      } else if (type === "organization") {
-        window.open("#องค์กรสตรี", "_blank");
-      }
-    }
-
-    function openERPLink(option) {
-      const baseUrl = "https://tnah097.github.io/cdwomenpod-dashboard/accounting.html";
-      if(option){
-        window.open(baseUrl + "#" + option, "_blank");
-      }
-    }
-  </script>
 </body>
 </html>
