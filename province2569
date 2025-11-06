@@ -120,7 +120,7 @@
     <script>
         // ================== Config ==================
         const PDPA_ENABLED = true;
-        const API_URL = "https://script.google.com/macros/s/AKfycbzlW-Yp6HBkQ8mc-3BEO9tgGVH-H7-6pPhKTm7_ZSligN4bco3WUjrQ7Fi9ZlOeXoiGEg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw5j-mTnxolrQDz9-3pp1WK_48Qa_3Mg9EWop5JbGS3Fe_B-WybkcWDSIz6AB-JZ3zruQ/exec";
         
         let allData = [], dataTable;
 
