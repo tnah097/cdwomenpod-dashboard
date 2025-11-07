@@ -234,6 +234,8 @@
 
 
 
+
+
     /* Table */
 
     .province-table-wrapper {
@@ -258,18 +260,12 @@
   border: 1px solid #f8bbd0;
   font-weight: bold;
   text-align: center;
-  vertical-align: middle; /* ✅ เพิ่มบรรทัดนี้เพื่อให้ข้อความอยู่ตรงกลางแนวดิ่ง */
+  vertical-align: middle;
   white-space: normal;
   word-wrap: break-word;
   line-height: 1.4;
-  min-width: 130px;
-display: flex;
-align-items: center;    /* แนวดิ่ง */
-justify-content: center; /* แนวนอน */
-text-align: center;      /* เพื่อกัน fallback */
-  
+  min-width: 130px;             /* ✅ เพิ่มความกว้างขั้นต่ำ */
 }
-
 
 .summary-table td {
   padding: 8px 10px;
@@ -406,20 +402,18 @@ table.dataTable {
 <body>
 
   <div class="dashboard-container scale-control">
-    
-    
-      
-      <!-- ✅ Toolbar -->
-  <div class="toolbar">
-    <div class="left-tools">
-      <button onclick="window.location.href='Menu.html'">
-        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="home"> กลับสู่เมนูหลัก
-      </button>
-    </div>
-    
-    
-    
-    
+
+
+<!-- ✅ Toolbar -->
+<div class="toolbar">
+  <div class="left-tools">
+    <button onclick="window.location.href='Menu.html'">
+      <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="home"> กลับสู่เมนูหลัก
+    </button>
+  </div>
+</div>
+
+
 
     <div class="header">
 
