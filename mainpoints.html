@@ -212,10 +212,15 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 const API_URL = 'https://script.google.com/macros/s/AKfycbzhjOObglsXQUBoB-8_w466P4lm0LLU89dUKmKr25UudxBAwy_HU7ZPyef1IMXltcQm4g/exec'; // <-- แก้ตรงนี้ก่อนใช้งาน
 
 let currentSheet = '';
-const START_HEADER_ROW = 3; // แถวบนสุดสำหรับ header (0-based index: 0=แถว1 sheet) -> ปรับถ้าจำเป็น
-const END_HEADER_ROW = 5;   // แถวสุดท้ายของ header (รวม)
-const START_BODY_ROW = 6;   // แถวเริ่มข้อมูลจริง (1-based เป็นแถว 7 sheet) -> ปรับถ้าจำเป็น
+// แถวบนสุดของ header จริง (0-based)
+const START_HEADER_ROW = 4;
 
+// แถวสุดท้ายของ header
+const END_HEADER_ROW = 5;
+
+// แถวเริ่มต้นข้อมูลจริง
+const START_BODY_ROW = 6;
+  
 // โหลดรายชื่อชีตอัตโนมัติ
 async function loadSheetList() {
   try {
