@@ -139,7 +139,7 @@ thead th {
 }
 thead tr:nth-child(1) th { position: sticky; top: 0; }
 thead tr:nth-child(2) th { position: sticky; top: 32px; }
-thead tr:nth-child(3) th { position: sticky; top: 64px; }
+
   
 thead tr:last-child th { border-bottom: 2.5px solid #880e4f; }
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
@@ -213,14 +213,9 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 const API_URL = 'https://script.google.com/macros/s/AKfycbwlH8Smpn_snzR7K8RTURfMxNpg7l-ucuRGwDeMRKl-zvRElclqX6ywt_8ZqkIbXxGO/exec'; // <-- แก้ตรงนี้ก่อนใช้งาน
 
 let currentSheet = '';
-// แถวบนสุดของ header จริง (0-based)
-const START_HEADER_ROW = 4;
-
-// แถวสุดท้ายของ header
-const END_HEADER_ROW = 5;
-
-// แถวเริ่มต้นข้อมูลจริง
-const START_BODY_ROW = 6;
+const START_HEADER_ROW = 3;  // Header 1
+const END_HEADER_ROW = 4;    // Header 2
+const START_BODY_ROW = 5;    // Data row
   
 // โหลดรายชื่อชีตอัตโนมัติ
 async function loadSheetList() {
@@ -280,9 +275,14 @@ async function loadSheet(sheetName) {
 
     // เตรียม header table (แถว START_HEADER_ROW .. END_HEADER_ROW)
     const headerRows = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
-    const headerMerged = merged
-      .filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
-      .map(m => ({ ...m, row: m.row - START_HEADER_ROW }));
+   const headerMerged = merged.filter(m =>
+  m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW
+).map(m => ({
+  row: m.row - START_HEADER_ROW,
+  col: m.col,
+  width: m.width,
+  height: m.height
+}));
 
     thead.innerHTML = applyMergedCells(headerRows, headerMerged, true);
 
