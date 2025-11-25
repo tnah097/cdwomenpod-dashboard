@@ -687,7 +687,7 @@ function settlePayment() {
   }
   
   // อัปเดต lastPaymentDate สำหรับงวดที่รับชำระ
-  if(historyEntry.breakdown.length>0){
+ if(historyEntry.breakdown.length>0){
     paymentHistory.push(historyEntry);
     historyEntry.breakdown.map(item=>item.sequence).filter((value, index, self) => self.indexOf(value) === index).forEach(seq => {
       const installment = allInstallments.find(i=>i.sequence===seq);
@@ -713,7 +713,7 @@ function settlePayment() {
         .saveSettlementData(dataToSave);
     
     // สำหรับการทดสอบแบบ Local (ไม่ต้องใช้ GAS)
-    // renderAll(); // ลบหรือ Comment Out บรรทัดนี้
+    // renderAll(); // ** ต้อง Comment Out หรือลบออกไป **
   }
 
   document.getElementById('paymentAmount').value='';
