@@ -1,170 +1,141 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เข้าสู่ระบบ | CDD Women Fund</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CDD Women Fund Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Sarabun', sans-serif;
-        background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5, #e1bee7);
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+  body {
+    margin: 0;
+    font-family: 'Sarabun', sans-serif;
+    background: linear-gradient(to bottom right, #ffe6f0, #f8bbd0, #f3e5f5);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .login-box {
-        width: 380px;
-        background: rgba(255,255,255,0.92);
-        border-radius: 16px;
-        box-shadow: 0 6px 30px rgba(0,0,0,0.15);
-        overflow: hidden;
-        border: 2px solid #f8bbd0;
-    }
+  .login-box {
+    width: 360px;
+    padding: 30px;
+    background: white;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: fadeIn 0.6s ease-in-out;
+  }
 
-    .login-header {
-        background-color: #d8c2d5; /* พาสเทลม่วงชมพูอ่อน */
-        padding: 18px;
-        text-align: center;
-        font-size: 1.4rem;
-        font-weight: bold;
-        color: white;
-        letter-spacing: 1px;
-    }
+  .logo-box img {
+    width: 90px;
+    margin: 5px 15px;
+  }
 
-    .logo-area {
-        text-align: center;
-        padding-top: 18px;
-    }
-    .logo-area img {
-        width: 80px;
-        margin: 5px 12px;
-    }
+  h2 {
+    margin-top: 10px;
+    color: #d63384;
+    font-size: 1.6rem;
+    font-weight: bold;
+  }
 
-    .login-body {
-        padding: 25px 30px;
-    }
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 10px;
+    border: 1px solid #f48fb1;
+    background: #fff5f8;
+    font-size: 1rem;
+    outline: none;
+  }
 
-    input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 12px;
-        border: 1px solid #f48fb1;
-        border-radius: 10px;
-        font-size: 1rem;
-        background: #fff;
-    }
+  input:focus {
+    border-color: #d81b60;
+  }
 
-    input:focus {
-        border-color: #ec407a;
-        outline: none;
-    }
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 16px;
+    background: #ec407a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
 
-    .remember-box {
-        display: flex;
-        align-items: center;
-        margin-top: 15px;
-        font-size: 0.9rem;
-        color: #444;
-    }
+  button:hover {
+    background: #d81b60;
+  }
 
-    .remember-box input {
-        width: 16px;
-        margin-right: 8px;
-    }
+  .error {
+    margin-top: 12px;
+    color: red;
+    font-weight: bold;
+  }
 
-    button {
-        width: 100%;
-        margin-top: 20px;
-        background-color: #ec407a;
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 10px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.25s;
-    }
-
-    button:hover {
-        background-color: #d81b60;
-    }
-
-    .error {
-        margin-top: 15px;
-        color: red;
-        text-align: center;
-        font-weight: bold;
-    }
-
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px);}
+    to   { opacity: 1; transform: translateY(0);}
+  }
 </style>
+
 </head>
 
 <body>
 
 <div class="login-box">
+  
+  <div class="logo-box">
+    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" />
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" />
+  </div>
 
-    <div class="login-header">SIGN IN NOW</div>
+  <h2>เข้าสู่ระบบจังหวัด</h2>
 
-    <div class="logo-area">
-        <img src="https://i.postimg.cc/507bjy9Z/cdd.png">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s">
-    </div>
+  <input type="text" id="username" placeholder="รหัสจังหวัด (Username)" />
+  <input type="password" id="password" placeholder="รหัสผ่าน (Password)" />
 
-    <div class="login-body">
+  <button onclick="login()">เข้าสู่ระบบ</button>
 
-        <input type="text" id="username" placeholder="User ID">
-        <input type="password" id="password" placeholder="Password">
+  <div id="error" class="error"></div>
 
-        <div class="remember-box">
-            <input type="checkbox" id="remember">
-            <label for="remember">Remember me</label>
-        </div>
-
-        <button onclick="login()">SIGN IN</button>
-
-        <div id="errorBox" class="error"></div>
-
-    </div>
 </div>
 
 <script>
-const LOGIN_API = "https://script.google.com/macros/s/AKfycbz7p42v9kmXv3ypoqU1dmPLZFDgC_yDeXRN6jHw0zIJ70QAIALDVeX5CXtKMIlIW0Jdaw/exec";
-
-async function login() {
+  async function login() {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
-    const errorBox = document.getElementById("errorBox");
+    const errorBox = document.getElementById("error");
 
-    errorBox.textContent = "";
-
-    if (!user || !pass) {
-        errorBox.textContent = "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน";
-        return;
+    if (user === "" || pass === "") {
+      errorBox.textContent = "กรุณากรอกข้อมูลให้ครบถ้วน";
+      return;
     }
+
+    errorBox.textContent = "กำลังตรวจสอบ...";
+
+    // ⭐ ใช้ Web App URL ของตัวเอง
+    const API = "https://script.google.com/macros/s/AKfycbzSLV23wpE_R3_AcDC5shyyZ_dGvmz_ywa1xl68IHN_yNzDG1krFoQHlnjF5Zn9BTLMeA/exec";
 
     try {
-        const res = await fetch(`${LOGIN_API}?action=login&username=${user}&password=${pass}`);
-        const json = await res.json();
+      const res = await fetch(`${API}?action=login&username=${user}&password=${pass}`);
+      const data = await res.json();
 
-        if (json.status === "success") {
-            const province = json.province;
-            window.location.href = `province2569.html?province=${encodeURIComponent(province)}`;
-        } else {
-            errorBox.textContent = "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
-        }
+      if (data.status === "success") {
+        // ⭐ Redirect ไปหน้า province
+        window.location.href = `province2569.html?province=${encodeURIComponent(data.province)}`;
+      } else {
+        errorBox.textContent = "❌ Username หรือ Password ไม่ถูกต้อง";
+      }
 
-    } catch (err) {
-        errorBox.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
-        console.error(err);
+    } catch (e) {
+      errorBox.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
     }
-}
+  }
 </script>
 
 </body>
