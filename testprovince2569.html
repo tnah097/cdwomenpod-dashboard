@@ -91,96 +91,154 @@
     </table>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyCOP6KoPdNybrCrSGFS-7gbvU3CEuIlsA9Yi07XfmqHb7uR1wN9_YGEMgt6cAUUm2v/exec";
-    let allData = [], dataTable;
+ <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbwwxjRdiPSd7SOuZAOO5OmWi5NHCBMOf3d1923ik9QBY7iiZ0gJl6ppcQQUHGrxuLRTAg/exec";
+  let allData = [], dataTable;
 
-    const formatNumber = v => isNaN(parseFloat(v)) ? "-" : parseFloat(v).toLocaleString("th-TH", { minimumFractionDigits: 2 });
-    const formatPercent = v => isNaN(parseFloat(v)) ? "-" : `${parseFloat(v).toFixed(2)}%`;
+  const formatNumber = v => isNaN(parseFloat(v)) ? "-" : parseFloat(v).toLocaleString("th-TH", { minimumFractionDigits: 2 });
+  const formatPercent = v => isNaN(parseFloat(v)) ? "-" : `${parseFloat(v).toFixed(2)}%`;
+  const formatDate = v => (!v || v === "-") ? "-" : new Date(v).toLocaleDateString("th-TH");
 
-    $(document).ready(async function () {
-      const province = new URLSearchParams(window.location.search).get("province");
-      $("#province-title").text(province || "-");
+  $(document).ready(async function () {
+    const province = new URLSearchParams(window.location.search).get("province");
+    $("#province-title").text(province || "-");
 
-      $("#btnResetFilter").on("click", () => { $("#filter-section select").val("").trigger("change"); });
-      $("#btnDownload").on("click", downloadData);
+    $("#btnResetFilter").on("click", () => { $("#filter-section select").val("").trigger("change"); });
+    $("#btnDownload").on("click", downloadData);
 
-      await fetchData(province);
+    await fetchData(province);
+  });
+
+  async function fetchData(province) {
+    try {
+      const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+
+      allData = json.data || [];
+      updateSummaryCards(json.summary);
+      
+      // 🔹 เรียงข้อมูลตามคอลัมน์ "ลำดับ" ให้ตรงกับ Google Sheet
+      allData = sortByOrderColumn(allData);
+
+      renderTable(allData);
+      setupFilters(allData);
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด: " + err.message);
+    }
+  }
+
+  // ฟังก์ชันจัดเรียงตามคอลัมน์ "ลำดับ"
+  function sortByOrderColumn(data) {
+    if (!data || data.length === 0) return data;
+    if (!("ลำดับ" in data[0])) return data;
+
+    // clone array กัน side-effect
+    const cloned = [...data];
+    cloned.sort((a, b) => Number(a["ลำดับ"] || 0) - Number(b["ลำดับ"] || 0));
+    return cloned;
+  }
+
+  function renderTable(data) {
+    if (!data || data.length === 0) {
+      $("#detailsTable thead").empty();
+      $("#detailsTable tbody").empty();
+      return;
+    }
+
+    const headers = Object.keys(data[0] || {});
+    const thead = $("#detailsTable thead").empty()
+      .append(`<tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>`);
+    const tbody = $("#detailsTable tbody").empty();
+
+    data.forEach(row => {
+      tbody.append(
+        `<tr>${headers.map(h => `<td>${formatCell(h, row[h])}</td>`).join("")}</tr>`
+      );
     });
 
-    async function fetchData(province) {
-      try {
-        const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
-        const json = await res.json();
-        if (json.error) throw new Error(json.error);
+    if ($.fn.DataTable.isDataTable("#detailsTable")) {
+      $("#detailsTable").DataTable().destroy();
+    }
 
-        // ✅ ใช้ overview ที่มาจากชีต KPI69 แถว B2–U2
-        updateSummaryCards(json.overview);
-
-        // ✅ ตารางแสดงข้อมูลทั้งหมด
-        allData = json.data || [];
-        renderTable(allData);
-        setupFilters(allData);
-      } catch (err) {
-        alert("เกิดข้อผิดพลาด: " + err.message);
+    dataTable = $("#detailsTable").DataTable({
+      scrollX: true,
+      pageLength: 10,
+      order: [[0, "asc"]], // 🔹 บังคับเรียงตามคอลัมน์แรก (ลำดับ)
+      language: {
+        search: "ค้นหา:",
+        info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
       }
+    });
+  }
+
+  // แยก format ตามหัวคอลัมน์
+  function formatCell(header, v) {
+    if (v == null || v === "") return "-";
+
+    // 🔹 คอลัมน์ "ลำดับ" ให้แสดงเป็นเลขธรรมดาไม่ต้องใส่จุดทศนิยม
+    if (header === "ลำดับ") {
+      return v;
     }
 
-    function renderTable(data) {
-      const headers = Object.keys(data[0] || {});
-      const thead = $("#detailsTable thead").empty().append(`<tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>`);
-      const tbody = $("#detailsTable tbody").empty();
-      data.forEach(row => tbody.append(`<tr>${headers.map(h => `<td>${row[h] || "-"}</td>`).join("")}</tr>`));
-      if ($.fn.DataTable.isDataTable("#detailsTable")) $("#detailsTable").DataTable().destroy();
-      dataTable = $("#detailsTable").DataTable({ scrollX: true, pageLength: 10, language: { search: "ค้นหา:", info: "แสดง _START_ ถึง _END_ จาก _TOTAL_" } });
-    }
+    if (typeof v === "number") return formatNumber(v);
+    if (String(v).includes("%")) return v;
 
-    function setupFilters(data) {
-      const keys = ["อำเภอ/เขต", "ตำบล", "ปีงบประมาณ", "สถานะโครงการ"];
-      const container = $("#filter-section").empty();
-      keys.forEach(k => {
-        const values = [...new Set(data.map(r => r[k]).filter(Boolean))].sort();
-        const select = $(`<select data-key="${k}"><option value="">-- ทั้งหมด --</option>${values.map(v => `<option>${v}</option>`).join("")}</select>`);
-        container.append(`<div class='filter-item'><label>${k}</label></div>`).append(select);
+    return v;
+  }
+
+  function setupFilters(data) {
+    const keys = ["อำเภอ/เขต", "ตำบล", "ปีงบประมาณ", "สถานะโครงการ"];
+    const container = $("#filter-section").empty();
+
+    keys.forEach(k => {
+      const values = [...new Set(data.map(r => r[k]).filter(Boolean))].sort();
+      const select = $(
+        `<select data-key="${k}">
+           <option value="">-- ทั้งหมด --</option>
+           ${values.map(v => `<option>${v}</option>`).join("")}
+         </select>`
+      );
+
+      const item = $("<div class='filter-item'></div>");
+      item.append(`<label>${k}</label>`);
+      item.append(select);
+      container.append(item);
+    });
+
+    $("#filter-section select").on("change", function () {
+      let filtered = [...allData];
+      $("#filter-section select").each(function () {
+        const key = $(this).data("key");
+        const val = $(this).val();
+        if (val) filtered = filtered.filter(r => r[key] === val);
       });
+      filtered = sortByOrderColumn(filtered); // ให้เรียงลำดับถูกทุกครั้งที่กรอง
+      renderTable(filtered);
+    });
+  }
 
-      $("#filter-section select").on("change", function () {
-        let filtered = [...allData];
-        $("#filter-section select").each(function () {
-          const key = $(this).data("key");
-          const val = $(this).val();
-          if (val) filtered = filtered.filter(r => r[key] === val);
-        });
-        renderTable(filtered);
-      });
-    }
+  function updateSummaryCards(s) {
+    $("#num-projects").text(s.totalProjects.toLocaleString("th-TH"));
+    $("#approved-money").text(formatNumber(s.approvedMoney));
+    $("#debt-start").text(formatNumber(s.debtStart));
+    $("#debt-now").text(formatNumber(s.debtNow));
+    $("#overdue").text(formatNumber(s.overdue));
+    $("#legal").text(formatNumber(s.legal));
+    $("#percent-overdue").text(formatPercent(s.percentOverdue));
+    $("#update-date").text("ข้อมูล ณ วันที่ " + s.updateDate);
+  }
 
-    function updateSummaryCards(s) {
-      $("#num-projects").text(formatNumber(s.B2));
-      $("#approved-money").text(formatNumber(s.C2));
-      $("#debt-start").text(formatNumber(s.D2));
-      $("#debt-now").text(formatNumber(s.E2));
-      $("#recovered").text(formatNumber(s.G2));
-      $("#not-due").text(formatNumber(s.F2));
-      $("#mediation").text(formatNumber(s.H2));
-      $("#prosecutor").text(formatNumber(s.I2));
-      $("#court-filed").text(formatNumber(s.J2));
-      $("#legal").text(formatNumber(s.O2));
-      $("#overdue-legal").text(formatNumber(s.Q2));
-      $("#overdue").text(formatNumber(s.R2));
-      $("#percent-overdue").text(formatPercent(s.S2));
-      $("#update-date").text("ข้อมูล ณ วันที่ " + new Date().toLocaleDateString("th-TH"));
-    }
+  function downloadData() {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(allData);
+    XLSX.utils.book_append_sheet(wb, ws, "Province");
+    XLSX.writeFile(wb, `${$("#province-title").text()}_KPI69.xlsx`);
+  }
+</script>
 
-    function downloadData() {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(allData);
-      XLSX.utils.book_append_sheet(wb, ws, "Province");
-      XLSX.writeFile(wb, `${$("#province-title").text()}_KPI69.xlsx`);
-    }
-  </script>
 </body>
 </html>
