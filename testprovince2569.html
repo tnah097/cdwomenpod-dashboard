@@ -174,15 +174,17 @@
     }
 
     dataTable = $("#detailsTable").DataTable({
-      scrollX: true,
-      pageLength: 10,
-      order: [[0, "asc"]], // 🔹 บังคับเรียงตามคอลัมน์แรก (ลำดับ)
-      language: {
-        search: "ค้นหา:",
-        info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
-      }
-    });
+  scrollX: true,
+  pageLength: 10,
+  columnDefs: [
+    { targets: 0, type: "num" }   // บังคับคอลัมน์ลำดับเป็นตัวเลข
+  ],
+  order: [[0, "asc"]],
+  language: {
+    search: "ค้นหา:",
+    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
   }
+});
 
   // แยก format ตามหัวคอลัมน์
   function formatCell(header, v) {
