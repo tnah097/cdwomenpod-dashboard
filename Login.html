@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ | CDD Women Fund</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Sarabun', sans-serif;
+        background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5, #e1bee7);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-box {
+        width: 380px;
+        background: rgba(255,255,255,0.92);
+        border-radius: 16px;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        overflow: hidden;
+        border: 2px solid #f8bbd0;
+    }
+
+    .login-header {
+        background-color: #d8c2d5; /* พาสเทลม่วงชมพูอ่อน */
+        padding: 18px;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+        letter-spacing: 1px;
+    }
+
+    .logo-area {
+        text-align: center;
+        padding-top: 18px;
+    }
+    .logo-area img {
+        width: 80px;
+        margin: 5px 12px;
+    }
+
+    .login-body {
+        padding: 25px 30px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 12px;
+        border: 1px solid #f48fb1;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: #fff;
+    }
+
+    input:focus {
+        border-color: #ec407a;
+        outline: none;
+    }
+
+    .remember-box {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: #444;
+    }
+
+    .remember-box input {
+        width: 16px;
+        margin-right: 8px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 20px;
+        background-color: #ec407a;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    button:hover {
+        background-color: #d81b60;
+    }
+
+    .error {
+        margin-top: 15px;
+        color: red;
+        text-align: center;
+        font-weight: bold;
+    }
+
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <div class="login-header">SIGN IN NOW</div>
+
+    <div class="logo-area">
+        <img src="https://i.postimg.cc/507bjy9Z/cdd.png">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s">
+    </div>
+
+    <div class="login-body">
+
+        <input type="text" id="username" placeholder="User ID">
+        <input type="password" id="password" placeholder="Password">
+
+        <div class="remember-box">
+            <input type="checkbox" id="remember">
+            <label for="remember">Remember me</label>
+        </div>
+
+        <button onclick="login()">SIGN IN</button>
+
+        <div id="errorBox" class="error"></div>
+
+    </div>
+</div>
+
+<script>
+const LOGIN_API = "https://script.google.com/macros/s/AKfycbz7p42v9kmXv3ypoqU1dmPLZFDgC_yDeXRN6jHw0zIJ70QAIALDVeX5CXtKMIlIW0Jdaw/exec";
+
+async function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    const errorBox = document.getElementById("errorBox");
+
+    errorBox.textContent = "";
+
+    if (!user || !pass) {
+        errorBox.textContent = "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${LOGIN_API}?action=login&username=${user}&password=${pass}`);
+        const json = await res.json();
+
+        if (json.status === "success") {
+            const province = json.province;
+            window.location.href = `province2569.html?province=${encodeURIComponent(province)}`;
+        } else {
+            errorBox.textContent = "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+        }
+
+    } catch (err) {
+        errorBox.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
+        console.error(err);
+    }
+}
+</script>
+
+</body>
+</html>
