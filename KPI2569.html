@@ -143,11 +143,13 @@
 }
     /* Table */
 
-    .province-table-wrapper {
-  margin-top: 30px;
-  margin-left: 0;            /* ✅ ปรับเป็น 0 */
+   .province-table-wrapper {
+  margin-top: 40px;
+  margin-left: 0;
   text-align: left !important;
-  overflow-x: auto;          /* ✅ เพิ่มบรรทัดนี้เพื่อให้ตาราง scroll แนวนอนได้ */
+  overflow-x: auto;
+  overflow-y: auto;   /* ✅ เปิดการเลื่อนแนวตั้ง */
+  padding-bottom: 10px;
 }
 
 .summary-table {
@@ -183,14 +185,7 @@
   min-width: 130px;
 }
 
-.province-table-wrapper {
-  margin-top: 40px;
-  margin-left: 0;
-  text-align: left !important;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 10px;
-}
+
 
     .summary-table tr:nth-child(even) { background-color: #fce4ec; }
     .summary-table tr:nth-child(odd) { background-color: white; }
@@ -239,9 +234,6 @@
 }
 .dataTables_scrollBody table {
   width: 100% !important;
-}
-.dataTables_scrollBody {
-  overflow-y: auto !important;   /* ✅ เปิด scroll แนวตั้งกลับมา */
 }
 
 table.dataTable {
@@ -556,21 +548,18 @@ async function fetchData(){
     if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
 
     provinceDataTable = $('#provinceTable').DataTable({
-  paging: false,
-  scrollX: true,
-  scrollY: '400px',
-  scrollCollapse: true,
-  autoWidth: true,              // ✅ เปิด autoWidth กลับมาเพื่อ sync header/body
-  ordering: false,              // ✅ ปิด sorting ช่วยให้คง alignment
-  order: [],
-  fixedHeader: false,
-  language: {
-    search: "ค้นหา:",
-    zeroRecords: "ไม่พบข้อมูล"
-  },
-  initComplete: function () {
-    this.api().columns.adjust();
-  }
+    paging: true,               // ✔ มีปุ่มเลือก 10/25/50
+    pageLength: 10,
+    scrollX: true,              // ✔ เลื่อนซ้าย–ขวาได้
+    scrollY: "420px",           // ✔ สร้าง scroll bar แนวตั้งเหมือนในรูปตัวเอง
+    scrollCollapse: true,
+    autoWidth: false,           // ✔ หัวตารางตรง ไม่สั่น
+    ordering: true,             // ✔ ปุ่มเรียงจากมาก→น้อย / น้อย→มาก
+    fixedHeader: true,          // ✔ หัวติดบนตอนเลื่อน
+    language: {
+        search: "ค้นหา:",
+        lengthMenu: "แสดง _MENU_ รายการ"
+    }
 });
 
     setTimeout(()=>{if(provinceDataTable&&provinceDataTable.columns)provinceDataTable.columns.adjust().draw(false);},200);
