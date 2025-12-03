@@ -30,20 +30,25 @@
 </head>
 
 <body>
-  <div class="dashboard-container">
-    <div class="header">
-      <div class="header-text">
-        <h1><span style="color:navy;">CDD</span> <span style="color:deeppink;">Women</span> <span style="color:red;">Fund</span></h1>
-        <h2><span style="color:black;">รายจังหวัด:</span> <span style="color:red;" id="province-title"></span></h2
+ <div class="dashboard-container">
+  <div class="header">
 
-   </div>
-            </div>
-            <div class="logo-container">
-               <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="100" />
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" width="70" height="100" />
-            </div>
-        </div>
-    
+    <div class="header-text">
+      <h1><span style="color:navy;">CDD</span> 
+          <span style="color:deeppink;">Women</span> 
+          <span style="color:red;">Fund</span></h1>
+
+      <h2><span style="color:black;">รายจังหวัด:</span> 
+          <span style="color:red;" id="province-title"></span></h2>
+    </div>
+
+    <div class="logo-container">
+       <img src="https://i.postimg.cc/507bjy9Z/cdd.png" width="60" height="100" />
+       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" width="70" height="100" />
+    </div>
+
+  </div>
+
 
     <div style="text-align:right;font-weight:bold;color:navy;margin-top:1rem;font-size:1.2rem;">
       <span id="update-date">ข้อมูล ณ วันที่ 10 พฤศจิกายน 2568</span>
@@ -117,18 +122,43 @@
       }
     }
 
-    function renderTable(data) {
-      const headers = Object.keys(data[0] || {});
-      const thead = $("#detailsTable thead").empty().append(`<tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>`);
-      const tbody = $("#detailsTable tbody").empty();
+   function renderTable(data) {
+  const headers = Object.keys(data[0] || {});
+  const thead = $("#detailsTable thead")
+    .empty()
+    .append(`<tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>`);
+  const tbody = $("#detailsTable tbody").empty();
 
-      data.forEach(row => {
-        tbody.append(`<tr>${headers.map(h => `<td>${formatValue(row[h])}</td>`).join("")}</tr>`);
-      });
+  data.forEach((row, idx) => {
+    const tds = headers.map(h => {
+      let value = row[h];
 
-      if ($.fn.DataTable.isDataTable("#detailsTable")) $("#detailsTable").DataTable().destroy();
-      dataTable = $("#detailsTable").DataTable({ scrollX: true, pageLength: 10, language: { search: "ค้นหา:", info: "แสดง _START_ ถึง _END_ จาก _TOTAL_" } });
+      // ✅ ให้คอลัมน์ "ลำดับ" รันเลขใหม่ 1,2,3,... ตามลำดับแถวที่แสดง
+      if (h === "ลำดับ") {
+        value = idx + 1;           // ไม่ใช้ค่าจาก Google Sheet แล้ว
+        return `<td>${value}</td>`; // แสดงเป็นเลขตรง ๆ ไม่ format ทศนิยม
+      }
+
+      return `<td>${formatValue(value)}</td>`;
+    }).join("");
+
+    tbody.append(`<tr>${tds}</tr>`);
+  });
+
+  if ($.fn.DataTable.isDataTable("#detailsTable")) {
+    $("#detailsTable").DataTable().destroy();
+  }
+
+  dataTable = $("#detailsTable").DataTable({
+    scrollX: true,
+    pageLength: 10,
+    language: {
+      search: "ค้นหา:",
+      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
     }
+  });
+}
+
 
     function formatValue(v) {
       if (v == null || v === "") return "-";
