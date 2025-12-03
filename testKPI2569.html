@@ -556,21 +556,18 @@ async function fetchData(){
     if($.fn.DataTable.isDataTable('#provinceTable'))$('#provinceTable').DataTable().clear().destroy();
 
     provinceDataTable = $('#provinceTable').DataTable({
-  paging: false,
-  scrollX: true,
-  scrollY: '400px',
-  scrollCollapse: true,
-  autoWidth: true,              // ✅ เปิด autoWidth กลับมาเพื่อ sync header/body
-  ordering: false,              // ✅ ปิด sorting ช่วยให้คง alignment
-  order: [],
-  fixedHeader: false,
-  language: {
-    search: "ค้นหา:",
-    zeroRecords: "ไม่พบข้อมูล"
-  },
-  initComplete: function () {
-    this.api().columns.adjust();
-  }
+    paging: true,              // ✔ เปิดปุ่ม Show 10 / 25 / 50
+    pageLength: 10,            // ✔ ค่าเริ่มต้น = 10 แถว
+    scrollX: true,
+    scrollY: false,            // ❌ ปิด scrollY กันหัวไม่ตรงเวลา sort
+    autoWidth: false,          // ✔ กันคอลัมน์สั่น
+    ordering: true,            // ✔ เปิด sorting
+    info: true,                // ✔ แสดง “Showing 1 to 10 of …”
+    fixedHeader: true,         // ✔ หัวตารางลอยตาม
+    language: {
+        search: "ค้นหา:",
+        lengthMenu: "แสดง _MENU_ รายการ"
+    }
 });
 
     setTimeout(()=>{if(provinceDataTable&&provinceDataTable.columns)provinceDataTable.columns.adjust().draw(false);},200);
