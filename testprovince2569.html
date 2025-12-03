@@ -120,7 +120,7 @@
 
       allData = json.data || [];
       updateSummaryCards(json.summary);
-      
+
       // 🔹 เรียงข้อมูลตามคอลัมน์ "ลำดับ" ให้ตรงกับ Google Sheet
       allData = sortByOrderColumn(allData);
 
@@ -131,25 +131,24 @@
     }
   }
 
+  // ฟังก์ชันจัดเรียงตามคอลัมน์ "ลำดับ"
   function sortByOrderColumn(data) {
-  if (!data || data.length === 0) return data;
-  if (!("ลำดับ" in data[0])) return data;
+    if (!data || data.length === 0) return data;
+    if (!("ลำดับ" in data[0])) return data;
 
-  const cloned = [...data];
+    const cloned = [...data];
 
-  cloned.sort((a, b) => {
-    const parseOrder = (val) => {
-      if (val == null || val === "") return 0;
-      // แปลงเป็น string เอา , ออก แล้วตัดทศนิยมทิ้ง
-      const s = String(val).replace(/,/g, "");
-      return parseInt(s, 10) || 0;
-    };
+    cloned.sort((a, b) => {
+      const parseOrder = (val) => {
+        if (val == null || val === "") return 0;
+        const s = String(val).replace(/,/g, ""); // เอา , ออก
+        return parseInt(s, 10) || 0;            // ตัดทศนิยมทิ้ง
+      };
+      return parseOrder(a["ลำดับ"]) - parseOrder(b["ลำดับ"]);
+    });
 
-    return parseOrder(a["ลำดับ"]) - parseOrder(b["ลำดับ"]);
-  });
-
-  return cloned;
-}
+    return cloned;
+  }
 
   function renderTable(data) {
     if (!data || data.length === 0) {
@@ -174,17 +173,18 @@
     }
 
     dataTable = $("#detailsTable").DataTable({
-  scrollX: true,
-  pageLength: 10,
-  columnDefs: [
-    { targets: 0, type: "num" }   // บังคับคอลัมน์ลำดับเป็นตัวเลข
-  ],
-  order: [[0, "asc"]],
-  language: {
-    search: "ค้นหา:",
-    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
+      scrollX: true,
+      pageLength: 10,
+      columnDefs: [
+        { targets: 0, type: "num" }   // 🔹 บังคับคอลัมน์ลำดับเป็นตัวเลข
+      ],
+      order: [[0, "asc"]],
+      language: {
+        search: "ค้นหา:",
+        info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
+      }
+    });
   }
-});
 
   // แยก format ตามหัวคอลัมน์
   function formatCell(header, v) {
@@ -227,7 +227,7 @@
         const val = $(this).val();
         if (val) filtered = filtered.filter(r => r[key] === val);
       });
-      filtered = sortByOrderColumn(filtered); // ให้เรียงลำดับถูกทุกครั้งที่กรอง
+      filtered = sortByOrderColumn(filtered);
       renderTable(filtered);
     });
   }
