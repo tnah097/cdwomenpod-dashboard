@@ -80,14 +80,18 @@
     </div>
 
     <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
-    <table id="detailsTable" class="display" style="width:100%">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </div>
+<div style="width:100%; overflow-x:auto;">
+
+  <table id="detailsTable" class="display" style="width:100%">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+
+</div>
 
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+   <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwwxjRdiPSd7SOuZAOO5OmWi5NHCBMOf3d1923ik9QBY7iiZ0gJl6ppcQQUHGrxuLRTAg/exec";
@@ -152,11 +156,13 @@
   dataTable = $("#detailsTable").DataTable({
     scrollX: true,
     pageLength: 10,
+    fixedHeader: true,
     language: {
       search: "ค้นหา:",
       info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
     }
   });
+
 }
 
 
