@@ -106,36 +106,34 @@
 </div>
 
 <script>
-  async function login() {
+const API_URL = "https://script.google.com/macros/s/AKfycbzSLV23wpE_R3_AcDC5shyyZ_dGvmz_ywa1xl68IHN_yNzDG1krFoQHlnjF5Zn9BTLMeA/exec";
+
+async function login() {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
-    const errorBox = document.getElementById("error");
+    const msg = document.getElementById("error");
 
-    if (user === "" || pass === "") {
-      errorBox.textContent = "กรุณากรอกข้อมูลให้ครบถ้วน";
-      return;
-    }
-
-    errorBox.textContent = "กำลังตรวจสอบ...";
-
-    // ⭐ ใช้ Web App URL ของตัวเอง
-    const API = "https://script.google.com/macros/s/AKfycbzSLV23wpE_R3_AcDC5shyyZ_dGvmz_ywa1xl68IHN_yNzDG1krFoQHlnjF5Zn9BTLMeA/exec";
+    msg.textContent = "กำลังตรวจสอบข้อมูล...";
 
     try {
-      const res = await fetch(`${API}?action=login&username=${user}&password=${pass}`);
-      const data = await res.json();
+        const res = await fetch(`${API_URL}?action=login&username=${user}&password=${pass}`);
+        const data = await res.json();
 
-      if (data.status === "success") {
-        // ⭐ Redirect ไปหน้า province
-        window.location.href = `province2569.html?province=${encodeURIComponent(data.province)}`;
-      } else {
-        errorBox.textContent = "❌ Username หรือ Password ไม่ถูกต้อง";
-      }
+        if (data.status === "success") {
+            const provinceName = data.province;
+
+            // ⬇ Redirect ไปหน้า province พร้อมชื่อจังหวัดจริง
+            window.location.href =
+              `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(provinceName)}`;
+
+        } else {
+            msg.textContent = "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+        }
 
     } catch (e) {
-      errorBox.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
+        msg.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
     }
-  }
+}
 </script>
 
 </body>
