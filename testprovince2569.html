@@ -131,16 +131,25 @@
     }
   }
 
-  // ฟังก์ชันจัดเรียงตามคอลัมน์ "ลำดับ"
   function sortByOrderColumn(data) {
-    if (!data || data.length === 0) return data;
-    if (!("ลำดับ" in data[0])) return data;
+  if (!data || data.length === 0) return data;
+  if (!("ลำดับ" in data[0])) return data;
 
-    // clone array กัน side-effect
-    const cloned = [...data];
-    cloned.sort((a, b) => Number(a["ลำดับ"] || 0) - Number(b["ลำดับ"] || 0));
-    return cloned;
-  }
+  const cloned = [...data];
+
+  cloned.sort((a, b) => {
+    const parseOrder = (val) => {
+      if (val == null || val === "") return 0;
+      // แปลงเป็น string เอา , ออก แล้วตัดทศนิยมทิ้ง
+      const s = String(val).replace(/,/g, "");
+      return parseInt(s, 10) || 0;
+    };
+
+    return parseOrder(a["ลำดับ"]) - parseOrder(b["ลำดับ"]);
+  });
+
+  return cloned;
+}
 
   function renderTable(data) {
     if (!data || data.length === 0) {
