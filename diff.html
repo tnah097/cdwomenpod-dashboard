@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <title>Dashboard ตรวจสอบคอลัมน์ U</title>
+
 <style>
     body {
         font-family: Kanit, sans-serif;
@@ -102,14 +103,9 @@
 
     <!-- เลือกจังหวัด -->
     <div class="card">
-        <label>เลือกจังหวัด:</label>  
+        <label>เลือกจังหวัด:</label>
         <select id="provinceSelect">
-            <option value="">-- เลือกจังหวัด --</option>
-            <option>ระนอง</option>
-            <option>นครปฐม</option>
-            <option>ชุมพร</option>
-            <option>สุพรรณบุรี</option>
-            <!-- ตัวเองเพิ่มจังหวัดอื่นได้ -->
+            <option value="">กำลังโหลดจังหวัด...</option>
         </select>
         <br><br>
         <button onclick="loadData()">โหลดข้อมูล</button>
@@ -140,11 +136,40 @@
 
 </div>
 
-
 <script>
-// ใส่ URL Apps Script ที่ส่ง JSON กลับมา
-const API_URL = "https://script.google.com/macros/s/AKfycbz3b65BngZdY3Q6VNTyCRhl7gwh_ZIDthPO4jaRbosEodMuAwABBVYO2drrDnwJjsA/exec";
+// API URL ของตัวเอง
+const API_URL = "https://script.google.com/macros/s/AKfycbyUj_eHPedINaGDLclh22aXjJ6klt8T3LUj6KoKPPuxcX-oC1B4Bk9kegRoBqmE2hjp/exec";
 
+// โหลดรายชื่อจังหวัดอัตโนมัติเมื่อหน้าเว็บเปิดขึ้น
+window.onload = loadProvinces;
+
+// ดึงจังหวัดทั้งหมดจาก API
+async function loadProvinces() {
+    const select = document.getElementById("provinceSelect");
+
+    try {
+        const response = await fetch(`${API_URL}?listProvinces=1`);
+        const provinces = await response.json();
+
+        // เคลียร์ dropdown
+        select.innerHTML = `<option value="">-- เลือกจังหวัด --</option>`;
+
+        // ใส่จังหวัดทั้งหมดลง dropdown
+        provinces.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p;
+            option.textContent = p;
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("โหลดจังหวัดล้มเหลว:", error);
+        select.innerHTML = `<option value="">โหลดจังหวัดไม่สำเร็จ</option>`;
+    }
+}
+
+
+// โหลดข้อมูลความต่างคอลัมน์ U ของจังหวัด
 async function loadData() {
     const province = document.getElementById("provinceSelect").value;
 
@@ -160,6 +185,8 @@ async function loadData() {
     renderChart(data);
 }
 
+
+// แสดงตารางผลลัพธ์
 function renderTable(data) {
     const tbody = document.querySelector("#resultTable tbody");
     tbody.innerHTML = "";
@@ -176,6 +203,8 @@ function renderTable(data) {
     });
 }
 
+
+// แสดงกราฟแท่ง
 function renderChart(data) {
     const ctx = document.getElementById("barChart");
 
