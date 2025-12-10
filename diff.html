@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<title>Dashboard ตรวจสอบคอลัมน์ U</title>
+<style>
+    body {
+        font-family: Kanit, sans-serif;
+        margin: 0;
+        background: #fdeefa;
+        color: #333;
+    }
+
+    header {
+        background: #ffb6d9;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        color: #7a0052;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .container {
+        padding: 20px;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        border-left: 8px solid #ff99c8;
+    }
+
+    label {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    select, button {
+        padding: 10px 15px;
+        font-size: 16px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ff8fc2;
+    }
+
+    button {
+        background: #ff8fc2;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: #ff73b8;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 15px;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid #ffd3e6;
+        text-align: center;
+    }
+
+    th {
+        background: #ffb6d9;
+        color: #7a0052;
+        font-weight: 700;
+    }
+
+    .highlight {
+        background: #ffe6f2;
+        font-weight: bold;
+        color: #d10063;
+    }
+
+    canvas {
+        margin-top: 20px;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+    Dashboard ตรวจสอบความต่างคอลัมน์ U (KPI69 vs นย04)
+</header>
+
+<div class="container">
+
+    <!-- เลือกจังหวัด -->
+    <div class="card">
+        <label>เลือกจังหวัด:</label>  
+        <select id="provinceSelect">
+            <option value="">-- เลือกจังหวัด --</option>
+            <option>ระนอง</option>
+            <option>นครปฐม</option>
+            <option>ชุมพร</option>
+            <option>สุพรรณบุรี</option>
+            <!-- ตัวเองเพิ่มจังหวัดอื่นได้ -->
+        </select>
+        <br><br>
+        <button onclick="loadData()">โหลดข้อมูล</button>
+    </div>
+
+    <!-- ตารางผลตรวจสอบ -->
+    <div class="card">
+        <h2>ผลตรวจสอบเลขที่สัญญา (คอลัมน์ U ต่างกัน)</h2>
+
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>เลขที่สัญญา</th>
+                    <th>U ใน KPI69</th>
+                    <th>U รวมจาก นย04</th>
+                    <th>ผลต่าง</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- กราฟ -->
+    <div class="card">
+        <h2>สรุปจำนวนความต่าง</h2>
+        <canvas id="barChart" height="80"></canvas>
+    </div>
+
+</div>
+
+
+<script>
+// ใส่ URL Apps Script ที่ส่ง JSON กลับมา
+const API_URL = "https://script.google.com/macros/s/XXXXXXXXXXXXXXXX/exec";
+
+async function loadData() {
+    const province = document.getElementById("provinceSelect").value;
+
+    if (!province) {
+        alert("กรุณาเลือกจังหวัดก่อนนะครับ");
+        return;
+    }
+
+    const response = await fetch(`${API_URL}?province=${province}`);
+    const data = await response.json();
+
+    renderTable(data);
+    renderChart(data);
+}
+
+function renderTable(data) {
+    const tbody = document.querySelector("#resultTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="highlight">${row.contract}</td>
+            <td>${row.kpi}</td>
+            <td>${row.ny}</td>
+            <td><b>${row.diff}</b></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderChart(data) {
+    const ctx = document.getElementById("barChart");
+
+    const labels = data.map(r => r.contract);
+    const diffs = data.map(r => r.diff);
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "ผลต่างค่า U ต่อเลขที่สัญญา",
+                data: diffs,
+                backgroundColor: "#ff99c8",
+                borderColor: "#e3548a",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
