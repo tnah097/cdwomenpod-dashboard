@@ -234,11 +234,15 @@ function renderTable(data) {
     const tbody = document.querySelector("#resultTable tbody");
     tbody.innerHTML = "";
 
-    // กรองเฉพาะแถวที่ diff != 0 หรือมี note
-    const filtered = data.filter(r =>
-        r.diff !== 0 ||
-        (r.note && r.note.trim() !== "")
-    );
+    // แปลง diff เป็นตัวเลขก่อน และกรองเฉพาะข้อมูลที่ไม่ตรงกันจริง ๆ
+    const filtered = data.filter(r => {
+        const diffVal = Number(r.diff || 0);
+        const kpiVal  = Number(r.kpi || 0);
+        const nyVal   = Number(r.ny  || 0);
+        const noteVal = (r.note || "").trim();
+
+        return diffVal !== 0 || noteVal !== "";
+    });
 
     filtered.forEach(row => {
         const tr = document.createElement("tr");
@@ -251,6 +255,7 @@ function renderTable(data) {
         tbody.appendChild(tr);
     });
 }
+
 
 
 function showLoading() {
@@ -266,14 +271,15 @@ function hideLoading() {
 function renderChart(data) {
     const ctx = document.getElementById("barChart");
 
-    // กรองเฉพาะแถวที่ diff != 0 หรือมี note
-    const filtered = data.filter(r =>
-        r.diff !== 0 ||
-        (r.note && r.note.trim() !== "")
-    );
+    const filtered = data.filter(r => {
+        const diffVal = Number(r.diff || 0);
+        const noteVal = (r.note || "").trim();
+
+        return diffVal !== 0 || noteVal !== "";
+    });
 
     const labels = filtered.map(r => r.contract);
-    const diffs  = filtered.map(r => r.diff);
+    const diffs  = filtered.map(r => Number(r.diff || 0));
 
     new Chart(ctx, {
         type: "bar",
@@ -294,6 +300,7 @@ function renderChart(data) {
         }
     });
 }
+
 
 
 
