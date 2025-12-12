@@ -234,7 +234,13 @@ function renderTable(data) {
     const tbody = document.querySelector("#resultTable tbody");
     tbody.innerHTML = "";
 
-    data.forEach(row => {
+    // กรองเฉพาะแถวที่ diff != 0 หรือมี note
+    const filtered = data.filter(r =>
+        r.diff !== 0 ||
+        (r.note && r.note.trim() !== "")
+    );
+
+    filtered.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td class="highlight">${row.contract}</td>
@@ -245,6 +251,7 @@ function renderTable(data) {
         tbody.appendChild(tr);
     });
 }
+
 
 function showLoading() {
     document.getElementById("loadingBox").style.display = "block";
@@ -259,8 +266,14 @@ function hideLoading() {
 function renderChart(data) {
     const ctx = document.getElementById("barChart");
 
-    const labels = data.map(r => r.contract);
-    const diffs = data.map(r => r.diff);
+    // กรองเฉพาะแถวที่ diff != 0 หรือมี note
+    const filtered = data.filter(r =>
+        r.diff !== 0 ||
+        (r.note && r.note.trim() !== "")
+    );
+
+    const labels = filtered.map(r => r.contract);
+    const diffs  = filtered.map(r => r.diff);
 
     new Chart(ctx, {
         type: "bar",
@@ -281,6 +294,7 @@ function renderChart(data) {
         }
     });
 }
+
 
 
 
