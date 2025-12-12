@@ -102,7 +102,7 @@
 <body>
 
 <header>
-    Dashboard ตรวจสอบความต่างคอลัมน์ U (KPI69 vs นย04)
+    Dashboard ตรวจสอบความต่างคอลัมน์ V (KPI69 Vs นย04)
 </header>
 
 <div class="container">
@@ -175,7 +175,7 @@ async function loadProvinces() {
 }
 
 
-// โหลดข้อมูลความต่างคอลัมน์ U ของจังหวัด
+// โหลดข้อมูลความต่างคอลัมน์ V ของจังหวัด
 async function loadData() {
     const province = document.getElementById("provinceSelect").value;
 
@@ -222,7 +222,7 @@ function renderChart(data) {
         data: {
             labels: labels,
             datasets: [{
-                label: "ผลต่างค่า U ต่อเลขที่สัญญา",
+                label: "ผลต่างค่า V ต่อเลขที่สัญญา",
                 data: diffs,
                 backgroundColor: "#ff99c8",
                 borderColor: "#e3548a",
