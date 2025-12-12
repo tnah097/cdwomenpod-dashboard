@@ -234,14 +234,14 @@ function renderTable(data) {
     const tbody = document.querySelector("#resultTable tbody");
     tbody.innerHTML = "";
 
-    // แปลง diff เป็นตัวเลขก่อน และกรองเฉพาะข้อมูลที่ไม่ตรงกันจริง ๆ
     const filtered = data.filter(r => {
+        const kpiVal = Number(r.kpi || 0);
+        const nyVal  = Number(r.ny  || 0);
         const diffVal = Number(r.diff || 0);
-        const kpiVal  = Number(r.kpi || 0);
-        const nyVal   = Number(r.ny  || 0);
         const noteVal = (r.note || "").trim();
 
-        return diffVal !== 0 || noteVal !== "";
+        // แสดงเฉพาะแถวที่มีข้อมูลจริง หรือมีความต่าง
+        return (kpiVal !== 0 || nyVal !== 0 || diffVal !== 0 || noteVal !== "");
     });
 
     filtered.forEach(row => {
@@ -255,6 +255,7 @@ function renderTable(data) {
         tbody.appendChild(tr);
     });
 }
+
 
 
 
@@ -272,10 +273,12 @@ function renderChart(data) {
     const ctx = document.getElementById("barChart");
 
     const filtered = data.filter(r => {
+        const kpiVal = Number(r.kpi || 0);
+        const nyVal  = Number(r.ny  || 0);
         const diffVal = Number(r.diff || 0);
         const noteVal = (r.note || "").trim();
 
-        return diffVal !== 0 || noteVal !== "";
+        return (kpiVal !== 0 || nyVal !== 0 || diffVal !== 0 || noteVal !== "");
     });
 
     const labels = filtered.map(r => r.contract);
