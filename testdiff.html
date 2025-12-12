@@ -1,124 +1,242 @@
-function doGet(e) {
-  const folderKPI = DriveApp.getFolderById("1EQAN3fX0PqZOop6jhvWB9Fgg9DMK-CEa");
-  const folderNY  = DriveApp.getFolderById("1nSOuOmtiDYsny70_x063_285LNbL8odY");
+<!DOCTYPE html>
+<html lang="th">
+<head>
 
-  try {
+   
+    
+<meta charset="UTF-8" />
 
-    if (e.parameter.listProvinces == "1") {
-      const kpiFiles = getFilesMap(folderKPI);
-      return JsonReply(Object.keys(kpiFiles).sort());
+     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
+<title>Dashboard ตรวจสอบคอลัมน์ U</title>
+
+<style>
+    body {
+        font-family: Kanit, sans-serif;
+        margin: 0;
+        background: #fdeefa;
+        color: #333;
     }
 
-    if (e.parameter.province) {
-      const province = e.parameter.province.trim();
-      const kpiFiles = getFilesMap(folderKPI);
-      const nyFiles  = getFilesMap(folderNY);
-
-      if (!kpiFiles[province] || !nyFiles[province]) {
-        return JsonReply([]);
-      }
-
-      const diff = compareColumnV(kpiFiles[province], nyFiles[province]);
-
-      return JsonReply(diff.map(r => ({
-        contract: r[0],
-        kpi:      r[1],
-        ny:       r[2],
-        diff:     r[3]
-      })));
+    header {
+        background: #ffb6d9;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        color: #7a0052;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.15);
     }
 
-    return JsonReply({ error: "invalid parameters" });
+    .container {
+        padding: 20px;
+        max-width: 1100px;
+        margin: auto;
+    }
 
-  } catch (err) {
-    return JsonReply({ error: err.message });
-  }
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        border-left: 8px solid #ff99c8;
+    }
+
+    label {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    select, button {
+        padding: 10px 15px;
+        font-size: 16px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ff8fc2;
+    }
+
+    button {
+        background: #ff8fc2;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: #ff73b8;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 15px;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid #ffd3e6;
+        text-align: center;
+    }
+
+    th {
+        background: #ffb6d9;
+        color: #7a0052;
+        font-weight: 700;
+    }
+
+    .highlight {
+        background: #ffe6f2;
+        font-weight: bold;
+        color: #d10063;
+    }
+
+    canvas {
+        margin-top: 20px;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+    Dashboard ตรวจสอบความต่างคอลัมน์ V (KPI69 Vs นย04)
+</header>
+
+<div class="container">
+
+    <!-- เลือกจังหวัด -->
+    <div class="card">
+        <label>เลือกจังหวัด:</label>
+        <select id="provinceSelect">
+            <option value="">กำลังโหลดจังหวัด...</option>
+        </select>
+        <br><br>
+        <button onclick="loadData()">โหลดข้อมูล</button>
+    </div>
+
+    <!-- ตารางผลตรวจสอบ -->
+    <div class="card">
+        <h2>ผลตรวจสอบเลขที่สัญญา (คอลัมน์ V ต่างกัน)</h2>
+
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>เลขที่สัญญา</th>
+                    <th>V ใน KPI69</th>
+                    <th>V รวมจาก นย04</th>
+                    <th>ผลต่าง</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- กราฟ -->
+    <div class="card">
+        <h2>สรุปจำนวนความต่าง</h2>
+        <canvas id="barChart" height="80"></canvas>
+    </div>
+
+</div>
+
+<script>
+// API URL ของตัวเอง
+const API_URL = "https://script.google.com/macros/s/AKfycbzzO0TcONqj0UrziIaO1aBMq94lFibkT8AZa-Kgw6gbDvci17PnA4G92euisIuDkC25/exec";
+
+// โหลดรายชื่อจังหวัดอัตโนมัติเมื่อหน้าเว็บเปิดขึ้น
+window.onload = loadProvinces;
+
+// ดึงจังหวัดทั้งหมดจาก API
+async function loadProvinces() {
+    const select = document.getElementById("provinceSelect");
+
+    try {
+        const response = await fetch(`${API_URL}?listProvinces=1`);
+        const provinces = await response.json();
+
+        // เคลียร์ dropdown
+        select.innerHTML = `<option value="">-- เลือกจังหวัด --</option>`;
+
+        // ใส่จังหวัดทั้งหมดลง dropdown
+        provinces.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p;
+            option.textContent = p;
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("โหลดจังหวัดล้มเหลว:", error);
+        select.innerHTML = `<option value="">โหลดจังหวัดไม่สำเร็จ</option>`;
+    }
 }
 
 
-/* ------------------ Utilities ------------------ */
+// โหลดข้อมูลความต่างคอลัมน์ V ของจังหวัด
+async function loadData() {
+    const province = document.getElementById("provinceSelect").value;
 
-function JsonReply(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-                       .setMimeType(ContentService.MimeType.JSON);
-}
+    if (!province) {
+        alert("กรุณาเลือกจังหวัดก่อนนะครับ");
+        return;
+    }
 
-function getFilesMap(folder) {
-  const files = folder.getFiles();
-  const map = {};
+    const response = await fetch(`${API_URL}?province=${province}`);
+    const data = await response.json();
 
-  while (files.hasNext()) {
-    const file = files.next();
-    let name = file.getName();
-
-    let province = name.replace(/KPI.*$/i, "")
-                       .replace(/นย.*$/i, "")
-                       .replace(/\.xlsx$/i, "")
-                       .trim();
-
-    if (province) map[province] = file.getId();
-  }
-  return map;
+    renderTable(data);
+    renderChart(data);
 }
 
 
-/* ------------------ Compare Column V ------------------ */
+// แสดงตารางผลลัพธ์
+function renderTable(data) {
+    const tbody = document.querySelector("#resultTable tbody");
+    tbody.innerHTML = "";
 
-function compareColumnV(kpiId, nyId) {
-
-  const kpi = SpreadsheetApp.openById(kpiId).getSheetByName("KPI69");
-  const ny  = SpreadsheetApp.openById(nyId).getSheetByName("รายงานลูกหนี้รายโครงการ");
-
-  // Load headers
-  const kpiHeader = kpi.getRange(1, 1, 1, kpi.getLastColumn()).getValues()[0];
-  const nyHeader  = ny.getRange(5, 1, 1, ny.getLastColumn()).getValues()[0];
-
-  // TRUE column names (ตัวเองยืนยันมา)
-  const KPI_V_NAME = "เงินต้นคงเหลือ ณ 30 ก.ย. 2568";
-  const NY_V_NAME  = "ลูกหนี้คงเหลือ";
-
-  // Flexible matching
-  const kpiVIndex = findColumnIndex(kpiHeader, KPI_V_NAME);
-  const nyVIndex  = findColumnIndex(nyHeader, NY_V_NAME);
-
-  if (kpiVIndex < 0) throw new Error("ไม่พบคอลัมน์ V ใน KPI69");
-  if (nyVIndex < 0) throw new Error("ไม่พบคอลัมน์ V ใน นย04");
-
-  const kpiData = kpi.getRange(2, 1, kpi.getLastRow() - 1, kpi.getLastColumn()).getValues();
-  const nyData  = ny.getRange(6, 1, ny.getLastRow() - 5, ny.getLastColumn()).getValues();
-
-  const kpiMap = {};
-  kpiData.forEach(r => {
-    const contract = r[4];
-    const v = Number(r[kpiVIndex]) || 0;
-    if (contract) kpiMap[contract] = v;
-  });
-
-  const nyMap = {};
-  nyData.forEach(r => {
-    const contract = r[1];
-    const v = Number(r[nyVIndex]) || 0;
-    if (contract) nyMap[contract] = (nyMap[contract] || 0) + v;
-  });
-
-  const diff = [];
-  for (const c in kpiMap) {
-    const k = kpiMap[c];
-    const n = nyMap[c] || 0;
-    const d = k - n;
-
-    if (Math.abs(d) > 0.01) diff.push([c, k, n, d]);
-  }
-
-  return diff;
+    data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="highlight">${row.contract}</td>
+            <td>${row.kpi}</td>
+            <td>${row.ny}</td>
+            <td><b>${row.diff}</b></td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 
-/* Match หัวคอลัมน์แบบยืดหยุ่น */
-function findColumnIndex(header, key) {
-  key = key.trim();
-  return header.findIndex(h =>
-    h &&
-    h.toString().trim().includes(key)
-  );
+// แสดงกราฟแท่ง
+function renderChart(data) {
+    const ctx = document.getElementById("barChart");
+
+    const labels = data.map(r => r.contract);
+    const diffs = data.map(r => r.diff);
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "ผลต่างค่า V ต่อเลขที่สัญญา",
+                data: diffs,
+                backgroundColor: "#ff99c8",
+                borderColor: "#e3548a",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
 }
+</script>
+
+</body>
+</html>
