@@ -1,0 +1,124 @@
+function doGet(e) {
+  const folderKPI = DriveApp.getFolderById("1EQAN3fX0PqZOop6jhvWB9Fgg9DMK-CEa");
+  const folderNY  = DriveApp.getFolderById("1nSOuOmtiDYsny70_x063_285LNbL8odY");
+
+  try {
+
+    if (e.parameter.listProvinces == "1") {
+      const kpiFiles = getFilesMap(folderKPI);
+      return JsonReply(Object.keys(kpiFiles).sort());
+    }
+
+    if (e.parameter.province) {
+      const province = e.parameter.province.trim();
+      const kpiFiles = getFilesMap(folderKPI);
+      const nyFiles  = getFilesMap(folderNY);
+
+      if (!kpiFiles[province] || !nyFiles[province]) {
+        return JsonReply([]);
+      }
+
+      const diff = compareColumnV(kpiFiles[province], nyFiles[province]);
+
+      return JsonReply(diff.map(r => ({
+        contract: r[0],
+        kpi:      r[1],
+        ny:       r[2],
+        diff:     r[3]
+      })));
+    }
+
+    return JsonReply({ error: "invalid parameters" });
+
+  } catch (err) {
+    return JsonReply({ error: err.message });
+  }
+}
+
+
+/* ------------------ Utilities ------------------ */
+
+function JsonReply(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getFilesMap(folder) {
+  const files = folder.getFiles();
+  const map = {};
+
+  while (files.hasNext()) {
+    const file = files.next();
+    let name = file.getName();
+
+    let province = name.replace(/KPI.*$/i, "")
+                       .replace(/นย.*$/i, "")
+                       .replace(/\.xlsx$/i, "")
+                       .trim();
+
+    if (province) map[province] = file.getId();
+  }
+  return map;
+}
+
+
+/* ------------------ Compare Column V ------------------ */
+
+function compareColumnV(kpiId, nyId) {
+
+  const kpi = SpreadsheetApp.openById(kpiId).getSheetByName("KPI69");
+  const ny  = SpreadsheetApp.openById(nyId).getSheetByName("รายงานลูกหนี้รายโครงการ");
+
+  // Load headers
+  const kpiHeader = kpi.getRange(1, 1, 1, kpi.getLastColumn()).getValues()[0];
+  const nyHeader  = ny.getRange(5, 1, 1, ny.getLastColumn()).getValues()[0];
+
+  // TRUE column names (ตัวเองยืนยันมา)
+  const KPI_V_NAME = "เงินต้นคงเหลือ ณ 30 ก.ย. 2568";
+  const NY_V_NAME  = "ลูกหนี้คงเหลือ";
+
+  // Flexible matching
+  const kpiVIndex = findColumnIndex(kpiHeader, KPI_V_NAME);
+  const nyVIndex  = findColumnIndex(nyHeader, NY_V_NAME);
+
+  if (kpiVIndex < 0) throw new Error("ไม่พบคอลัมน์ V ใน KPI69");
+  if (nyVIndex < 0) throw new Error("ไม่พบคอลัมน์ V ใน นย04");
+
+  const kpiData = kpi.getRange(2, 1, kpi.getLastRow() - 1, kpi.getLastColumn()).getValues();
+  const nyData  = ny.getRange(6, 1, ny.getLastRow() - 5, ny.getLastColumn()).getValues();
+
+  const kpiMap = {};
+  kpiData.forEach(r => {
+    const contract = r[4];
+    const v = Number(r[kpiVIndex]) || 0;
+    if (contract) kpiMap[contract] = v;
+  });
+
+  const nyMap = {};
+  nyData.forEach(r => {
+    const contract = r[1];
+    const v = Number(r[nyVIndex]) || 0;
+    if (contract) nyMap[contract] = (nyMap[contract] || 0) + v;
+  });
+
+  const diff = [];
+  for (const c in kpiMap) {
+    const k = kpiMap[c];
+    const n = nyMap[c] || 0;
+    const d = k - n;
+
+    if (Math.abs(d) > 0.01) diff.push([c, k, n, d]);
+  }
+
+  return diff;
+}
+
+
+/* Match หัวคอลัมน์แบบยืดหยุ่น */
+function findColumnIndex(header, key) {
+  key = key.trim();
+  return header.findIndex(h =>
+    h &&
+    h.toString().trim().includes(key)
+  );
+}
