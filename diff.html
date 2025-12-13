@@ -11,6 +11,40 @@
 <title>Dashboard ตรวจสอบคอลัมน์ U</title>
 
 <style>
+
+
+
+   #loadingBox {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffb6d9;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 9999;
+    color: #7a0052;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* ลูกศรหมุน */
+.loading-arrow {
+    font-size: 28px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 5px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+   
     body {
         font-family: Kanit, sans-serif;
         margin: 0;
@@ -144,34 +178,32 @@
 
 <script>
 // API URL ของตัวเอง
-const API_URL = "https://script.google.com/macros/s/AKfycbwe2oSj-gNI0hdMTWRhzSLOFsGO5VAFVdHrbN_KE5VsMWoLQyXohcHqY3yVEsU__n3A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwLHaiCrBuexYAA8l012cCO46O3RnK3pzWYsejj98kc3XjM1gE7Cs9kXGo1XqbZPmaM/exec";
 
 // โหลดรายชื่อจังหวัดอัตโนมัติเมื่อหน้าเว็บเปิดขึ้น
 window.onload = loadProvinces;
 
 // ดึงจังหวัดทั้งหมดจาก API
 async function loadProvinces() {
+    showLoading();
     const select = document.getElementById("provinceSelect");
 
     try {
         const response = await fetch(`${API_URL}?listProvinces=1`);
         const provinces = await response.json();
 
-        // เคลียร์ dropdown
         select.innerHTML = `<option value="">-- เลือกจังหวัด --</option>`;
-
-        // ใส่จังหวัดทั้งหมดลง dropdown
         provinces.forEach(p => {
             const option = document.createElement("option");
             option.value = p;
             option.textContent = p;
             select.appendChild(option);
         });
-
     } catch (error) {
-        console.error("โหลดจังหวัดล้มเหลว:", error);
         select.innerHTML = `<option value="">โหลดจังหวัดไม่สำเร็จ</option>`;
     }
+
+    hideLoading();
 }
 
 
@@ -184,12 +216,17 @@ async function loadData() {
         return;
     }
 
+    showLoading();
+
     const response = await fetch(`${API_URL}?province=${province}`);
     const data = await response.json();
 
     renderTable(data);
     renderChart(data);
+
+    hideLoading();
 }
+
 
 
 // แสดงตารางผลลัพธ์
@@ -197,7 +234,17 @@ function renderTable(data) {
     const tbody = document.querySelector("#resultTable tbody");
     tbody.innerHTML = "";
 
-    data.forEach(row => {
+    const filtered = data.filter(r => {
+        const kpiVal = Number(r.kpi || 0);
+        const nyVal  = Number(r.ny  || 0);
+        const diffVal = Number(r.diff || 0);
+        const noteVal = (r.note || "").trim();
+
+        // แสดงเฉพาะแถวที่มีข้อมูลจริง หรือมีความต่าง
+        return (kpiVal !== 0 || nyVal !== 0 || diffVal !== 0 || noteVal !== "");
+    });
+
+    filtered.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td class="highlight">${row.contract}</td>
@@ -210,12 +257,32 @@ function renderTable(data) {
 }
 
 
+
+
+function showLoading() {
+    document.getElementById("loadingBox").style.display = "block";
+}
+
+function hideLoading() {
+    document.getElementById("loadingBox").style.display = "none";
+}
+   
+
 // แสดงกราฟแท่ง
 function renderChart(data) {
     const ctx = document.getElementById("barChart");
 
-    const labels = data.map(r => r.contract);
-    const diffs = data.map(r => r.diff);
+    const filtered = data.filter(r => {
+        const kpiVal = Number(r.kpi || 0);
+        const nyVal  = Number(r.ny  || 0);
+        const diffVal = Number(r.diff || 0);
+        const noteVal = (r.note || "").trim();
+
+        return (kpiVal !== 0 || nyVal !== 0 || diffVal !== 0 || noteVal !== "");
+    });
+
+    const labels = filtered.map(r => r.contract);
+    const diffs  = filtered.map(r => Number(r.diff || 0));
 
     new Chart(ctx, {
         type: "bar",
@@ -236,7 +303,21 @@ function renderChart(data) {
         }
     });
 }
+
+
+
+
+
+   
 </script>
 
+<div id="loadingBox">
+    <div class="loading-arrow">⟳</div>
+    <div class="loading-text">กำลังโหลดข้อมูล...</div>
+</div>
+
+   
 </body>
 </html>
+
+
