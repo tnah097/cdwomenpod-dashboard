@@ -528,10 +528,19 @@ async function fetchData(){
       const url = `https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(p.province)}`;
       const rowHTML=finalColumns.map(k=>{
         const raw=p[k];
-        if(k==="province"){
-          const display=(raw===null||raw===undefined||raw==="")?"-":raw;
-         return `<td class="align-left"><a href="${url}" class="province-link">${display}</a></td>`;
-        }
+        if (k === "province") {
+  const display = (raw === null || raw === undefined || raw === "") ? "-" : raw;
+  return `
+    <td class="align-left">
+      <a href="javascript:void(0)"
+         class="province-link"
+         onclick="goLogin('${p.province}')">
+         ${display}
+      </a>
+    </td>
+  `;
+}
+
         if(k==="overduePercent"||String(k).toLowerCase().includes("percent")){
           return `<td class="align-right">${formatPercent(raw)}</td>`;
         }
@@ -651,11 +660,23 @@ async function fetchStudyCenterData() {
     console.error("fetchStudyCenterData error:", err);
   }
 }
+
+
+
+
   
 fetchData();fetchStudyCenterData();
 
+  function goLogin(province) {
+  sessionStorage.clear();
+  window.location.href =
+    `Login.html?province=${encodeURIComponent(province)}`;
+}
+
+
 </script>
 
+  
 </body>
 
 </html>
