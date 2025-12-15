@@ -156,18 +156,20 @@ const API_URL =
 
   // เรียกทันทีเมื่อเปิดหน้า
   document.addEventListener("DOMContentLoaded", loadProvinces);
+function openProvince() {
+  const province = document.getElementById("provinceSelect").value;
 
-  function openProvince() {
-    const province = document.getElementById("provinceSelect").value;
-
-    if (!province) {
-      alert("กรุณาเลือกจังหวัด");
-      return;
-    }
-
-    window.location.href =
-      `province2569.html?province=${encodeURIComponent(province)}`;
+  if (!province) {
+    alert("กรุณาเลือกจังหวัด");
+    return;
   }
+
+  window.open(
+    `province2569.html?province=${encodeURIComponent(province)}`,
+    "_blank"
+  );
+}
+  
 </script>
 
 
