@@ -104,50 +104,49 @@
   <div id="error" class="error"></div>
 
 </div>
+  
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzLG-ixWhej_K1LPn0Ly79VooNCElXpco4wIAEkBjyH6zqIJOYHO7FskjaBa3V1v7Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyeDVDqabOkibsvQGqGPYYNy9yuMN7wPecOzms6YqIpus1KWlu8IzhFuuZ7nQeJ4A/exec";
 
 async function login() {
-    const user = document.getElementById("username").value.trim();
-    const pass = document.getElementById("password").value.trim();
-    const msg = document.getElementById("error");
+  const user = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value.trim();
+  const msg  = document.getElementById("error");
 
-    msg.textContent = "กำลังตรวจสอบข้อมูล...";
+  msg.textContent = "กำลังตรวจสอบข้อมูล...";
 
-    try {
-        const res = await fetch(
-          `${API_URL}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`
-        );
-        const data = await res.json();
+  try {
+    const res = await fetch(
+      `${API_URL}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`
+    );
+    const data = await res.json();
 
-        if (data.status === "success") {
-
-            // 🔐 ส่วนกลาง
-            if (data.role === "admin") {
-                window.location.href =
-                  "https://tnah097.github.io/cdwomenpod-dashboard/admin2569.html";
-                return;
-            }
-
-            // 🏷 จังหวัด
-            if (data.role === "province") {
-                window.location.href =
-                  `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(data.province)}`;
-                return;
-            }
-
-            msg.textContent = "❌ ไม่พบสิทธิ์ผู้ใช้งาน";
-
-        } else {
-            msg.textContent = "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
-        }
-
-    } catch (e) {
-        msg.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
+    if (data.status !== "success") {
+      msg.textContent = "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+      return;
     }
+
+    // 🔐 admin → ไปหน้าเลือกจังหวัด
+    if (data.role === "admin") {
+      window.location.href =
+        "https://tnah097.github.io/cdwomenpod-dashboard/admin2569.html";
+      return;
+    }
+
+    // 🏷 province → เข้า province ตรง
+    if (data.role === "province") {
+      window.location.href =
+        `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(data.province)}`;
+      return;
+    }
+
+    msg.textContent = "❌ ไม่พบสิทธิ์ผู้ใช้งาน";
+
+  } catch (e) {
+    msg.textContent = "❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
+  }
 }
 </script>
-
 
 </body>
 </html>
