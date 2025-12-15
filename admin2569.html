@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เลือกจังหวัด</title>
+</head>
+<body>
+
+<h2>เลือกจังหวัด</h2>
+
+<select id="provinceSelect">
+  <option value="">-- เลือกจังหวัด --</option>
+  <option value="นครปฐม">นครปฐม</option>
+  <option value="เชียงใหม่">เชียงใหม่</option>
+  <option value="สงขลา">สงขลา</option>
+</select>
+
+<button onclick="openProvince()">เปิดข้อมูล</button>
+
+<script>
+function openProvince() {
+  const province = document.getElementById("provinceSelect").value;
+  if (!province) {
+    alert("กรุณาเลือกจังหวัด");
+    return;
+  }
+
+  window.open(
+    `province2569.html?province=${encodeURIComponent(province)}`,
+    "_blank"   // ถ้าต้องการเปิดแท็บใหม่
+  );
+}
+</script>
+
+</body>
+</html>
