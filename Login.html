@@ -128,17 +128,20 @@ async function login() {
 
     // 🔐 admin → ไปหน้าเลือกจังหวัด
     if (data.role === "admin") {
-      window.location.href =
-        "https://tnah097.github.io/cdwomenpod-dashboard/admin2569.html";
-      return;
-    }
+  sessionStorage.setItem("role", "admin");
+  window.location.href =
+    "https://tnah097.github.io/cdwomenpod-dashboard/admin2569.html";
+  return;
+}
 
-    // 🏷 province → เข้า province ตรง
-    if (data.role === "province") {
-      window.location.href =
-        `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(data.province)}`;
-      return;
-    }
+// 🏷 province → เข้า province ตรง
+if (data.role === "province") {
+  sessionStorage.setItem("role", "province");
+  sessionStorage.setItem("province", data.province);
+  window.location.href =
+    `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(data.province)}`;
+  return;
+}
 
     msg.textContent = "❌ ไม่พบสิทธิ์ผู้ใช้งาน";
 
