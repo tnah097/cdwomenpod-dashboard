@@ -103,12 +103,8 @@
     <h2>เลือกจังหวัด (ส่วนกลาง)</h2>
 
     <select id="provinceSelect">
-      <option value="">-- เลือกจังหวัด --</option>
-      <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-      <option value="นครปฐม">นครปฐม</option>
-      <option value="เชียงใหม่">เชียงใหม่</option>
-      <option value="สงขลา">สงขลา</option>
-    </select>
+  <option value="">-- เลือกจังหวัด --</option>
+</select>
 
     <button onclick="openProvince()">เปิดข้อมูลจังหวัด</button>
 
@@ -118,28 +114,63 @@
 
   </div>
 
+
   <script>
-    // guard กันเปิดหน้านี้โดยไม่ login
-    const role = sessionStorage.getItem("role");
-    if (role !== "admin") {
-      alert("ไม่มีสิทธิ์เข้าใช้งานหน้านี้");
-      window.location.href = "login.html";
-    }
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbyVwuTxCYWygVb0aG6v9A3Nh3ClKTc3RVE6HwGn2ITCK8TscO25ChAbrLnvjxH_5qyoWw/exec";
+  </script>
+  
+<script>
+  // guard กันเปิดหน้านี้โดยไม่ login
+  const role = sessionStorage.getItem("role");
+  if (role !== "admin") {
+    alert("ไม่มีสิทธิ์เข้าใช้งานหน้านี้");
+    window.location.href = "login.html";
+  }
 
-    function openProvince() {
-      const province = document.getElementById("provinceSelect").value;
+  // ✅ โหลดจังหวัดจาก Apps Script
+  async function loadProvinces() {
+    try {
+      const res = await fetch(`${API_URL}?action=getProvinces`);
+      const data = await res.json();
 
-      if (!province) {
-        alert("กรุณาเลือกจังหวัด");
+      if (data.status !== "success") {
+        alert("ไม่สามารถโหลดรายชื่อจังหวัดได้");
         return;
       }
 
-      window.open(
-        `province2569.html?province=${encodeURIComponent(province)}`,
-        "_blank"
-      );
+      const select = document.getElementById("provinceSelect");
+      select.innerHTML = '<option value="">-- เลือกจังหวัด --</option>';
+
+      data.provinces.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        select.appendChild(opt);
+      });
+
+    } catch (e) {
+      alert("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้");
     }
-  </script>
+  }
+
+  // เรียกทันทีเมื่อเปิดหน้า
+  document.addEventListener("DOMContentLoaded", loadProvinces);
+
+  function openProvince() {
+    const province = document.getElementById("provinceSelect").value;
+
+    if (!province) {
+      alert("กรุณาเลือกจังหวัด");
+      return;
+    }
+
+    window.location.href =
+      `province2569.html?province=${encodeURIComponent(province)}`;
+  }
+</script>
+
+
 
 </body>
 </html>
