@@ -8,7 +8,7 @@
 
 <style>
 /* ===============================
-   Layout เดิม (คงไว้ทั้งหมด)
+   โครงสร้างเดิม (คงไว้)
    =============================== */
 body {
   font-family: 'Sarabun', sans-serif;
@@ -18,7 +18,6 @@ body {
   display: flex;
   justify-content: center;
   min-height: 100vh;
-  transition: background 0.8s ease;
 }
 .container {
   width: 100%;
@@ -59,7 +58,6 @@ body {
   color: #880e4f;
   font-weight: bold;
   font-size: 0.95rem;
-  margin-top: 5px;
 }
 
 /* Toolbar */
@@ -87,7 +85,7 @@ body {
 }
 
 /* ===============================
-   ตาราง
+   ตาราง (แก้ปัญหาหัวซ้อน)
    =============================== */
 .table-wrapper {
   overflow: auto;
@@ -108,18 +106,16 @@ th, td {
   vertical-align: middle;
   word-break: break-word;
 }
-
-/* ====== แก้หัวตารางไม่ซ้อน ====== */
 thead th {
   background-color: #f8bbd0;
   color: #880e4f;
   font-weight: 700;
-  white-space: normal;     /* ✅ ให้ตัดบรรทัด */
+  white-space: normal;      /* ✅ ตัดบรรทัด */
   line-height: 1.35;
   font-size: 0.85rem;
 }
 
-/* sticky เฉพาะหน้าจอ */
+/* sticky header (หน้าจอเท่านั้น) */
 thead tr:nth-child(1) th { position: sticky; top: 0; z-index: 5; }
 thead tr:nth-child(2) th { position: sticky; top: 38px; z-index: 5; }
 thead tr:nth-child(3) th { position: sticky; top: 76px; z-index: 5; }
@@ -135,7 +131,7 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 }
 
 /* ===============================
-   โหมด Export PDF / Print
+   Export PDF / Print (สำคัญ)
    =============================== */
 @media print {
   body {
@@ -147,16 +143,15 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
     border-radius: 0;
     padding: 10px;
   }
-  /* ❗ ปิด sticky ตอนพิมพ์ */
   thead th {
-    position: static !important;
+    position: static !important; /* ❌ ปิด sticky */
+  }
+  thead {
+    display: table-header-group;
   }
   .table-wrapper {
     max-height: none !important;
     overflow: visible !important;
-  }
-  thead {
-    display: table-header-group;
   }
   tr {
     page-break-inside: avoid;
@@ -204,7 +199,81 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 </div>
 
 <script>
-/* JS เดิมของคุณ คงไว้ทั้งหมด */
+/* ===============================
+   JS เดิม (คง logic ทั้งหมด)
+   =============================== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbxIDBqQkRdzRZsFsqTrxcdCg0FXY-NoxZ8UaFFKNG9oOGWr3G67vYmjw4vEpXoKLbH1_Q/exec';
+let currentQuarter = 'ไตรมาส 1-2';
+const START_HEADER_ROW = 3;
+const END_HEADER_ROW = 5;
+const START_BODY_ROW = 6;
+
+function applyMergedCells(cellData, mergedInfo) {
+  const hidden = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
+  let html = '';
+  for (let r = 0; r < cellData.length; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cellData[r].length; c++) {
+      if (hidden[r][c]) continue;
+      let attr = '';
+      const m = mergedInfo.find(x => x.row === r && x.col === c);
+      if (m) {
+        attr += ` rowspan="${m.height}" colspan="${m.width}"`;
+        for (let i = 0; i < m.height; i++)
+          for (let j = 0; j < m.width; j++)
+            if (!(i === 0 && j === 0)) hidden[r+i][c+j] = true;
+      }
+      html += `<th${attr}>${cellData[r][c] || ''}</th>`;
+    }
+    html += '</tr>';
+  }
+  return html;
+}
+
+async function loadSheet(sheetName) {
+  const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(sheetName)}`);
+  const { data, merged } = await res.json();
+
+  const headerPart = data.slice(0, START_HEADER_ROW);
+  document.getElementById('reportInfo').innerHTML =
+    headerPart.slice(0,2).map(r => r.filter(Boolean).join(' ')).join('<br>');
+  document.getElementById('reportDate').textContent =
+    headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
+
+  const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW+1);
+  const headerMerged = merged
+    .filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
+    .map(m => ({...m, row: m.row - START_HEADER_ROW}));
+
+  document.getElementById('tableHead').innerHTML =
+    applyMergedCells(headerData, headerMerged);
+
+  renderTableBody(data.slice(START_BODY_ROW));
+}
+
+function renderTableBody(rows) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  rows.forEach(row => {
+    tbody.innerHTML += '<tr>' +
+      row.map(c => `<td>${typeof c === 'number' ? c.toLocaleString('th-TH') : (c || '')}</td>`).join('')
+      + '</tr>';
+  });
+}
+
+function changeQuarter() {
+  currentQuarter = document.getElementById('quarterSelect').value;
+  loadSheet(currentQuarter);
+}
+
+document.getElementById('filterInput').addEventListener('keyup', e => {
+  const kw = e.target.value.toLowerCase();
+  document.querySelectorAll('#tableBody tr').forEach(r => {
+    r.style.display = r.innerText.toLowerCase().includes(kw) ? '' : 'none';
+  });
+});
+
+window.onload = () => loadSheet(currentQuarter);
 </script>
 </body>
 </html>
