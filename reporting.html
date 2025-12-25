@@ -106,25 +106,20 @@ th, td {
   vertical-align: middle;
   word-break: break-word;
 }
-
-
-/* sticky header (หน้าจอเท่านั้น) */
-thead {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-thead tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
 thead th {
   background-color: #f8bbd0;
-  z-index: 11;
+  color: #880e4f;
+  font-weight: 700;
+  white-space: normal;      /* ✅ ตัดบรรทัด */
+  line-height: 1.35;
+  font-size: 0.85rem;
 }
+
+/* sticky header (หน้าจอเท่านั้น) */
+thead tr:nth-child(1) th { position: sticky; top: 0; z-index: 5; }
+thead tr:nth-child(2) th { position: sticky; top: 38px; z-index: 5; }
+thead tr:nth-child(3) th { position: sticky; top: 76px; z-index: 5; }
+
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
 tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 
