@@ -15,7 +15,6 @@ body {
   display: flex;
   justify-content: center;
   min-height: 100vh;
-  transition: background 0.8s ease;
 }
 .container {
   width: 100%;
@@ -83,7 +82,7 @@ body {
   font-family: 'Sarabun';
 }
 
-/* ตาราง */
+/* TABLE */
 .table-wrapper {
   overflow: auto;
   max-height: 80vh;
@@ -107,14 +106,17 @@ thead th {
   color: #880e4f;
   font-weight: 700;
   position: sticky;
+  z-index: 5;
 }
 thead tr:nth-child(1) th { top: 0; }
 thead tr:nth-child(2) th { top: 32px; }
 thead tr:nth-child(3) th { top: 64px; }
 
-/* ✅ ปรับเฉพาะจังหวัด + หมายเหตุ */
-th:nth-child(2), td:nth-child(2),
-th:last-child, td:last-child {
+/* ✅ FIX: จังหวัด + หมายเหตุ */
+th:nth-child(2),
+td:nth-child(2),
+th:last-child,
+td:last-child {
   white-space: normal;
   line-height: 1.4;
 }
@@ -138,8 +140,11 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 </div>
 
 <div class="toolbar">
-  <button onclick="window.location.href='Menu.html'">🏠 กลับสู่เมนูหลัก</button>
+  <div class="left-tools">
+    <button onclick="window.location.href='Menu.html'">🏠 กลับสู่เมนูหลัก</button>
+  </div>
   <div class="filter-bar">
+    <label>ผลการดำเนินงานตามไตรมาส:</label>
     <select id="quarterSelect" onchange="changeQuarter()">
       <option value="ไตรมาส 1-2">ไตรมาส 1-2</option>
       <option value="ไตรมาส 3-4">ไตรมาส 3-4</option>
@@ -151,28 +156,28 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 <div class="table-wrapper">
 <table id="dataTable">
 
-<!-- ✅ FIX WIDTH ตามไฟล์ Excel -->
+<!-- ✅ COL WIDTH = Excel -->
 <colgroup>
   <col style="width:50px">
   <col style="width:120px">
   <col style="width:160px">
-  <col style="width:130px">
+  <col style="width:140px">
   <col style="width:140px">
   <col style="width:110px">
-  <col style="width:90px">
+  <col style="width:70px">
   <col style="width:70px">
   <col style="width:140px">
   <col style="width:140px">
   <col style="width:120px">
   <col style="width:90px">
   <col style="width:70px">
-  <col style="width:140px">
   <col style="width:160px">
-  <col style="width:130px">
+  <col style="width:160px">
+  <col style="width:120px">
+  <col style="width:80px">
+  <col style="width:80px">
   <col style="width:90px">
-  <col style="width:70px">
-  <col style="width:80px">
-  <col style="width:80px">
+  <col style="width:90px">
   <col style="width:220px">
 </colgroup>
 
@@ -182,10 +187,63 @@ tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 </tbody>
 </table>
 </div>
+
 </div>
 
 <script>
-/* JS เดิมของคุณ คงไว้ทั้งหมด */
+const API_URL = 'https://script.google.com/macros/s/AKfycbxIDBqQkRdzRZsFsqTrxcdCg0FXY-NoxZ8UaFFKNG9oOGWr3G67vYmjw4vEpXoKLbH1_Q/exec';
+let currentQuarter = 'ไตรมาส 1-2';
+const START_HEADER_ROW = 3;
+const END_HEADER_ROW = 5;
+const START_BODY_ROW = 6;
+
+function applyMergedCells(cellData, mergedInfo) {
+  const hidden = Array(cellData.length).fill(0).map(() => []);
+  let html = '';
+  for (let r = 0; r < cellData.length; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cellData[r].length; c++) {
+      if (hidden[r][c]) continue;
+      let attr = '';
+      const m = mergedInfo.find(x => x.row === r && x.col === c);
+      if (m) {
+        attr = `rowspan="${m.height}" colspan="${m.width}"`;
+        for (let i = 0; i < m.height; i++)
+          for (let j = 0; j < m.width; j++)
+            if (i || j) hidden[r+i][c+j] = true;
+      }
+      html += `<th ${attr}>${cellData[r][c] || ''}</th>`;
+    }
+    html += '</tr>';
+  }
+  return html;
+}
+
+async function loadSheet(sheetName) {
+  const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(sheetName)}`);
+  const { data, merged } = await res.json();
+
+  document.getElementById('tableHead').innerHTML =
+    applyMergedCells(data.slice(START_HEADER_ROW, END_HEADER_ROW + 1),
+    merged.map(m => ({ ...m, row: m.row - START_HEADER_ROW })));
+
+  renderBody(data.slice(START_BODY_ROW));
+}
+
+function renderBody(rows) {
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = '';
+  rows.forEach(r => {
+    tb.innerHTML += `<tr>${r.map(c => `<td>${c ?? ''}</td>`).join('')}</tr>`;
+  });
+}
+
+function changeQuarter() {
+  currentQuarter = document.getElementById('quarterSelect').value;
+  loadSheet(currentQuarter);
+}
+
+window.onload = () => loadSheet(currentQuarter);
 </script>
 
 </body>
