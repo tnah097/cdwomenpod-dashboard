@@ -15,6 +15,7 @@ body {
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  transition: background 0.8s ease;
 }
 
 .container {
@@ -36,13 +37,62 @@ body {
 }
 .logos-top img { height: 55px; }
 
-/* ================= TABLE ================= */
+.header-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+#reportInfo {
+  flex: 1;
+  text-align: center;
+  color: #880e4f;
+  font-weight: bold;
+  margin-top: 40px;
+  line-height: 1.6em;
+}
+#reportDate {
+  flex-basis: 100%;
+  text-align: right;
+  color: #880e4f;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-top: 5px;
+}
 
+/* Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.left-tools button {
+  background-color: #f8bbd0;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #880e4f;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.filter-bar select,
+.filter-bar input {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #f48fb1;
+  font-family: 'Sarabun';
+}
+
+/* TABLE */
 .table-wrapper {
   overflow: auto;
   max-height: 80vh;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(233,30,99,0.1);
   background: white;
 }
 
@@ -50,16 +100,16 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  table-layout: auto; /* 🔑 แก้ปัญหาตัวเลขซ้อน */
 }
 
+/* 🔴 แก้หลัก: ยกเลิก nowrap */
 th, td {
   border: 1px solid #c97a9b;
   padding: 6px 8px;
   text-align: center;
   vertical-align: middle;
-  white-space: normal;     /* 🔑 อนุญาตตัดบรรทัด */
-  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
 }
 
 thead th {
@@ -69,24 +119,24 @@ thead th {
   border: 1.5px solid #b36a84;
   position: sticky;
   top: 0;
-  z-index: 5;
 }
 
-/* 🔒 ล็อกเฉพาะคอลัมน์จังหวัด */
+/* ✅ ล็อกคอลัมน์จังหวัด */
 th:nth-child(2),
 td:nth-child(2) {
   width: 160px;
-  word-break: break-word;
+  max-width: 160px;
+  text-align: left;
 }
 
-/* 🔒 หมายเหตุ (รองรับ 2 บรรทัดจาก merge cell) */
+/* ✅ หมายเหตุหลายบรรทัด */
 td.note-cell {
   white-space: pre-line;
   text-align: left;
 }
 
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
-tr:nth-child(odd) td  { background-color: rgba(255,192,203,0.05); }
+tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
 
 .empty-row td {
   text-align: center;
@@ -100,70 +150,82 @@ tr:nth-child(odd) td  { background-color: rgba(255,192,203,0.05); }
 <body>
 <div class="container">
 
-  <!-- ❌ โลโก้คงเดิม ไม่แตะ -->
   <div class="logos-top">
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s">
   </div>
 
+  <div class="header-block">
+    <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+    <div id="reportDate"></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="left-tools">
+      <button onclick="window.location.href='Menu.html'">🏠 กลับสู่เมนูหลัก</button>
+    </div>
+    <div class="filter-bar">
+      <select id="quarterSelect" onchange="changeQuarter()">
+        <option value="ไตรมาส 1-2">ไตรมาส 1-2</option>
+        <option value="ไตรมาส 3-4">ไตรมาส 3-4</option>
+      </select>
+      <input id="filterInput" placeholder="ค้นหา...">
+    </div>
+  </div>
+
   <div class="table-wrapper">
-    <table id="dataTable">
+    <table>
       <thead id="tableHead"></thead>
       <tbody id="tableBody">
         <tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>
       </tbody>
     </table>
   </div>
-
 </div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxIDBqQkRdzRZsFsqTrxcdCg0FXY-NoxZ8UaFFKNG9oOGWr3G67vYmjw4vEpXoKLbH1_Q/exec';
-const START_HEADER_ROW = 3;
-const END_HEADER_ROW   = 5;
-const START_BODY_ROW   = 6;
+let currentQuarter = 'ไตรมาส 1-2';
 
-// ================= LOAD =================
-async function loadSheet(sheetName = 'ไตรมาส 1-2') {
-  const thead = document.getElementById('tableHead');
-  const tbody = document.getElementById('tableBody');
-
-  try {
-    const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(sheetName)}`);
-    const { data, merged } = await res.json();
-
-    // Header
-    const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW + 1);
-    thead.innerHTML = headerData.map(r =>
-      `<tr>${r.map(c => `<th>${c || ''}</th>`).join('')}</tr>`
-    ).join('');
-
-    // Body
-    renderTableBody(data.slice(START_BODY_ROW));
-
-  } catch (e) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="30">❌ โหลดข้อมูลไม่สำเร็จ</td></tr>`;
-  }
-}
-
-// ================= BODY =================
-function renderTableBody(rows) {
+function renderTableBody(data) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
 
-  rows.forEach(row => {
+  data.forEach((row, r) => {
     let tr = '<tr>';
-    row.forEach(cell => {
-      const safe = (cell || '').toString().replace(/\n/g, '<br>');
-      tr += `<td class="note-cell">${safe}</td>`;
+    row.forEach((cell, c) => {
+      const value = typeof cell === 'number' ? cell.toLocaleString('th-TH') : (cell || '');
+      const isNote = c === row.length - 1;
+      tr += `<td class="${isNote ? 'note-cell' : ''}">${value}</td>`;
     });
     tr += '</tr>';
     tbody.innerHTML += tr;
   });
 }
 
-// ================= INIT =================
-window.onload = () => loadSheet();
+async function loadSheet(q) {
+  const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(q)}`);
+  const { data, merged } = await res.json();
+
+  document.getElementById('tableHead').innerHTML =
+    data.slice(3,6).map(r => `<tr>${r.map(c=>`<th>${c||''}</th>`).join('')}</tr>`).join('');
+
+  renderTableBody(data.slice(6));
+}
+
+function changeQuarter(){
+  currentQuarter = document.getElementById('quarterSelect').value;
+  loadSheet(currentQuarter);
+}
+
+document.getElementById('filterInput').addEventListener('keyup', e => {
+  const k = e.target.value.toLowerCase();
+  document.querySelectorAll('#tableBody tr').forEach(tr=>{
+    tr.style.display = tr.innerText.toLowerCase().includes(k) ? '' : 'none';
+  });
+});
+
+window.onload = () => loadSheet(currentQuarter);
 </script>
 </body>
 </html>
