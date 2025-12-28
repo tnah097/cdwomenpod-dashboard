@@ -196,10 +196,6 @@ tr:nth-child(odd) td { background: rgba(255,192,203,0.05); }
 </div>
 
 <script>
-/* ===============================
-   CONFIG
-   =============================== */
-const API_URL = 'https://script.google.com/macros/s/AKfycbzqxNQiRQ1f5XPfTID_eodvV3eHJn_MzyoAQPwJR1mm0LYPmYEg2q9tHI3BOhiOhYhb/exec';
 let currentQuarter = 'ไตรมาส 1-2';
 
 const COL = {
@@ -207,21 +203,29 @@ const COL = {
   ZONE: 2
 };
 
-/* ===============================
-   LOAD DATA
-   =============================== */
-async function loadSheet(sheet) {
-  const res = await fetch(`${API_URL}?action=loadData&sheetName=${encodeURIComponent(sheet)}`)
-;
-  const { data, merged } = await res.json();
+function loadSheet(sheet) {
+  document.getElementById('tableBody').innerHTML =
+    `<tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>`;
 
-  // header text
+  google.script.run
+    .withSuccessHandler(renderSheet)
+    .withFailureHandler(err => {
+      alert('โหลดข้อมูลไม่สำเร็จ: ' + err.message);
+    })
+    .loadSheetData(sheet);
+}
+
+function renderSheet(result) {
+  const { data, merged } = result;
+
+  // ===== Header =====
   document.getElementById('reportInfo').innerHTML =
     data.slice(0,2).map(r => r.filter(Boolean).join(' ')).join('<br>');
+
   document.getElementById('reportDate').textContent =
     data[2].join(' ').replace('ข้อมูล ณ วันที่','').trim();
 
-  // table head
+  // ===== Table Head =====
   const headerData = data.slice(3,5);
   const headerMerged = merged
     .filter(m => m.row >= 3 && m.row <= 4)
@@ -230,29 +234,32 @@ async function loadSheet(sheet) {
   document.getElementById('tableHead').innerHTML =
     buildMergedHeader(headerData, headerMerged);
 
-  // body
+  // ===== Body =====
   renderBody(data.slice(6));
 }
 
 /* ===============================
-   MERGE HEADER
+   MERGED HEADER
    =============================== */
 function buildMergedHeader(data, merges) {
   const hide = data.map(r => r.map(() => false));
   let html = '';
-  for (let r=0;r<data.length;r++) {
+
+  for (let r = 0; r < data.length; r++) {
     html += '<tr>';
-    for (let c=0;c<data[r].length;c++) {
+    for (let c = 0; c < data[r].length; c++) {
       if (hide[r][c]) continue;
+
       let attr = '';
-      const m = merges.find(x=>x.row===r && x.col===c);
+      const m = merges.find(x => x.row === r && x.col === c);
+
       if (m) {
         attr = ` rowspan="${m.height}" colspan="${m.width}"`;
-        for (let i=0;i<m.height;i++)
-          for (let j=0;j<m.width;j++)
-            if (i||j) hide[r+i][c+j]=true;
+        for (let i = 0; i < m.height; i++)
+          for (let j = 0; j < m.width; j++)
+            if (i || j) hide[r+i][c+j] = true;
       }
-      html += `<th${attr}>${data[r][c]||''}</th>`;
+      html += `<th${attr}>${data[r][c] || ''}</th>`;
     }
     html += '</tr>';
   }
@@ -260,32 +267,31 @@ function buildMergedHeader(data, merges) {
 }
 
 /* ===============================
-   RENDER BODY
+   TABLE BODY
    =============================== */
 function renderBody(rows) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
 
-  rows.forEach(r => {
-    let tr = document.createElement('tr');
-    r.forEach((c,i) => {
-      let td = document.createElement('td');
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
 
-      // sticky
-      if (i===0) td.classList.add('sticky-col-1','text-center');
-      if (i===1) td.classList.add('sticky-col-2','text-left');
-      if (i===2) td.classList.add('sticky-col-3','text-left');
+    row.forEach((cell, i) => {
+      const td = document.createElement('td');
 
-      // format
-      if (typeof c === 'number') {
-        td.textContent = c.toLocaleString('th-TH',{minimumFractionDigits:2});
+      if (i === 0) td.classList.add('sticky-col-1','text-center');
+      if (i === 1) td.classList.add('sticky-col-2','text-left');
+      if (i === 2) td.classList.add('sticky-col-3','text-left');
+
+      if (typeof cell === 'number') {
+        td.textContent = cell.toLocaleString('th-TH',{minimumFractionDigits:2});
         td.classList.add('text-right');
       } else {
-        td.textContent = c ?? '';
+        td.textContent = cell ?? '';
       }
-
       tr.appendChild(td);
     });
+
     tbody.appendChild(tr);
   });
 
@@ -297,7 +303,8 @@ function renderBody(rows) {
    =============================== */
 function buildFilters(rows) {
   const prov = new Set(), zone = new Set();
-  rows.forEach(r=>{
+
+  rows.forEach(r => {
     prov.add(r[COL.PROVINCE]);
     zone.add(r[COL.ZONE]);
   });
@@ -305,46 +312,41 @@ function buildFilters(rows) {
   fillSelect('provinceFilter', prov);
   fillSelect('zoneFilter', zone);
 }
-function fillSelect(id,set){
-  const sel=document.getElementById(id);
-  sel.innerHTML='<option value="">ทั้งหมด</option>';
-  [...set].filter(Boolean).forEach(v=>{
-    sel.innerHTML+=`<option>${v}</option>`;
+
+function fillSelect(id, set) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = '<option value="">ทั้งหมด</option>';
+
+  [...set].filter(Boolean).forEach(v => {
+    sel.innerHTML += `<option value="${v}">${v}</option>`;
   });
 }
-function applyFilters(){
-  const p=document.getElementById('provinceFilter').value;
-  const z=document.getElementById('zoneFilter').value;
-  const kw=document.getElementById('filterInput').value.toLowerCase();
 
-  document.querySelectorAll('#tableBody tr').forEach(tr=>{
-    const t=tr.innerText.toLowerCase();
-    const show=(!p||t.includes(p))&&(!z||t.includes(z))&&t.includes(kw);
-    tr.style.display=show?'':'none';
+function applyFilters() {
+  const p  = document.getElementById('provinceFilter').value;
+  const z  = document.getElementById('zoneFilter').value;
+  const kw = document.getElementById('filterInput').value.toLowerCase();
+
+  document.querySelectorAll('#tableBody tr').forEach(tr => {
+    const t = tr.innerText.toLowerCase();
+    const show =
+      (!p || t.includes(p)) &&
+      (!z || t.includes(z)) &&
+      t.includes(kw);
+
+    tr.style.display = show ? '' : 'none';
   });
 }
 
 /* ===============================
-   EXPORT
+   QUARTER
    =============================== */
-function downloadExcel(){
-  const url =
-    API_URL
-    + '?action=exportExcel'
-    + '&sheetName=' + encodeURIComponent(currentQuarter);
-
-  // เปิดไฟล์ Excel จาก Google Apps Script โดยตรง
-  window.open(url, '_blank');
-}
-
-/* ===============================
-   INIT
-   =============================== */
-function changeQuarter(){
-  currentQuarter=document.getElementById('quarterSelect').value;
+function changeQuarter() {
+  currentQuarter = document.getElementById('quarterSelect').value;
   loadSheet(currentQuarter);
 }
-window.onload=()=>loadSheet(currentQuarter);
+
+window.onload = () => loadSheet(currentQuarter);
 </script>
 
 </body>
