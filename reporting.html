@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 /* ===============================
-   โครงสร้างเดิม (คงไว้)
+   Layout เดิม (คงไว้)
    =============================== */
 body {
   font-family: 'Sarabun', sans-serif;
@@ -39,13 +40,11 @@ body {
 
 .header-block {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
   flex-wrap: wrap;
   margin-bottom: 10px;
 }
 #reportInfo {
-  flex: 1;
+  width: 100%;
   text-align: center;
   color: #880e4f;
   font-weight: bold;
@@ -53,19 +52,25 @@ body {
   line-height: 1.6em;
 }
 #reportDate {
-  flex-basis: 100%;
+  width: 100%;
   text-align: right;
   color: #880e4f;
   font-weight: bold;
   font-size: 0.95rem;
 }
 
-/* Toolbar */
+/* ===============================
+   Toolbar
+   =============================== */
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+}
+.left-tools {
+  display: flex;
+  gap: 8px;
 }
 .left-tools button {
   background-color: #f8bbd0;
@@ -76,8 +81,11 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
-.filter-bar select,
-.filter-bar input {
+.filter-bar {
+  display: flex;
+  gap: 8px;
+}
+.filter-bar select, .filter-bar input {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid #f48fb1;
@@ -85,195 +93,257 @@ body {
 }
 
 /* ===============================
-   ตาราง (แก้ปัญหาหัวซ้อน)
+   Table
    =============================== */
 .table-wrapper {
   overflow: auto;
   max-height: 80vh;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(233,30,99,0.1);
   background: white;
 }
 table {
-  width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  width: max-content;
+  min-width: 100%;
+  font-size: 0.85rem;
 }
 th, td {
   border: 1px solid #c97a9b;
-  padding: 8px 6px;
-  text-align: center;
+  padding: 6px 8px;
+  white-space: nowrap;
   vertical-align: middle;
-  word-break: break-word;
+  box-sizing: border-box;
 }
 thead th {
   background-color: #f8bbd0;
   color: #880e4f;
   font-weight: 700;
-  white-space: normal;      /* ✅ ตัดบรรทัด */
-  line-height: 1.35;
-  font-size: 0.85rem;
+  text-align: center;
 }
 
-/* sticky header (หน้าจอเท่านั้น) */
-thead tr:nth-child(1) th { position: sticky; top: 0; z-index: 5; }
-thead tr:nth-child(2) th { position: sticky; top: 38px; z-index: 5; }
-thead tr:nth-child(3) th { position: sticky; top: 76px; z-index: 5; }
+/* ===== sticky header ===== */
+thead tr:nth-child(1) th { position: sticky; top: 0; z-index: 10; }
+thead tr:nth-child(2) th { position: sticky; top: 32px; z-index: 10; }
 
-tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
-tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
+/* ===== sticky left ===== */
+.sticky-col-1 { position: sticky; left: 0; z-index: 9; background: #fde7f0; }
+.sticky-col-2 { position: sticky; left: 70px; z-index: 9; background: #fde7f0; }
+.sticky-col-3 { position: sticky; left: 260px; z-index: 9; background: #fde7f0; }
+
+/* ===== alignment ===== */
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+tr:nth-child(even) td { background: rgba(255,182,193,0.12); }
+tr:nth-child(odd) td { background: rgba(255,192,203,0.05); }
 
 .empty-row td {
   text-align: center;
-  padding: 15px;
   font-style: italic;
   color: #c62828;
-}
-
-/* ===============================
-   Export PDF / Print (สำคัญ)
-   =============================== */
-@media print {
-  body {
-    background: white !important;
-    padding: 0;
-  }
-  .container {
-    box-shadow: none;
-    border-radius: 0;
-    padding: 10px;
-  }
-  thead th {
-    position: static !important; /* ❌ ปิด sticky */
-  }
-  thead {
-    display: table-header-group;
-  }
-  .table-wrapper {
-    max-height: none !important;
-    overflow: visible !important;
-  }
-  tr {
-    page-break-inside: avoid;
-  }
-  table {
-    font-size: 11px;
-  }
 }
 </style>
 </head>
 
 <body>
 <div class="container">
+
+  <!-- LOGO -->
   <div class="logos-top">
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s">
   </div>
 
+  <!-- HEADER -->
   <div class="header-block">
-    <div id="reportInfo">กำลังโหลดข้อมูลรายงาน...</div>
+    <div id="reportInfo">กำลังโหลดข้อมูล...</div>
     <div id="reportDate"></div>
   </div>
 
+  <!-- TOOLBAR -->
   <div class="toolbar">
     <div class="left-tools">
-      <button onclick="window.location.href='Menu.html'">🏠 กลับสู่เมนูหลัก</button>
+      <button onclick="location.href='Menu.html'">🏠 กลับสู่เมนูหลัก</button>
+      <button onclick="downloadExcel()">📥 Excel</button>
+      <button onclick="window.print()">📄 PDF</button>
     </div>
     <div class="filter-bar">
       <select id="quarterSelect" onchange="changeQuarter()">
         <option value="ไตรมาส 1-2">ไตรมาส 1-2</option>
         <option value="ไตรมาส 3-4">ไตรมาส 3-4</option>
       </select>
+      <select id="provinceFilter" onchange="applyFilters()">
+        <option value="">ทุกจังหวัด</option>
+      </select>
+      <select id="zoneFilter" onchange="applyFilters()">
+        <option value="">ทุกเขต</option>
+      </select>
       <input type="text" id="filterInput" placeholder="ค้นหา...">
     </div>
   </div>
 
+  <!-- TABLE -->
   <div class="table-wrapper">
-    <table>
+    <table id="dataTable">
       <thead id="tableHead"></thead>
       <tbody id="tableBody">
         <tr class="empty-row"><td colspan="30">กำลังโหลดข้อมูล...</td></tr>
       </tbody>
     </table>
   </div>
+
 </div>
 
 <script>
 /* ===============================
-   JS เดิม (คง logic ทั้งหมด)
+   CONFIG
    =============================== */
 const API_URL = 'https://script.google.com/macros/s/AKfycbxIDBqQkRdzRZsFsqTrxcdCg0FXY-NoxZ8UaFFKNG9oOGWr3G67vYmjw4vEpXoKLbH1_Q/exec';
 let currentQuarter = 'ไตรมาส 1-2';
-const START_HEADER_ROW = 3;
-const END_HEADER_ROW = 5;
-const START_BODY_ROW = 6;
 
-function applyMergedCells(cellData, mergedInfo) {
-  const hidden = Array(cellData.length).fill(0).map(() => Array(cellData[0].length).fill(false));
+const COL = {
+  PROVINCE: 1,
+  ZONE: 2
+};
+
+/* ===============================
+   LOAD DATA
+   =============================== */
+async function loadSheet(sheet) {
+  const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(sheet)}`);
+  const { data, merged } = await res.json();
+
+  // header text
+  document.getElementById('reportInfo').innerHTML =
+    data.slice(0,2).map(r => r.filter(Boolean).join(' ')).join('<br>');
+  document.getElementById('reportDate').textContent =
+    data[2].join(' ').replace('ข้อมูล ณ วันที่','').trim();
+
+  // table head
+  const headerData = data.slice(3,5);
+  const headerMerged = merged
+    .filter(m => m.row >= 3 && m.row <= 4)
+    .map(m => ({...m, row: m.row - 3}));
+
+  document.getElementById('tableHead').innerHTML =
+    buildMergedHeader(headerData, headerMerged);
+
+  // body
+  renderBody(data.slice(6));
+}
+
+/* ===============================
+   MERGE HEADER
+   =============================== */
+function buildMergedHeader(data, merges) {
+  const hide = data.map(r => r.map(() => false));
   let html = '';
-  for (let r = 0; r < cellData.length; r++) {
+  for (let r=0;r<data.length;r++) {
     html += '<tr>';
-    for (let c = 0; c < cellData[r].length; c++) {
-      if (hidden[r][c]) continue;
+    for (let c=0;c<data[r].length;c++) {
+      if (hide[r][c]) continue;
       let attr = '';
-      const m = mergedInfo.find(x => x.row === r && x.col === c);
+      const m = merges.find(x=>x.row===r && x.col===c);
       if (m) {
-        attr += ` rowspan="${m.height}" colspan="${m.width}"`;
-        for (let i = 0; i < m.height; i++)
-          for (let j = 0; j < m.width; j++)
-            if (!(i === 0 && j === 0)) hidden[r+i][c+j] = true;
+        attr = ` rowspan="${m.height}" colspan="${m.width}"`;
+        for (let i=0;i<m.height;i++)
+          for (let j=0;j<m.width;j++)
+            if (i||j) hide[r+i][c+j]=true;
       }
-      html += `<th${attr}>${cellData[r][c] || ''}</th>`;
+      html += `<th${attr}>${data[r][c]||''}</th>`;
     }
     html += '</tr>';
   }
   return html;
 }
 
-async function loadSheet(sheetName) {
-  const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(sheetName)}`);
-  const { data, merged } = await res.json();
-
-  const headerPart = data.slice(0, START_HEADER_ROW);
-  document.getElementById('reportInfo').innerHTML =
-    headerPart.slice(0,2).map(r => r.filter(Boolean).join(' ')).join('<br>');
-  document.getElementById('reportDate').textContent =
-    headerPart[2].join(' ').replace('ข้อมูล ณ วันที่', '').trim();
-
-  const headerData = data.slice(START_HEADER_ROW, END_HEADER_ROW+1);
-  const headerMerged = merged
-    .filter(m => m.row >= START_HEADER_ROW && m.row <= END_HEADER_ROW)
-    .map(m => ({...m, row: m.row - START_HEADER_ROW}));
-
-  document.getElementById('tableHead').innerHTML =
-    applyMergedCells(headerData, headerMerged);
-
-  renderTableBody(data.slice(START_BODY_ROW));
-}
-
-function renderTableBody(rows) {
+/* ===============================
+   RENDER BODY
+   =============================== */
+function renderBody(rows) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
-  rows.forEach(row => {
-    tbody.innerHTML += '<tr>' +
-      row.map(c => `<td>${typeof c === 'number' ? c.toLocaleString('th-TH') : (c || '')}</td>`).join('')
-      + '</tr>';
+
+  rows.forEach(r => {
+    let tr = document.createElement('tr');
+    r.forEach((c,i) => {
+      let td = document.createElement('td');
+
+      // sticky
+      if (i===0) td.classList.add('sticky-col-1','text-center');
+      if (i===1) td.classList.add('sticky-col-2','text-left');
+      if (i===2) td.classList.add('sticky-col-3','text-left');
+
+      // format
+      if (typeof c === 'number') {
+        td.textContent = c.toLocaleString('th-TH',{minimumFractionDigits:2});
+        td.classList.add('text-right');
+      } else {
+        td.textContent = c ?? '';
+      }
+
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  buildFilters(rows);
+}
+
+/* ===============================
+   FILTER
+   =============================== */
+function buildFilters(rows) {
+  const prov = new Set(), zone = new Set();
+  rows.forEach(r=>{
+    prov.add(r[COL.PROVINCE]);
+    zone.add(r[COL.ZONE]);
+  });
+
+  fillSelect('provinceFilter', prov);
+  fillSelect('zoneFilter', zone);
+}
+function fillSelect(id,set){
+  const sel=document.getElementById(id);
+  sel.innerHTML='<option value="">ทั้งหมด</option>';
+  [...set].filter(Boolean).forEach(v=>{
+    sel.innerHTML+=`<option>${v}</option>`;
+  });
+}
+function applyFilters(){
+  const p=document.getElementById('provinceFilter').value;
+  const z=document.getElementById('zoneFilter').value;
+  const kw=document.getElementById('filterInput').value.toLowerCase();
+
+  document.querySelectorAll('#tableBody tr').forEach(tr=>{
+    const t=tr.innerText.toLowerCase();
+    const show=(!p||t.includes(p))&&(!z||t.includes(z))&&t.includes(kw);
+    tr.style.display=show?'':'none';
   });
 }
 
-function changeQuarter() {
-  currentQuarter = document.getElementById('quarterSelect').value;
+/* ===============================
+   EXPORT
+   =============================== */
+function downloadExcel(){
+  const table=document.getElementById('dataTable').outerHTML;
+  const blob=new Blob([table],{type:'application/vnd.ms-excel'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='report.xls';
+  a.click();
+}
+
+/* ===============================
+   INIT
+   =============================== */
+function changeQuarter(){
+  currentQuarter=document.getElementById('quarterSelect').value;
   loadSheet(currentQuarter);
 }
-
-document.getElementById('filterInput').addEventListener('keyup', e => {
-  const kw = e.target.value.toLowerCase();
-  document.querySelectorAll('#tableBody tr').forEach(r => {
-    r.style.display = r.innerText.toLowerCase().includes(kw) ? '' : 'none';
-  });
-});
-
-window.onload = () => loadSheet(currentQuarter);
+window.onload=()=>loadSheet(currentQuarter);
 </script>
+
 </body>
 </html>
