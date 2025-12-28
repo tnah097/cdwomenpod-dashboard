@@ -9,7 +9,7 @@
 
 <style>
 body {
-  font-family: 'Sarabun', sans-serif; 
+  font-family: 'Sarabun', sans-serif;
   margin: 0;
   padding: 20px;
   background: linear-gradient(to bottom right, #ffe6f0, #ffd1e6);
@@ -96,17 +96,26 @@ body {
   border-radius: 12px;
   background: white;
 }
+
 table {
   border-collapse: collapse;
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  table-layout: fixed; /* สำคัญมาก */
   font-size: 0.85rem;
 }
+
+/* fix column width ให้ตรง sheet */
+col.col-a { width: 50px; }   /* ลำดับ */
+col.col-b { width: 160px; }  /* จังหวัด */
+col.col-c { width: 200px; }  /* เขต */
+
 th, td {
   border: 1px solid #c97a9b;
   padding: 6px 8px;
   white-space: nowrap;
+  box-sizing: border-box;
 }
+
 thead th {
   background-color: #f8bbd0;
   color: #880e4f;
@@ -115,13 +124,31 @@ thead th {
 }
 
 /* sticky header */
-thead tr:nth-child(1) th { position: sticky; top: 0; z-index: 10; }
-thead tr:nth-child(2) th { position: sticky; top: 32px; z-index: 10; }
+thead tr:nth-child(1) th { position: sticky; top: 0; z-index: 20; }
+thead tr:nth-child(2) th { position: sticky; top: 32px; z-index: 20; }
 
-/* sticky left */
-.sticky-col-1 { position: sticky; left: 0; z-index: 9; background: #fde7f0; }
-.sticky-col-2 { position: sticky; left: 70px; z-index: 9; background: #fde7f0; }
-.sticky-col-3 { position: sticky; left: 260px; z-index: 9; background: #fde7f0; }
+/* sticky left columns */
+.sticky-col-1 {
+  position: sticky;
+  left: 0;
+  z-index: 15;
+  background: #fde7f0;
+  text-align: center;
+}
+.sticky-col-2 {
+  position: sticky;
+  left: 50px;
+  z-index: 15;
+  background: #fde7f0;
+  text-align: left;
+}
+.sticky-col-3 {
+  position: sticky;
+  left: 210px;
+  z-index: 15;
+  background: #fde7f0;
+  text-align: left;
+}
 
 .text-left { text-align: left; }
 .text-right { text-align: right; }
@@ -172,9 +199,14 @@ tr:nth-child(odd) td { background: rgba(255,192,203,0.05); }
   <!-- TABLE -->
   <div class="table-wrapper">
     <table id="dataTable">
+      <colgroup>
+        <col class="col-a">
+        <col class="col-b">
+        <col class="col-c">
+      </colgroup>
       <thead id="tableHead"></thead>
       <tbody id="tableBody">
-        <tr><td>กำลังโหลดข้อมูล...</td></tr>
+        <tr><td colspan="25">กำลังโหลดข้อมูล...</td></tr>
       </tbody>
     </table>
   </div>
@@ -184,12 +216,11 @@ tr:nth-child(odd) td { background: rgba(255,192,203,0.05); }
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbx1TPlllIc3sxFQ_UWPxE0wUa9AYoTGupSLcQB_bof7o2M4dlirZGZc3PffBlxyp5Zq/exec';
 let currentQuarter = 'ไตรมาส 1-2';
-
 const COL = { PROVINCE: 1, ZONE: 2 };
 
 async function loadSheet(sheet) {
   const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(sheet)}`);
-  const { data, merged } = await res.json();
+  const { data } = await res.json();
 
   document.getElementById('reportInfo').innerHTML =
     data.slice(0,2).map(r => r.filter(Boolean).join(' ')).join('<br>');
@@ -221,9 +252,9 @@ function renderBody(rows) {
     const tr = document.createElement('tr');
     r.forEach((c,i) => {
       const td = document.createElement('td');
-      if (i === 0) td.classList.add('sticky-col-1','text-center');
-      if (i === 1) td.classList.add('sticky-col-2','text-left');
-      if (i === 2) td.classList.add('sticky-col-3','text-left');
+      if (i === 0) td.classList.add('sticky-col-1');
+      if (i === 1) td.classList.add('sticky-col-2');
+      if (i === 2) td.classList.add('sticky-col-3');
       td.textContent = c ?? '';
       tr.appendChild(td);
     });
