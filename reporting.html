@@ -327,12 +327,13 @@ function applyFilters(){
    EXPORT
    =============================== */
 function downloadExcel(){
-  const table=document.getElementById('dataTable').outerHTML;
-  const blob=new Blob([table],{type:'application/vnd.ms-excel'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='report.xls';
-  a.click();
+  const url =
+    API_URL
+    + '?action=exportExcel'
+    + '&sheetName=' + encodeURIComponent(currentQuarter);
+
+  // เปิดไฟล์ Excel จาก Google Apps Script โดยตรง
+  window.open(url, '_blank');
 }
 
 /* ===============================
