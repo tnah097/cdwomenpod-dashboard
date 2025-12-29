@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDDWomenfund Dashboard</title> 
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  
+  <div class="dashboard-container scale-control">
+    <div class="header">
+      <div class="header-text">
+        <h1><span style="color: navy;">CDD</span><span style="color: deeppink;">Women</span><span style="color: red;">Fund</span></h1>
+        <h2><span style="color: black;">ฐานข้อมูล </span><span style="color: deeppink;">ระดับประเทศ </span><span style="color: red;" id="province-title">รายจังหวัด</span></h2>
+        <div style="color: navy; font-weight: bold; font-size: 1.5rem; margin-top: 1rem;">
+          ลูกหนี้กองทุนพัฒนาบทบาทสตรีระดับประเทศ
+        </div>
+      </div>
+      <div class="logo-container">
+        <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo" width="60" height="140" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Additional Logo" />
+      </div>
+    </div>
+    <div style="color: navy; font-weight: bold; text-align: right; font-size: 1.5rem; margin-top: 1rem;">
+      ข้อมูล ณ วันที่ 10 พฤศจิกายน 2568
+    </div>
+<!-- ✅ Toolbar -->
+<div class="toolbar">
+  <div class="left-tools">
+    <button onclick="window.location.href='Menu.html'">
+      <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="home"> กลับสู่เมนูหลัก
+    </button>
+  </div>
+</div>
+    <div id="log">🔄 กำลังโหลดข้อมูลภาพรวมจังหวัด...</div>
+    <!-- 🟣 Cards -->
+    <div class="cards">
+      <div class="card pink">
+        จำนวนโครงการ<div class="value" id="num-projects">-</div>
+        เงินที่อนุมัติ<div class="value" id="approved-money-card1">-</div>
+        ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568<div class="value" id="debt-start-card1">-</div>
+      </div>
+      <div class="card light-pink">
+        ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now-card2">-</div>
+        รับคืนเงินต้น<div class="value" id="recovered-principal">-</div>
+        หนี้ยังไม่ถึงกำหนดชำระ (ข)<div class="value" id="not-due-card2">-</div>
+      </div>
+      <div class="card orange">
+        การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)<div class="value" id="mediation">-</div>
+        พนักงานอัยการรับเรื่อง(ง1)<div class="value" id="prosecutor">-</div>
+        ศาลประทับรับฟ้อง(ง2)<div class="value" id="court-filed">-</div>
+        ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)<div class="value" id="court-judgement">-</div>
+        ศาลมีคำพิพากษาตามยอม(ง4)<div class="value" id="court-consent">-</div>
+        ป.วิ แพ่ง มาตรา 20 ตรี(ง5)<div class="value" id="civil-law-20">-</div>
+        ดำเนินคดีอาญา(ง6)<div class="value" id="criminal-action">-</div>
+      </div>
+      <div class="card pastel-pink">
+        ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)<div class="value" id="legal-card4">-</div>
+        เงินต้นตามที่ได้รับดำเนินคดี<div class="value" id="principal-legal">-</div>
+        จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ<div class="value" id="overdue-legal">-</div>
+      </div>
+      <div class="card deep-pastel-pink">
+        หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue-card5">-</div>
+        ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue-card5">-</div>
+        จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน<div class="value" id="contract-end-debt">-</div>
+        มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด<div class="value" id="over-5-percent">-</div>
+      </div>
+    </div>
+    <div class="main-visuals">
+      <div class="left">
+        <div class="section-title">10 อันดับ ร้อยละหนี้เกินกำหนด</div>
+        <canvas id="donutChart"></canvas>
+      </div>
+      <div class="center">
+        <img src="https://i.postimg.cc/pTR4HCg3/women5-copy.png" alt="ภาพผู้หญิง" style="width: 400px; height: auto;" />
+      </div>
+<div class="card deep-pastel-pink" style="min-width:320px;">
+  <div style="font-weight: bold; color: white;">ศูนย์ศึกษาและพัฒนาชุมชน</div>
+  <br />
+  <div style="max-width:100%; overflow:auto;">
+    <table class="summary-table" id="studyCenterTable" style="color: black; width: 100%;">
+      <thead>
+        <tr>
+          <th class="clickable-header" title="คลิกเพื่อแสดงทุกจังหวัด">ศูนย์ศึกษาและพัฒนาชุมชน</th>
+          <th>จำนวนจังหวัด</th>
+          <th>จังหวัด</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+      
+    </div>
+    <div class="province-table-wrapper">
+      <table class="summary-table" id="provinceTable" style="width:100%;">
+        <thead>
+          <!-- will be replaced dynamically by JS -->
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
