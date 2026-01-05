@@ -1,176 +1,159 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>รายงานผลกองทุนพัฒนาบทบาทสตรี</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- React + ReactDOM -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<!-- XLSX -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- Babel (for JSX in browser) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+body {
+  font-family: 'Sarabun', sans-serif;
+  margin: 0;
+}
+.custom-scrollbar::-webkit-scrollbar { width: 12px; height: 12px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #fdfdfd; border-radius: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #f8bbd0; border-radius: 6px; border: 3px solid #fdfdfd; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #880e4f; }
 
-  <!-- XLSX -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <style>
-    body { font-family: 'Sarabun', sans-serif; }
-    @media print {
-      .no-print { display: none !important; }
-      table { font-size: 8pt; }
-    }
-  </style>
+@media print {
+  .no-print { display: none !important; }
+}
+</style>
 </head>
 
 <body>
-  <div id="root"></div>
+<div id="app"></div>
 
-  <script type="text/babel">
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxIDBqQkRdzRZsFsqTrxcdCg0FXY-NoxZ8UaFFKNG9oOGWr3G67vYmjw4vEpXoKLbH1_Q/exec';
+<script>
+/* ================= CONFIG ================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbxIDBqQkRdzRZsFsqTrxcdCg0FXY-NoxZ8UaFFKNG9oOGWr3G67vYmjw4vEpXoKLbH1_Q/exec';
 
-    const Quarter = {
-      Q1_2: 'ไตรมาส 1-2',
-      Q3_4: 'ไตรมาส 3-4'
-    };
+const THEMES = {
+  "ไตรมาส 1-2": {
+    main: '#f8bbd0',
+    dark: '#880e4f',
+    gradient: 'linear-gradient(to bottom right, #ffe6f0, #ffd1e6)',
+    border: '#f48fb1'
+  },
+  "ไตรมาส 3-4": {
+    main: '#e1bee7',
+    dark: '#6a1b9a',
+    gradient: 'linear-gradient(to bottom right, #f3e5f5, #e1bee7)',
+    border: '#ce93d8'
+  }
+};
 
-    const THEMES = {
-      [Quarter.Q1_2]: {
-        main: '#f8bbd0',
-        dark: '#880e4f',
-        gradient: 'linear-gradient(to bottom right, #ffe6f0, #ffd1e6)',
-        border: '#f48fb1'
-      },
-      [Quarter.Q3_4]: {
-        main: '#e1bee7',
-        dark: '#6a1b9a',
-        gradient: 'linear-gradient(to bottom right, #f3e5f5, #e1bee7)',
-        border: '#ce93d8'
-      }
-    };
+const LOGO_CDD = 'https://i.postimg.cc/507bjy9Z/cdd.png';
+const LOGO_WOMEN = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s';
 
-    const START_HEADER_ROW = 3;
-    const END_HEADER_ROW = 4;
-    const START_BODY_ROW = 5;
+const START_HEADER_ROW = 3;
+const END_HEADER_ROW = 4;
+const START_BODY_ROW = 5;
 
-    function App() {
-      const [quarter, setQuarter] = React.useState(Quarter.Q1_2);
-      const [data, setData] = React.useState([]);
-      const [loading, setLoading] = React.useState(true);
-      const [search, setSearch] = React.useState('');
-      const theme = THEMES[quarter];
+/* ================= STATE ================= */
+let currentQuarter = 'ไตรมาส 1-2';
+let rawData = [];
+let mergedData = [];
+let searchQuery = '';
 
-      React.useEffect(() => {
-        setLoading(true);
-        fetch(`${API_URL}?sheetName=${encodeURIComponent(quarter)}`)
-          .then(r => r.json())
-          .then(res => {
-            setData(res.data || res);
-            setLoading(false);
-          });
-      }, [quarter]);
+/* ================= INIT ================= */
+loadData();
 
-      const bodyRows = React.useMemo(() => {
-        const rows = data.slice(START_BODY_ROW);
-        if (!search) return rows;
-        return rows.filter(r => r.some(c => String(c).toLowerCase().includes(search.toLowerCase())));
-      }, [data, search]);
+/* ================= FUNCTIONS ================= */
 
-      return (
-        <div className="min-h-screen flex justify-center p-6" style={{ background: theme.gradient }}>
-          <div className="bg-white w-full max-w-[1700px] rounded-3xl p-6 shadow-2xl">
+async function loadData() {
+  const res = await fetch(`${API_URL}?sheetName=${encodeURIComponent(currentQuarter)}`);
+  const json = await res.json();
+  rawData = json.data;
+  mergedData = json.merged || [];
+  render();
+}
 
-            <h1 className="text-center font-bold text-2xl whitespace-pre-line" style={{ color: theme.dark }}>
-              {data.slice(0,2).map(r=>r.join(' ')).join('\n')}
-            </h1>
+function exportExcel() {
+  const ws = XLSX.utils.aoa_to_sheet(rawData.slice(START_HEADER_ROW));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'รายงาน');
+  XLSX.writeFile(wb, `รายงาน_${currentQuarter}.xlsx`);
+}
 
-            <div className="text-right font-bold mt-2" style={{ color: theme.dark }}>
-              {data[2]?.join(' ')}
-            </div>
+function render() {
+  const theme = THEMES[currentQuarter];
+  document.body.style.background = theme.gradient;
 
-            <div className="flex gap-4 mt-6 items-center no-print">
-              <select
-                value={quarter}
-                onChange={e => setQuarter(e.target.value)}
-                className="px-3 py-2 rounded-xl border font-bold"
-                style={{ borderColor: theme.border }}
-              >
-                <option>{Quarter.Q1_2}</option>
-                <option>{Quarter.Q3_4}</option>
-              </select>
+  const headerText = rawData.slice(0,2).map(r=>r.join(' ')).join('<br>');
+  const dateText = rawData[2]?.join(' ') || '';
 
-              <input
-                placeholder="ค้นหา..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="px-4 py-2 border rounded-xl flex-1"
-              />
+  const bodyRows = rawData.slice(START_BODY_ROW).filter(r=>{
+    if(!searchQuery) return true;
+    return r.join(' ').toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
-              <button
-                onClick={() => window.print()}
-                className="px-5 py-2 rounded-xl font-bold"
-                style={{ background: theme.main, color: theme.dark }}
-              >
-                🖨 PDF
-              </button>
+  document.getElementById('app').innerHTML = `
+  <div class="min-h-screen p-6 flex justify-center">
+    <div class="w-full max-w-[1700px] bg-white rounded-[30px] p-8 shadow-2xl relative">
 
-              <button
-                onClick={() => {
-                  const ws = XLSX.utils.aoa_to_sheet(data.slice(START_HEADER_ROW));
-                  const wb = XLSX.utils.book_new();
-                  XLSX.utils.book_append_sheet(wb, ws, 'รายงาน');
-                  XLSX.writeFile(wb, 'รายงาน.xlsx');
-                }}
-                className="px-5 py-2 rounded-xl font-bold"
-                style={{ background: theme.main, color: theme.dark }}
-              >
-                📊 Excel
-              </button>
-            </div>
+      <div class="absolute top-6 right-6 flex gap-3 no-print">
+        <img src="${LOGO_CDD}" class="h-14"/>
+        <img src="${LOGO_WOMEN}" class="h-14"/>
+      </div>
 
-            <div className="mt-6 overflow-auto max-h-[65vh] border rounded-xl">
-              <table className="w-full border-collapse">
-                <thead>
-                  {data.slice(START_HEADER_ROW, END_HEADER_ROW+1).map((r,i)=>(
-                    <tr key={i}>
-                      {r.map((c,j)=>(
-                        <th key={j}
-                          className="border p-2 sticky top-0"
-                          style={{ background: theme.main, color: theme.dark }}>
-                          {c}
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  {loading && (
-                    <tr><td colSpan="30" className="p-10 text-center italic">กำลังโหลด...</td></tr>
-                  )}
-                  {!loading && bodyRows.map((r,i)=>(
-                    <tr key={i} className={i%2?'bg-gray-50':''}>
-                      {r.map((c,j)=>(
-                        <td key={j} className="border p-2">{c}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <div class="mt-10 mb-6 text-center">
+        <h1 class="text-2xl font-bold" style="color:${theme.dark}">${headerText}</h1>
+        <p class="text-right font-bold mt-4" style="color:${theme.dark}">${dateText}</p>
+      </div>
 
-          </div>
-        </div>
-      );
-    }
+      <div class="flex gap-4 items-center mb-6 no-print">
+        <select onchange="changeQuarter(this.value)" class="border px-3 py-2 rounded">
+          <option ${currentQuarter==='ไตรมาส 1-2'?'selected':''}>ไตรมาส 1-2</option>
+          <option ${currentQuarter==='ไตรมาส 3-4'?'selected':''}>ไตรมาส 3-4</option>
+        </select>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+        <input placeholder="ค้นหา..." oninput="searchQuery=this.value;render()" class="border px-3 py-2 rounded flex-1"/>
+
+        <button onclick="exportExcel()" class="px-4 py-2 rounded font-bold" style="background:${theme.main};color:${theme.dark}">
+          Export Excel
+        </button>
+
+        <button onclick="window.print()" class="px-4 py-2 rounded font-bold border">
+          Print PDF
+        </button>
+      </div>
+
+      <div class="overflow-auto custom-scrollbar max-h-[60vh] border rounded">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            ${renderHeader()}
+          </thead>
+          <tbody>
+            ${bodyRows.map(r=>`<tr>${r.map(c=>`<td class="border px-2 py-1">${c||''}</td>`).join('')}</tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  `;
+}
+
+function renderHeader() {
+  return rawData.slice(START_HEADER_ROW, END_HEADER_ROW+1)
+    .map(r=>`<tr>${r.map(c=>`<th class="border px-2 py-1 bg-pink-200">${c||''}</th>`).join('')}</tr>`)
+    .join('');
+}
+
+function changeQuarter(q) {
+  currentQuarter = q;
+  loadData();
+}
+</script>
 </body>
 </html>
