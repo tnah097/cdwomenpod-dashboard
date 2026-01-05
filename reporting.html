@@ -114,36 +114,46 @@ body {
   box-shadow: 0 4px 12px rgba(233,30,99,0.1);
   background: white;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
 }
 
-  
-td[colspan] {
-  white-space: nowrap;
-  text-align: left;
-  line-height: 1.5;
-  padding: 10px;
+th, td {
+  border: 1px solid #c97a9b;
+  padding: 6px 8px;
+  text-align: center;
+  vertical-align: middle;
 }
 
-  
 thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background-color: #f8bbd0;
   color: #880e4f;
   font-weight: 700;
-  border: 1.5px solid #b36a84;
-  z-index: 5;
-  transition: all 0.5s ease;
 }
-thead tr:nth-child(1) th { position: sticky; top: 0; }
-thead tr:nth-child(2) th { position: sticky; top: 32px; }
-thead tr:nth-child(3) th { position: sticky; top: 64px; }
-thead tr:last-child th { border-bottom: 2.5px solid #880e4f; }
+
+tbody td {
+  position: relative;
+  z-index: 1;
+}
+
+td[colspan] {
+  white-space: normal;
+  text-align: left;
+  line-height: 1.6;
+  padding: 10px;
+}
 
 tr:nth-child(even) td { background-color: rgba(255,182,193,0.12); }
 tr:nth-child(odd) td { background-color: rgba(255,192,203,0.05); }
+
+
+
 
 .empty-row td {
   text-align: center;
