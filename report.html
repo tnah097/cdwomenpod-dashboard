@@ -119,13 +119,16 @@ table {
   border-collapse: collapse;
   font-size: 0.9rem;
 }
-th, td {
-  border: 1px solid #c97a9b;
-  padding: 6px 8px;
-  text-align: center;
-  vertical-align: middle;
+
+  
+td[colspan] {
   white-space: nowrap;
+  text-align: left;
+  line-height: 1.5;
+  padding: 10px;
 }
+
+  
 thead th {
   background-color: #f8bbd0;
   color: #880e4f;
@@ -265,6 +268,54 @@ function applyMergedCells(cellData, mergedInfo) {
   return html;
 }
 
+// ✅ render body ที่รองรับ merge จาก Google Sheets
+function renderMergedBody(bodyData, mergedInfo, startRowIndex) {
+  if (!bodyData || bodyData.length === 0) return '';
+
+  const hidden = Array(bodyData.length)
+    .fill(0)
+    .map(() => Array(bodyData[0].length).fill(false));
+
+
+  let html = '';
+
+  for (let r = 0; r < bodyData.length; r++) {
+    html += '<tr>';
+
+    for (let c = 0; c < bodyData[r].length; c++) {
+      if (hidden[r][c]) continue;
+
+      let attr = '';
+      const merge = mergedInfo.find(
+        m => m.row === r + startRowIndex && m.col === c
+      );
+
+      if (merge) {
+        attr = ` rowspan="${merge.height}" colspan="${merge.width}"`;
+        for (let i = 0; i < merge.height; i++) {
+          for (let j = 0; j < merge.width; j++) {
+            if (i === 0 && j === 0) continue;
+            hidden[r + i][c + j] = true;
+          }
+        }
+      }
+
+      const value = bodyData[r][c] || '';
+      html += `<td${attr}>${value}</td>`;
+    }
+
+    html += '</tr>';
+  }
+
+  return html;
+}
+
+
+
+
+
+
+  
 // ✅ โหลดข้อมูล
 async function loadSheet(sheetName = 'ไตรมาส 1-2') {
   const infoEl = document.getElementById('reportInfo');
@@ -288,7 +339,18 @@ async function loadSheet(sheetName = 'ไตรมาส 1-2') {
       .map(m => ({ ...m, row: m.row - START_HEADER_ROW }));
     thead.innerHTML = applyMergedCells(headerData, headerMerged);
 
-    renderTableBody(data.slice(START_BODY_ROW));
+    const bodyData = data.slice(START_BODY_ROW);
+
+// เอาเฉพาะ merged ที่อยู่ใน body
+const bodyMerged = merged.filter(m => m.row >= START_BODY_ROW);
+
+tbody.innerHTML = renderMergedBody(
+  bodyData,
+  bodyMerged,
+  START_BODY_ROW
+);
+
+    
     updateThemeColor(sheetName);
 
   } catch (err) {
@@ -297,26 +359,7 @@ async function loadSheet(sheetName = 'ไตรมาส 1-2') {
   }
 }
 
-// ✅ สร้างตารางข้อมูล
-function renderTableBody(data) {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-  data.forEach((row, index) => {
-    let tr = '<tr>';
-    row.forEach((cell, colIndex) => {
-      const value = (typeof cell === 'number') ? cell.toLocaleString('th-TH') : (cell || '');
-      if (index === data.length - 1 && colIndex === 0) {
-        tr += `<td colspan="2" style="font-weight:bold;">${value}</td>`;
-      } else if (index === data.length - 1 && colIndex === 1) {
-        return;
-      } else {
-        tr += `<td>${value}</td>`;
-      }
-    });
-    tr += '</tr>';
-    tbody.innerHTML += tr;
-  });
-}
+
 
 // ✅ เปลี่ยนไตรมาส
 function changeQuarter() {
