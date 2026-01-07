@@ -372,7 +372,7 @@ table.dataTable {
 <script>
 
 
-const API_URL = "https://script.google.com/macros/s/AKfycbz7p42v9kmXv3ypoqU1dmPLZFDgC_yDeXRN6jHw0zIJ70QAIALDVeX5CXtKMIlIW0Jdaw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby-WMXu4yHrGqdETd37jqoYVpQK3lktS2lY-UMaze1Dz29jp1vUBNqeQz5DQmfBYddM/exec";
 let donutChartInstance = null;
 let provinceDataTable = null;
 
@@ -408,7 +408,13 @@ const columnMap = {
   over5Percent: "มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด (E)",
   statusPayment: "สถานะการชำระหนี้",
   projectStatus: "สถานะโครงการ",
-  notes: "หมายเหตุ"
+  notes: "หมายเหตุ",
+  debtRestructure: "มาตรการปรับโครงสร้างหนี้",
+  mediationAct2562: "มาตรการการไกล่เกลี่ยข้อพิพาท พ.ศ. 2562",
+  civilBeforeCourt: "มาตรการไกล่เกลี่ยก่อนฟ้อง ตาม ป.วิ.พ. มาตรา 20 ตรี",
+  defaultSettlement: "มาตรการไกล่เกลี่ยและประนีประนอมอมความกรณีลูกหนี้ผิดนัด",
+  reducePenalty: "มาตรการพิจารณาลดหรืองดเบี้ยปรับ/ดอกเบี้ยผิดนัด",
+  reduceInterest2566: "มาตรการลดอัตราดอกเบี้ยเงินกู้และดอกเบี้ยผิดนัด พ.ศ. 2566"
 
 };
 
@@ -421,7 +427,15 @@ const orderedColumns = [
   "recoveredInterest","recoveredFine","recoveredPenaltyInterest","recoveredOverpay","recoveredTotal","debtAsOf30968",
   "mediation","prosecutor","courtFiled","courtJudgement","courtConsent","civilLaw20","criminalAction",
   "legalAction","principalLegal","overdueLegal","overdue","overduePercent",
-  "contractEndDebt","over5Percent","statusPayment","projectStatus","notes"
+  "contractEndDebt","over5Percent","statusPayment","projectStatus",
+    "debtRestructure",
+  "mediationAct2562",
+  "civilBeforeCourt",
+  "defaultSettlement",
+  "reducePenalty",
+  "reduceInterest2566",
+  "notes",
+
 
 ];
 
