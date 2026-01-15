@@ -74,7 +74,12 @@ thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-
     <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
     <div class="input-group">
       <label for="principal">เงินต้น (สำหรับคำนวณ):</label>
-      <input type="text" id="principal" placeholder="กรอกเงินต้นที่ต้องการคำนวณ" onkeyup="formatNumberInput(this)">
+     <input
+  type="text"
+  id="principal"
+  placeholder="กรอกเงินต้นที่ต้องการคำนวณ"
+  oninput="allowDecimalInput(this)"
+  onblur="formatDecimal2(this)">
     </div>
     <div class="input-group">
       <label for="rate">อัตราดอกเบี้ยผิดนัด (% ต่อปี):</label>
@@ -688,8 +693,39 @@ function formatNumber(num){
   return Number(num).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 function formatDate(dateStr){ if(!dateStr || isNaN(new Date(dateStr).getTime())) return ''; return new Date(dateStr).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-function formatNumberInput(input){ let value=input.value.replace(/,/g,''); if(!isNaN(value) && value.length>0){ input.value=parseFloat(value).toLocaleString('en-US'); } }
+// อนุญาตให้พิมพ์ตัวเลข + จุดทศนิยม (ไม่จัด format ระหว่างพิมพ์)
+function allowDecimalInput(input) {
+  let value = input.value;
 
+  // เอา comma ออก
+  value = value.replace(/,/g, '');
+
+  // อนุญาตเฉพาะตัวเลขและจุด
+  value = value.replace(/[^0-9.]/g, '');
+
+  // ไม่ให้มีจุดมากกว่า 1 จุด
+  const parts = value.split('.');
+  if (parts.length > 2) {
+    value = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  input.value = value;
+}
+
+// จัด format เป็น comma + ทศนิยม 2 ตำแหน่ง เมื่อออกจากช่อง
+function formatDecimal2(input) {
+  let value = input.value.replace(/,/g, '');
+  if (value === '' || value === '.') {
+    input.value = '0.00';
+    return;
+  }
+
+  const num = parseFloat(value);
+  input.value = num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
 /* ========== เรียกเริ่มต้น (ถ้ามีข้อมูลจะถูก render เมื่ออัปโหลด) ========== */
 
 
