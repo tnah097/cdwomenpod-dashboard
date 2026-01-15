@@ -213,58 +213,42 @@ function handleFileSelect(event) {
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
     if (jsonData.length === 0) { alert("ไฟล์ Excel ไม่มีข้อมูล"); return; }
 
-    allInstallments = jsonData.map((row, index) => {
-      let installment = { id: index };
-      for (const excelHeader in excelHeaderMapping) {
-        const internalKey = excelHeaderMapping[excelHeader];
-        installment[internalKey] = row[excelHeader] || 0;
-        
+   allInstallments = jsonData.map((row, index) => {
+  let installment = { id: index };
 
-      }
+  for (const excelHeader in excelHeaderMapping) {
+    const internalKey = excelHeaderMapping[excelHeader];
+    const cellValue = row[excelHeader];
 
-      // ตั้งค่าเริ่มต้น/ตัวเก็บข้อมูลเพิ่มเติม
-      // installment.newDefaultInterest = 0; // [BUG FIXED v1] บรรทัดนี้ถูกลบออก (จากโค้ดก่อนหน้า)
-      installment.lastPaymentDate = null;
+    if (internalKey === 'dueDate') {
+      installment[internalKey] = cellValue ?? null;
+    } else {
+      installment[internalKey] = cellValue ?? 0;
+    }
+  }
 
-      // แปลงวันที่ ให้อยู่ในรูปแบบ YYYY-MM-DD สำหรับใช้งาน
-      if (installment.dueDate instanceof Date) {
-        installment.dueDate = formatDateForInput(installment.dueDate);
-      } else if (typeof installment.dueDate === 'number') {
-        installment.dueDate = formatDateForInput(excelSerialDateToJSDate(installment.dueDate));
-      } else if (typeof installment.dueDate === 'string') {
-        // พยายาม normalize ให้เป็น YYYY-MM-DD ถ้าเป็น format ที่ browser รับได้
-        const d = new Date(installment.dueDate);
-        if (!isNaN(d.getTime())) installment.dueDate = formatDateForInput(d);
-      }
+  // ตั้งค่าเริ่มต้น
+  installment.lastPaymentDate = null;
 
-      // ถ้า sequence ยังไม่มี ให้ใช้ index+1
-      if (!installment.sequence) installment.sequence = index + 1;
+  // แปลงวันที่
+  if (installment.dueDate instanceof Date) {
+    installment.dueDate = formatDateForInput(installment.dueDate);
+  } else if (typeof installment.dueDate === 'number' && installment.dueDate > 1) {
+    installment.dueDate = formatDateForInput(excelSerialDateToJSDate(installment.dueDate));
+  } else {
+    installment.dueDate = '';
+  }
 
-      // Ensure numeric fields are numbers
-      ['principal','interest','penalty','oldDefaultInterest','newDefaultInterest','receivedPrincipal','receivedInterest','receivedPenalty','receivedOldDefaultInterest','receivedNewDefaultInterest','overpayment'].forEach(k=>{
-        installment[k] = Number(installment[k] || 0);
-      });
+  if (!installment.sequence) installment.sequence = index + 1;
 
-      // [NEW FIX v2]
-      // ตรวจสอบและแก้ไขข้อมูล: ถ้า "ยอดรับคืน" (Paid) มากกว่า "ยอดหนี้" (Due) (ซึ่งอาจเกิดจากไฟล์ Excel ที่ข้อมูลไม่ครบ)
-      // ให้ปรับ "ยอดหนี้" (Due) ให้มีค่าอย่างน้อยเท่ากับ "ยอดรับคืน" (Paid)
-      if (installment.receivedNewDefaultInterest > installment.newDefaultInterest) {
-        installment.newDefaultInterest = installment.receivedNewDefaultInterest;
-      }
-      if (installment.receivedOldDefaultInterest > installment.oldDefaultInterest) {
-        installment.oldDefaultInterest = installment.receivedOldDefaultInterest;
-      }
-      if (installment.receivedPenalty > installment.penalty) {
-        installment.penalty = installment.receivedPenalty;
-      }
-      if (installment.receivedInterest > installment.interest) {
-        installment.interest = installment.receivedInterest;
-      }
-      // [END NEW FIX v2]
+  [
+    'principal','interest','penalty','oldDefaultInterest','newDefaultInterest',
+    'receivedPrincipal','receivedInterest','receivedPenalty',
+    'receivedOldDefaultInterest','receivedNewDefaultInterest','overpayment'
+  ].forEach(k => installment[k] = Number(installment[k] || 0));
 
-      return installment;
-    });
-
+  return installment;
+});
     paymentHistory = [];
     
 renderAll();
