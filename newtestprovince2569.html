@@ -186,43 +186,59 @@ table.dataTable td:nth-child(17) {
 }
 
 
-  function formatValue(v, columnName) {
+ function formatValue(v, columnName) {
 
-  // ---------------- TEXT FIELDS ----------------
-  const textColumns = [
-    "ชื่อโครงการ",
-    "ผู้เสนอโครงการ/ผู้ร่วมโครงการ",
+  // ================== TEXT-ONLY (3 ช่องนี้เท่านั้น) ==================
+  const dashIfZeroColumns = [
     "หมายเหตุ",
     "*หมายเหตุจากจว.*",
     "มาตรการ"
   ];
 
-  if (textColumns.includes(columnName)) {
-    if (v == null || v === "" || v === "0" || v === "0.00") {
+  if (dashIfZeroColumns.includes(columnName)) {
+    if (
+      v === null ||
+      v === undefined ||
+      v === "" ||
+      v === 0 ||
+      v === "0" ||
+      v === "0.0" ||
+      v === "0.00"
+    ) {
       return "-";
     }
     return String(v);
   }
 
-  // ---------------- ปีงบประมาณ ----------------
+  // ================== TEXT ปกติ ==================
+  const normalTextColumns = [
+    "ชื่อโครงการ",
+    "ผู้เสนอโครงการ/ผู้ร่วมโครงการ"
+  ];
+
+  if (normalTextColumns.includes(columnName)) {
+    return v == null || v === "" ? "-" : String(v);
+  }
+
+  // ================== ปีงบประมาณ ==================
   if (columnName === "ปีงบประมาณ") {
     return v == null || v === "" ? "-" : parseInt(v, 10);
   }
 
-  // ---------------- เลขที่สัญญา ----------------
+  // ================== เลขที่สัญญา ==================
   if (columnName === "เลขที่สัญญา") {
     return v == null || v === "" ? "-" : String(v);
   }
 
-  // ---------------- PERCENT ----------------
+  // ================== เปอร์เซ็นต์ ==================
   if (String(v).includes("%")) return v;
 
-  // ---------------- NUMERIC / MONEY ----------------
+  // ================== ตัวเลข / เงิน ==================
   if (typeof v === "number" || !isNaN(v)) {
     return formatNumber(v);
   }
 
-  // ---------------- DEFAULT ----------------
+  // ================== ค่าอื่น ==================
   return v ?? "-";
 }
 
