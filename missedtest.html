@@ -275,11 +275,10 @@ renderAll();
 
 /* Helper: Excel serial date -> JS Date (best-effort) */
 function excelSerialDateToJSDate(serial) {
-  // Excel's serial date: 1 => 1900-01-01 (note: 1900 leap bug), but this simple conversion is often acceptable
-  const utc_days = Math.floor(serial - 25569);
-  const utc_value = utc_days * 86400;  
-  const date_info = new Date(utc_value * 1000);
-  return date_info;
+  // Excel serial date → JS Date (รองรับจริง)
+  const date = new Date(Date.UTC(1899, 11, 30));
+  date.setUTCDate(date.getUTCDate() + serial);
+  return date;
 }
 
 /* Helper: format date to YYYY-MM-DD */
