@@ -691,8 +691,17 @@ function formatNumber(num){
   if (num === null || num === undefined || isNaN(num)) return '-';
   return Number(num).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-function formatDate(dateStr){ if(!dateStr || isNaN(new Date(dateStr).getTime())) return ''; return new Date(dateStr).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-// อนุญาตให้พิมพ์ตัวเลข + จุดทศนิยม (ไม่จัด format ระหว่างพิมพ์)
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear(); // ค.ศ. ตรง ๆ
+
+  return `${day}/${month}/${year}`;
+}
 function allowDecimalInput(input) {
   let value = input.value;
 
