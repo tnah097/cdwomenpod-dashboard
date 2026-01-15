@@ -150,8 +150,9 @@
   });
 
   if ($.fn.DataTable.isDataTable("#detailsTable")) {
-    $("#detailsTable").DataTable().destroy();
-  }
+  dataTable.clear().rows.add(data).draw();
+  return;
+}
 
   dataTable = $("#detailsTable").DataTable({
     scrollX: true,
@@ -179,20 +180,39 @@
       keys.forEach(k => {
         const values = [...new Set(data.map(r => r[k]).filter(Boolean))].sort();
         const select = $(`<select data-key="${k}"><option value="">-- ทั้งหมด --</option>${values.map(v => `<option>${v}</option>`).join("")}</select>`);
-        container.append(`<div class='filter-item'><label>${k}</label></div>`).append(select);
+   const item = $(`
+  <div class="filter-item">
+    <label>${k}</label>
+    ${select.prop('outerHTML')}
+  </div>
+`);
+container.append(item);
       });
-
-      $("#filter-section select").on("change", function () {
-        let filtered = [...allData];
-        $("#filter-section select").each(function () {
-          const key = $(this).data("key");
-          const val = $(this).val();
-          if (val) filtered = filtered.filter(r => r[key] === val);
-        });
-        renderTable(filtered);
-      });
+  $("#filter-section select").on("change", applyFilters);
+      
     }
 
+  function applyFilters() {
+  dataTable.columns().search("");
+
+  $("#filter-section select").each(function () {
+    const key = $(this).data("key");
+    const val = $(this).val();
+    if (!val) return;
+
+    const colIndex = dataTable
+      .columns()
+      .indexes()
+      .filter(i => dataTable.settings()[0].aoColumns[i].sTitle === key)[0];
+
+    if (colIndex !== undefined) {
+      dataTable.column(colIndex).search(`^${val}$`, true, false);
+    }
+  });
+
+  dataTable.draw();
+}
+    
     function updateSummaryCards(s) {
       $("#num-projects").text(s.totalProjects.toLocaleString("th-TH"));
       $("#approved-money").text(formatNumber(s.approvedMoney));
@@ -202,6 +222,7 @@
       $("#legal").text(formatNumber(s.legal));
       $("#percent-overdue").text(formatPercent(s.percentOverdue));
       $("#update-date").text("ข้อมูล ณ วันที่ " + s.updateDate);
+    
     }
 
     function downloadData() {
