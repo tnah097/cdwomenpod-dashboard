@@ -57,7 +57,19 @@ thead th { background-color: #002D62; color: white; position: sticky; top: 0; z-
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANdGcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" alt="Women Fund Logo" />
     </div>
   </div>
+<div class="input-group">
+  <label>เลือกจังหวัด</label>
+  <select id="provinceSelect"></select>
+</div>
 
+<div class="input-group">
+  <label>เลขที่สัญญา</label>
+  <input type="text" id="contractNo" placeholder="กรอกเลขที่สัญญา">
+</div>
+
+<button class="calc-button" onclick="saveToGoogleSheet(this)">บันทึกข้อมูลลงระบบ</button>
+
+  
   <div class="calculator-card">
     <p style="text-align:center; font-weight:bold; color:#880e4f;">ส่วนที่ 1: เครื่องมือคำนวณ (Manual)</p>
     <div class="input-group">
@@ -201,6 +213,8 @@ function handleFileSelect(event) {
       for (const excelHeader in excelHeaderMapping) {
         const internalKey = excelHeaderMapping[excelHeader];
         installment[internalKey] = row[excelHeader] || 0;
+        
+
       }
 
       // ตั้งค่าเริ่มต้น/ตัวเก็บข้อมูลเพิ่มเติม
@@ -247,7 +261,9 @@ function handleFileSelect(event) {
     });
 
     paymentHistory = [];
-    renderAll();
+    
+renderAll();
+    
   };
   reader.readAsArrayBuffer(file);
 }
@@ -496,7 +512,7 @@ function renderSummary() {
   const tbody = document.getElementById('summary-table-body');
   header.innerHTML = '';
   tbody.innerHTML = '';
-  if (allInstallments.length === 0) return;
+
   const summaryHeaders = ['', 'เงินต้น','ดอกเบี้ย','เบี้ยปรับ','ด/บ ผิดนัดเดิม','ด/บ ผิดนัดใหม่','รับเงินเกิน','รวม'];
   header.innerHTML = `<th>${summaryHeaders.join('</th><th>')}</th>`;
 
@@ -667,12 +683,76 @@ function applyRowColors(){
   });
 }
 
-function formatNumber(num){ return (typeof num==='number')?num.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'; }
+function formatNumber(num){
+  if (num === null || num === undefined || isNaN(num)) return '-';
+  return Number(num).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 function formatDate(dateStr){ if(!dateStr || isNaN(new Date(dateStr).getTime())) return ''; return new Date(dateStr).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'}); }
 function formatNumberInput(input){ let value=input.value.replace(/,/g,''); if(!isNaN(value) && value.length>0){ input.value=parseFloat(value).toLocaleString('en-US'); } }
 
 /* ========== เรียกเริ่มต้น (ถ้ามีข้อมูลจะถูก render เมื่ออัปโหลด) ========== */
-renderAll();
+
+
+
+const API_URL = "https://script.google.com/macros/s/AKfycbyR78iVrJT2QmU9zunRCRSbymGT3nDW_dbEC53BRWuF9eNbcOsyYIYAYJQaGLStUx5N/exec";
+
+/* ===== โหลดรายชื่อจังหวัด ===== */
+window.addEventListener("load", async () => {
+  const res = await fetch(`${API_URL}?action=listProvinces`);
+  const provinces = await res.json();
+  const sel = document.getElementById("provinceSelect");
+ sel.innerHTML =
+  `<option value="">-- เลือกจังหวัด --</option>` +
+  provinces.map(p => `<option value="${p}">${p}</option>`).join("");
+});
+
+/* ===== บันทึกข้อมูล ===== */
+async function saveToGoogleSheet(btn) {
+  btn.disabled = true;
+  try {
+    const province = document.getElementById("provinceSelect").value;
+    const contractNo = document.getElementById("contractNo").value;
+
+    if (!province || !contractNo) {
+      alert("กรุณาเลือกจังหวัดและกรอกเลขที่สัญญา");
+      return;
+    }
+
+    if (allInstallments.length === 0) {
+      alert("กรุณาอัปโหลดไฟล์ Excel ก่อนบันทึกข้อมูล");
+      return;
+    }
+
+    const payload = {
+      province,
+      contractNo,
+      summary: {
+        principal: parseFloat(document.getElementById("principal").value.replace(/,/g,'')) || 0,
+        rate: parseFloat(document.getElementById("rate").value),
+        calcResult: document.getElementById("result").innerText
+      },
+      installments: allInstallments,
+      history: paymentHistory
+    };
+
+    const res = await fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
+
+
+    const txt = await res.text();
+    alert(txt);
+
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+  
 </script>
 </body>
 </html>
