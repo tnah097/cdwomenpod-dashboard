@@ -186,20 +186,33 @@ table.dataTable td:nth-child(17) {
 }
 
 
-    function formatValue(v, columnName) {
-  if (v == null || v === "") return "-";
+  function formatValue(v, columnName) {
+  if (v == null || v === "" || v === "0" || v === 0 || v === "0.00") return "-";
 
-  // ปีงบประมาณ → เลขล้วน
+  // ---------- TEXT FIELDS ----------
+  const textColumns = [
+    "ชื่อโครงการ",
+    "ผู้เสนอโครงการ/ผู้ร่วมโครงการ",
+    "หมายเหตุ",
+    "*หมายเหตุจากจว.*",
+    "มาตรการ"
+  ];
+
+  if (textColumns.includes(columnName)) {
+    return String(v);
+  }
+
+  // ---------- ปีงบประมาณ ----------
   if (columnName === "ปีงบประมาณ") {
     return parseInt(v, 10);
   }
 
-  // เลขที่สัญญา → แสดงดิบ
+  // ---------- เลขที่สัญญา ----------
   if (columnName === "เลขที่สัญญา") {
     return String(v);
   }
 
-  // วันที่ → แสดงแบบวันที่
+  // ---------- วันที่ ----------
   if (
     columnName === "วันที่เริ่มต้นสัญญา" ||
     columnName === "วันที่สิ้นสุดสัญญา" ||
@@ -209,10 +222,10 @@ table.dataTable td:nth-child(17) {
     return formatDate(v);
   }
 
-  // %
+  // ---------- เปอร์เซ็นต์ ----------
   if (String(v).includes("%")) return v;
 
-  // ตัวเลขอื่น (เงิน)
+  // ---------- ตัวเลขเงิน ----------
   if (!isNaN(v)) return formatNumber(v);
 
   return v;
