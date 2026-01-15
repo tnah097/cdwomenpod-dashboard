@@ -26,7 +26,26 @@
     .action-button-container { display:flex;gap:10px; }
     button { padding:6px 15px;border:none;border-radius:4px;color:white;font-weight:bold;cursor:pointer; }
     #btnResetFilter { background-color:#d9534f; } #btnDownload { background-color:#5cb85c; }
+
+     /* header ยังอยู่กลาง */
+table.dataTable thead th {
+  text-align: center;
+}
+
+/* คอลัมน์ข้อความให้ข้อมูลชิดซ้าย */
+table.dataTable td:nth-child(6),
+table.dataTable td:nth-child(7),
+table.dataTable td:nth-child(15),
+table.dataTable td:nth-child(16),
+table.dataTable td:nth-child(17) {
+  text-align: left;
+}
+    
   </style>
+
+ 
+
+  
 </head>
 
 <body>
@@ -143,7 +162,7 @@
         return `<td>${value}</td>`; // แสดงเป็นเลขตรง ๆ ไม่ format ทศนิยม
       }
 
-      return `<td>${formatValue(value)}</td>`;
+     return `<td>${formatValue(value, h)}</td>`;
     }).join("");
 
     tbody.append(`<tr>${tds}</tr>`);
@@ -167,12 +186,47 @@
 }
 
 
-    function formatValue(v) {
-      if (v == null || v === "") return "-";
-      if (typeof v === "number") return formatNumber(v);
-      if (String(v).includes("%")) return v;
-      return v;
+  function formatValue(v, columnName) {
+
+  // ---------------- TEXT FIELDS ----------------
+  const textColumns = [
+    "ชื่อโครงการ",
+    "ผู้เสนอโครงการ/ผู้ร่วมโครงการ",
+    "หมายเหตุ",
+    "*หมายเหตุจากจว.*",
+    "มาตรการ"
+  ];
+
+  if (textColumns.includes(columnName)) {
+    if (v == null || v === "" || v === "0" || v === "0.00") {
+      return "-";
     }
+    return String(v);
+  }
+
+  // ---------------- ปีงบประมาณ ----------------
+  if (columnName === "ปีงบประมาณ") {
+    return v == null || v === "" ? "-" : parseInt(v, 10);
+  }
+
+  // ---------------- เลขที่สัญญา ----------------
+  if (columnName === "เลขที่สัญญา") {
+    return v == null || v === "" ? "-" : String(v);
+  }
+
+  // ---------------- PERCENT ----------------
+  if (String(v).includes("%")) return v;
+
+  // ---------------- NUMERIC / MONEY ----------------
+  if (typeof v === "number" || !isNaN(v)) {
+    return formatNumber(v);
+  }
+
+  // ---------------- DEFAULT ----------------
+  return v ?? "-";
+}
+
+
 
     function setupFilters(data) {
       const keys = ["อำเภอ/เขต", "ตำบล", "ปีงบประมาณ", "สถานะโครงการ"];
