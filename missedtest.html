@@ -259,10 +259,9 @@ renderAll();
 
 /* Helper: Excel serial date -> JS Date (best-effort) */
 function excelSerialDateToJSDate(serial) {
-  // Excel serial date → JS Date (รองรับจริง)
-  const date = new Date(Date.UTC(1899, 11, 30));
-  date.setUTCDate(date.getUTCDate() + serial);
-  return date;
+  const excelEpoch = new Date(1899, 11, 30); // ❗ local time
+  excelEpoch.setDate(excelEpoch.getDate() + serial);
+  return excelEpoch;
 }
 
 /* Helper: format date to YYYY-MM-DD */
