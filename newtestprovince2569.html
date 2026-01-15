@@ -187,9 +187,8 @@ table.dataTable td:nth-child(17) {
 
 
   function formatValue(v, columnName) {
-  if (v == null || v === "" || v === "0" || v === 0 || v === "0.00") return "-";
 
-  // ---------- TEXT FIELDS ----------
+  // ---------------- TEXT FIELDS ----------------
   const textColumns = [
     "ชื่อโครงการ",
     "ผู้เสนอโครงการ/ผู้ร่วมโครงการ",
@@ -199,37 +198,45 @@ table.dataTable td:nth-child(17) {
   ];
 
   if (textColumns.includes(columnName)) {
+    if (v == null || v === "" || v === "0" || v === "0.00") {
+      return "-";
+    }
     return String(v);
   }
 
-  // ---------- ปีงบประมาณ ----------
+  // ---------------- ปีงบประมาณ ----------------
   if (columnName === "ปีงบประมาณ") {
-    return parseInt(v, 10);
+    return v == null || v === "" ? "-" : parseInt(v, 10);
   }
 
-  // ---------- เลขที่สัญญา ----------
+  // ---------------- เลขที่สัญญา ----------------
   if (columnName === "เลขที่สัญญา") {
-    return String(v);
+    return v == null || v === "" ? "-" : String(v);
   }
 
-  // ---------- วันที่ ----------
-  if (
-    columnName === "วันที่เริ่มต้นสัญญา" ||
-    columnName === "วันที่สิ้นสุดสัญญา" ||
-    columnName === "วันที่รับชำระล่าสุด" ||
-    columnName === "กำหนดวันชำระเงินงวดสุดท้ายที่ไม่มีการรับชำระ"
-  ) {
-    return formatDate(v);
+  // ---------------- DATE FIELDS ----------------
+  const dateColumns = [
+    "วันที่เริ่มต้นสัญญา",
+    "วันที่สิ้นสุดสัญญา",
+    "วันที่รับชำระล่าสุด",
+    "กำหนดวันชำระเงินงวดสุดท้ายที่ไม่มีการรับชำระ"
+  ];
+
+  if (dateColumns.includes(columnName)) {
+    return v ? formatDate(v) : "-";
   }
 
-  // ---------- เปอร์เซ็นต์ ----------
+  // ---------------- PERCENT ----------------
   if (String(v).includes("%")) return v;
 
-  // ---------- ตัวเลขเงิน ----------
-  if (!isNaN(v)) return formatNumber(v);
+  // ---------------- NUMERIC / MONEY ----------------
+  if (typeof v === "number" || !isNaN(v)) {
+    return formatNumber(v);
+  }
 
-  return v;
+  return v ?? "-";
 }
+
 
     function setupFilters(data) {
       const keys = ["อำเภอ/เขต", "ตำบล", "ปีงบประมาณ", "สถานะโครงการ"];
