@@ -7,7 +7,7 @@ const CSV_URLS = {
 
 let rawData = [];
 let svgDoc;
-
+ 
 // 🔑 DOM elements (สำคัญมาก)
 const typeSelect = document.getElementById("typeSelect");
 const yearSelect = document.getElementById("yearSelect");
@@ -257,3 +257,4 @@ monthSelect.onchange = updateView;
 
 /* init */
 loadCSV("due");
+
