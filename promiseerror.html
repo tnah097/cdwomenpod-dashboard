@@ -15,9 +15,21 @@ body {
   margin: 0;
   background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5);
 }
+
 .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,.25); border-radius: 6px; }
-.sticky-shadow { box-shadow: inset -2px 0 0 rgba(0,0,0,.15); }
+
+.sticky-shadow {
+  box-shadow: inset -2px 0 0 rgba(0,0,0,.15);
+}
+
+/* ✅ บังคับ sticky header ให้ทำงานแน่นอน */
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #f8bbd0;
+}
 </style>
 
 <script type="importmap">
@@ -42,8 +54,9 @@ import * as XLSX from "xlsx";
 const API_URL = "https://script.google.com/macros/s/AKfycbymjkn7L21n5TyqSLdm3egPfmO2-A7rFpSv4wHINbtoQ_CRCUtjH2djaFFr-i8VrpSpYg/exec";
 const LOGO_CDD = "https://i.postimg.cc/507bjy9Z/cdd.png";
 const LOGO_WOMEN = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s";
+const ICON_HOME = "https://cdn-icons-png.flaticon.com/512/25/25694.png";
 
-const HEADER_ROW = 0;   // ✔ หัวข้อ 1 แถว
+const HEADER_ROW = 0;
 const BODY_START = 1;
 
 function App() {
@@ -64,8 +77,8 @@ function App() {
   const body = data.slice(BODY_START);
 
   const provinces = useMemo(() => {
-    const set = new Set(body.map(r => r[0]).filter(Boolean));
-    return ["ทั้งหมด", ...set];
+    const s = new Set(body.map(r => r[0]).filter(Boolean));
+    return ["ทั้งหมด", ...s];
   }, [body]);
 
   const filtered = province === "ทั้งหมด"
@@ -93,8 +106,17 @@ function App() {
           โครงการที่ติดลบ
         </h1>
 
-        {/* TOOLS */}
-        <div className="flex flex-wrap gap-4 mb-4">
+        {/* ✅ TOOLBAR + ปุ่มกลับเมนู */}
+        <div className="flex flex-wrap items-center gap-4 mb-4 bg-gray-50/80 p-4 rounded-[25px] border shadow-sm">
+          <button
+            onClick={() => window.location.href='Menu.html'}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-bold border-2"
+            style={{ backgroundColor:'#f8bbd0', color:'#880e4f', borderColor:'#880e4f' }}
+          >
+            <img src={ICON_HOME} className="h-5" />
+            กลับสู่เมนูหลัก
+          </button>
+
           <select
             className="border rounded px-3 py-2"
             value={province}
@@ -106,13 +128,14 @@ function App() {
           <button onClick={exportExcel} className="px-4 py-2 bg-green-500 text-white rounded">
             Export Excel
           </button>
+
           <button onClick={() => window.print()} className="px-4 py-2 bg-red-500 text-white rounded">
             Export PDF
           </button>
         </div>
 
-        {/* TABLE */}
-        <div className="overflow-auto custom-scrollbar border rounded-2xl">
+        {/* ✅ TABLE SCROLL CONTAINER */}
+        <div className="overflow-auto custom-scrollbar border rounded-2xl max-h-[70vh]">
           <table className="border-collapse w-full">
             <thead>
               <tr>
@@ -121,11 +144,8 @@ function App() {
                     key={c}
                     style={{
                       minWidth: colWidths[c] || 140,
-                      position: "sticky",
-                      top: 0,
                       left: c === 0 ? 0 : undefined,
-                      zIndex: c === 0 ? 50 : 40,
-                      background: "#f8bbd0"
+                      zIndex: c === 0 ? 110 : 100
                     }}
                     className={`border px-3 py-2 text-sm font-bold ${c===0?"sticky-shadow":""}`}
                   >
@@ -146,7 +166,7 @@ function App() {
                         position: c === 0 ? "sticky" : "relative",
                         left: c === 0 ? 0 : undefined,
                         background: c === 0 ? "#fff" : undefined,
-                        zIndex: c === 0 ? 20 : 1
+                        zIndex: c === 0 ? 50 : 1
                       }}
                       className={`border px-3 py-2 text-sm ${c===0?"font-bold sticky-shadow":""}`}
                     >
