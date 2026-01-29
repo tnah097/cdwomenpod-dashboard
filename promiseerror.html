@@ -13,15 +13,13 @@
 body {
   font-family: 'Sarabun', sans-serif;
   margin: 0;
-  overflow: hidden;
+  background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5);
 }
 
-/* scrollbar */
 .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,.25); border-radius: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: #f5f5f5; }
 
-/* sticky shadow */
 .sticky-shadow {
   box-shadow: inset -2px 0 0 rgba(0,0,0,.15);
 }
@@ -37,7 +35,7 @@ body {
 </script>
 </head>
 
-<body class="bg-gray-50">
+<body>
 <div id="root"></div>
 
 <script type="text/babel" data-type="module">
@@ -50,11 +48,14 @@ const START_HEADER_ROW = 3;
 const END_HEADER_ROW = 4;
 const START_BODY_ROW = 5;
 
+const LOGO_CDD = "https://i.postimg.cc/507bjy9Z/cdd.png";
+const LOGO_WOMEN = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s";
+
 function measureWidth(text) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.font = "bold 14px Sarabun";
-  return Math.min(Math.max(ctx.measureText(text).width + 40, 90), 420);
+  return Math.min(Math.max(ctx.measureText(text || "").width + 50, 120), 420);
 }
 
 function App() {
@@ -66,10 +67,11 @@ function App() {
     fetch(API_URL)
       .then(r => r.json())
       .then(res => {
-        setData(res);
-        setMerged([]);
+        setData(res.data || []);
+        setMerged(res.merged || []);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const headers = useMemo(
@@ -84,18 +86,28 @@ function App() {
 
   const colWidths = useMemo(() => {
     if (!headers.length) return [];
-    return headers[headers.length - 1].map(h => measureWidth(h || ""));
+    return headers[headers.length - 1].map(h => measureWidth(h));
   }, [headers]);
 
   return (
     <div className="min-h-screen p-6 flex justify-center">
-      <div className="w-full max-w-[1700px] bg-white rounded-[30px] p-6 shadow-2xl flex flex-col">
+      <div className="w-full max-w-[1700px] bg-white rounded-[35px] p-8 shadow-2xl relative flex flex-col">
 
-        <div className="text-center mb-4 font-bold text-pink-700 text-xl">
-          โครงการที่ติดลบ
+        {/* LOGOS */}
+        <div className="absolute top-6 right-8 flex gap-4">
+          <img src={LOGO_CDD} className="h-14" />
+          <img src={LOGO_WOMEN} className="h-14" />
         </div>
 
-        <div className="flex-1 overflow-auto custom-scrollbar border rounded-xl">
+        {/* HEADER */}
+        <div className="text-center mb-6 mt-6">
+          <h1 className="text-xl font-bold text-pink-700">
+            โครงการที่ติดลบ
+          </h1>
+        </div>
+
+        {/* TABLE */}
+        <div className="flex-1 overflow-auto custom-scrollbar border rounded-2xl">
           <table className="border-collapse w-full">
             <thead>
               {headers.map((row, r) => (
@@ -108,10 +120,10 @@ function App() {
                         position: "sticky",
                         top: r * 48,
                         left: c === 0 ? 0 : undefined,
-                        zIndex: c === 0 ? 30 : 20,
+                        zIndex: c === 0 ? 40 : 30,
                         background: "#f8bbd0",
                         whiteSpace: "normal",
-                        lineHeight: "1.25"
+                        lineHeight: "1.3"
                       }}
                       className={`border px-3 py-2 text-sm font-bold text-center ${c===0?"sticky-shadow":""}`}
                     >
@@ -124,7 +136,11 @@ function App() {
 
             <tbody>
               {loading ? (
-                <tr><td colSpan="50" className="p-10 text-center">กำลังโหลดข้อมูล...</td></tr>
+                <tr>
+                  <td colSpan="50" className="p-10 text-center font-bold text-pink-600">
+                    กำลังโหลดข้อมูล...
+                  </td>
+                </tr>
               ) : (
                 body.map((row, r) => (
                   <tr key={r} className={r % 2 ? "bg-gray-50" : "bg-white"}>
@@ -136,7 +152,7 @@ function App() {
                           position: c === 0 ? "sticky" : "relative",
                           left: c === 0 ? 0 : undefined,
                           background: c === 0 ? "#fff" : undefined,
-                          zIndex: c === 0 ? 10 : 1,
+                          zIndex: c === 0 ? 20 : 1,
                           whiteSpace: c === 2 ? "nowrap" : "normal"
                         }}
                         className={`border px-3 py-2 text-sm ${c===0?"font-bold sticky-shadow":""}`}
