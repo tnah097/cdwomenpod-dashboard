@@ -51,6 +51,11 @@ import React, { useEffect, useState, useMemo } from "react";
 import ReactDOM from "react-dom/client";
 import * as XLSX from "xlsx";
 
+
+
+
+
+  
 const API_URL = "https://script.google.com/macros/s/AKfycbymjkn7L21n5TyqSLdm3egPfmO2-A7rFpSv4wHINbtoQ_CRCUtjH2djaFFr-i8VrpSpYg/exec";
 const LOGO_CDD = "https://i.postimg.cc/507bjy9Z/cdd.png";
 const LOGO_WOMEN = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s";
@@ -59,6 +64,31 @@ const ICON_HOME = "https://cdn-icons-png.flaticon.com/512/25/25694.png";
 const HEADER_ROW = 0;
 const BODY_START = 1;
 
+
+
+// แปลง ISO → วันที่ไทย dd/mm/yyyy
+const formatDate = (value) => {
+  if (!value) return "";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("th-TH");
+};
+
+// แปลงเป็นตัวเลขทศนิยม 2 ตำแหน่ง
+const formatNumber = (value) => {
+  if (value === null || value === undefined || value === "") return "";
+  const n = Number(String(value).replace(/,/g, ""));
+  return isNaN(n)
+    ? value
+    : n.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+};
+
+
+
+  
 function App() {
   const [data, setData] = useState([]);
   const [colWidths, setColWidths] = useState([]);
@@ -141,16 +171,19 @@ function App() {
               <tr>
                 {headers.map((h, c) => (
                   <th
-                    key={c}
-                    style={{
-                      minWidth: colWidths[c] || 140,
-                      left: c === 0 ? 0 : undefined,
-                      zIndex: c === 0 ? 110 : 100
-                    }}
-                    className={`border px-3 py-2 text-sm font-bold ${c===0?"sticky-shadow":""}`}
-                  >
-                    {h}
-                  </th>
+  key={c}
+  style={{
+    minWidth: colWidths[c] || 140,
+    position: c === 0 ? "sticky" : "sticky",
+    top: 0,
+    left: c === 0 ? 0 : undefined,
+    zIndex: c === 0 ? 120 : 110,
+    background: "#f8bbd0"
+  }}
+  className={`border px-3 py-2 text-sm font-bold ${c===0?"sticky-shadow":""}`}
+>
+  {h}
+</th>
                 ))}
               </tr>
             </thead>
@@ -159,19 +192,30 @@ function App() {
               {filtered.map((row, r) => (
                 <tr key={r}>
                   {row.map((cell, c) => (
-                    <td
-                      key={c}
-                      style={{
-                        minWidth: colWidths[c] || 140,
-                        position: c === 0 ? "sticky" : "relative",
-                        left: c === 0 ? 0 : undefined,
-                        background: c === 0 ? "#fff" : undefined,
-                        zIndex: c === 0 ? 50 : 1
-                      }}
-                      className={`border px-3 py-2 text-sm ${c===0?"font-bold sticky-shadow":""}`}
-                    >
-                      {cell}
-                    </td>
+                   <td
+  key={c}
+  style={{
+    minWidth: colWidths[c] || 140,
+    position: c === 0 ? "sticky" : "relative",
+    left: c === 0 ? 0 : undefined,
+    background: c === 0 ? "#fff" : undefined,
+    zIndex: c === 0 ? 20 : 1
+  }}
+  className={`border px-3 py-2 text-sm ${c===0?"font-bold sticky-shadow":""}`}
+>
+  {
+    // วันที่
+    (c === 8 || c === 9)
+      ? formatDate(cell)
+
+    // ตัวเลข 2 ตำแหน่ง
+    : ([6,7,10,11,12].includes(c))
+      ? formatNumber(cell)
+
+    // ค่าอื่นคงเดิม
+    : cell
+  }
+</td>
                   ))}
                 </tr>
               ))}
