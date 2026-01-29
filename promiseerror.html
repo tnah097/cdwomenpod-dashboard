@@ -66,12 +66,12 @@ const BODY_START = 1;
 
 
 
-// แปลง ISO → วันที่ไทย dd/mm/yyyy
+// แปลง ISO → วันที่ dd/mm/yyyy
 const formatDate = (value) => {
   if (!value) return "";
   const d = new Date(value);
   if (isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("th-TH");
+  return d.toLocaleDateString("en-GB");
 };
 
 // แปลงเป็นตัวเลขทศนิยม 2 ตำแหน่ง
