@@ -429,7 +429,6 @@
 
       <div class="card light-pink">
         ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)<div class="value" id="debt-now-card2">-</div>
-        รับคืนเงินต้น<div class="value" id="recovered-principal">-</div>
         หนี้ยังไม่ถึงกำหนดชำระ (ข)<div class="value" id="not-due-card2">-</div>
 
       </div>
@@ -537,7 +536,7 @@
       debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
       debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
       notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
-      recoveredPrincipal: "รับคืนเงินต้น",
+   
       recoveredInterest: "รับคืนดอกเบี้ย",
       recoveredFine: "รับคืนเบี้ยปรับ",
       recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
@@ -575,7 +574,7 @@
     const orderedColumns = [
 
       "province", "totalProjects", "approvedAmount",
-      "debtStart", "debtNow", "notDue", "recoveredPrincipal",
+      "debtStart", "debtNow", "notDue", 
       "recoveredInterest", "recoveredFine", "recoveredPenaltyInterest", "recoveredOverpay", "recoveredTotal", "debtAsOf30968",
       "mediation", "prosecutor", "courtFiled", "courtJudgement", "courtConsent", "civilLaw20", "criminalAction",
       "legalAction", "principalLegal", "overdueLegal", "overdue", "overduePercent",
@@ -624,7 +623,7 @@
         document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
         document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
         document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
-        document.getElementById('recovered-principal').textContent = formatNumber(overview.G2);
+       
         document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
         document.getElementById('mediation').textContent = formatNumber(overview.H2);
         document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
@@ -853,4 +852,5 @@
 
 
 </html>
+
 
