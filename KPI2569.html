@@ -831,7 +831,7 @@
             $(this).addClass('selected-row');
             const provinces = $(this).data('provinces') || "";
             // provinces เป็น pipe-separated (a|b|c), ใช้ regex match แบบเต็มคำ
-            const regex = `^(${provinces})$`;
+            const regex = `(${provinces})`;
             // คอลัมน์จังหวัดใน provinceDataTable ของคุณคือ column index 0 — ใช้ search กับ regex
             provinceDataTable.column(0).search(regex, true, false).draw();
           } else {
@@ -873,6 +873,7 @@
 
 
 </html>
+
 
 
 
