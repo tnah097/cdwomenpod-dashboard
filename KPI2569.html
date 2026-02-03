@@ -3,6 +3,9 @@
 <html lang="th">
 
 <head>
+ 
+  
+  
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
@@ -14,6 +17,14 @@
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+  
+  <!-- FixedColumns CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+
+<!-- FixedColumns JS -->
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+  
+  
   <style>
     body {
 
@@ -372,6 +383,19 @@
       min-height: auto;
       background: transparent;
     }
+
+/* ให้คอลัมน์ที่ถูกล็อกมีพื้นหลัง */
+.dataTables_wrapper .DTFC_LeftWrapper table {
+  background-color: white;
+}
+
+/* เส้นแบ่งระหว่างคอลัมน์ที่ล็อกกับคอลัมน์เลื่อน */
+.DTFC_LeftWrapper {
+  border-right: 2px solid #f06292;
+}
+
+
+    
   </style>
   <script>
     const IS_IFRAME = window.self !== window.top;
@@ -715,20 +739,26 @@
 
         if ($.fn.DataTable.isDataTable('#provinceTable')) $('#provinceTable').DataTable().clear().destroy();
 
-        provinceDataTable = $('#provinceTable').DataTable({
-          paging: true,               // ✔ มีปุ่มเลือก 10/25/50
-          pageLength: 10,
-          scrollX: true,              // ✔ เลื่อนซ้าย–ขวาได้
-          scrollY: "420px",           // ✔ สร้าง scroll bar แนวตั้งเหมือนในรูปตัวเอง
-          scrollCollapse: true,
-          autoWidth: false,           // ✔ หัวตารางตรง ไม่สั่น
-          ordering: true,             // ✔ ปุ่มเรียงจากมาก→น้อย / น้อย→มาก
-          fixedHeader: true,          // ✔ หัวติดบนตอนเลื่อน
-          language: {
-            search: "ค้นหา:",
-            lengthMenu: "แสดง _MENU_ รายการ"
-          }
-        });
+    provinceDataTable = $('#provinceTable').DataTable({
+  paging: true,
+  pageLength: 10,
+  scrollX: true,
+  scrollY: "420px",
+  scrollCollapse: true,
+  autoWidth: false,
+  ordering: true,
+  fixedHeader: true,
+
+  /* ✅ ล็อกคอลัมน์จังหวัด */
+  fixedColumns: {
+    leftColumns: 1   // ← คอลัมน์แรก (จังหวัด)
+  },
+
+  language: {
+    search: "ค้นหา:",
+    lengthMenu: "แสดง _MENU_ รายการ"
+  }
+});
 
         setTimeout(() => { if (provinceDataTable && provinceDataTable.columns) provinceDataTable.columns.adjust().draw(false); }, 200);
         logEl.textContent = "✅ โหลดข้อมูลภาพรวมจังหวัดสำเร็จ";
@@ -838,6 +868,7 @@
 
 
 </html>
+
 
 
 
