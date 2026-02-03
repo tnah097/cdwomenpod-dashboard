@@ -416,37 +416,28 @@
 /* ✅ แก้เส้นตารางศูนย์ศึกษาไม่ตรง */
 /* ===== FIX ตารางศูนย์ศึกษา (ไม่ใช้ scrollX/scrollY) ===== */
 #studyCenterTable {
-  table-layout: fixed !important;
-  width: 100% !important;
+  table-layout: auto !important;
 }
 
+/* ❗ สำคัญ: บังคับเหมือนกันทั้ง th และ td */
 #studyCenterTable th,
 #studyCenterTable td {
   box-sizing: border-box;
-}
-
-/* คอลัมน์ 1: ศูนย์ศึกษา */
-#studyCenterTable th:nth-child(1),
-#studyCenterTable td:nth-child(1) {
-  width: 45%;
-  text-align: left;
-}
-
-/* คอลัมน์ 2: จำนวนจังหวัด */
-#studyCenterTable th:nth-child(2),
-#studyCenterTable td:nth-child(2) {
-  width: 15%;
-  text-align: center;
-}
-
-/* คอลัมน์ 3: จังหวัด */
-#studyCenterTable th:nth-child(3),
-#studyCenterTable td:nth-child(3) {
-  width: 40%;
   white-space: normal;
   word-break: break-word;
 }
 
+/* 🔐 ความกว้างเดิม ห้ามเปลี่ยน */
+#studyCenterTable th:nth-child(1),
+#studyCenterTable td:nth-child(1) { width: 45%; }
+
+#studyCenterTable th:nth-child(2),
+#studyCenterTable td:nth-child(2) { width: 15%; text-align:center; }
+
+#studyCenterTable th:nth-child(3),
+#studyCenterTable td:nth-child(3) { width: 40%; }
+
+   
    
   </style>
   <script>
@@ -854,14 +845,12 @@
 
   const studyTable = $('#studyCenterTable').DataTable({
   paging: false,
-  scrollY: false,          // ✅ ปิด scrollY
-  scrollCollapse: false,  // ✅ ปิดไปพร้อมกัน
   scrollX: false,
+  scrollY: false,
   autoWidth: false,
   searching: true,
-  info: false,
   ordering: false,
-  language: { search: "ค้นหา:", zeroRecords: "ไม่พบข้อมูล" },
+  info: false,
   columns: [
     { width: "45%" },
     { width: "15%" },
@@ -924,6 +913,7 @@
 
 
 </html>
+
 
 
 
