@@ -18,11 +18,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
   
-  <!-- FixedColumns CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
 
-<!-- FixedColumns JS -->
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
   
   
   <style>
@@ -384,59 +380,17 @@
       background: transparent;
     }
 
-/* ให้คอลัมน์ที่ถูกล็อกมีพื้นหลัง */
-.dataTables_wrapper .DTFC_LeftWrapper table {
-  background-color: white;
+   #studyCenterTable {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-/* เส้นแบ่งระหว่างคอลัมน์ที่ล็อกกับคอลัมน์เลื่อน */
-.DTFC_LeftWrapper {
-  border-right: 2px solid #f06292;
-}
-
-/* ✅ บังคับสีหัวตารางของคอลัมน์ที่ถูก Fixed (จังหวัด) */
-.DTFC_LeftWrapper thead th,
-.DTFC_LeftHeadWrapper thead th,
-.DTFC_LeftHeadWrapper thead th.sorting,
-.DTFC_LeftHeadWrapper thead th.sorting_asc,
-.DTFC_LeftHeadWrapper thead th.sorting_desc {
-  background-color: #f06292 !important;
-  color: black !important;
-  border-right: 1px solid #f8bbd0;
-  border-bottom: 1px solid #f8bbd0;
-}
-
-/* กันกรณี DataTables ใส่ style inline */
-.DTFC_LeftWrapper thead th.sorting,
-.DTFC_LeftWrapper thead th.sorting_asc,
-.DTFC_LeftWrapper thead th.sorting_desc {
-  background-color: #f06292 !important;
-}
-
-/* ✅ แก้เส้นตารางศูนย์ศึกษาไม่ตรง */
-/* ===== FIX ตารางศูนย์ศึกษา (ไม่ใช้ scrollX/scrollY) ===== */
-#studyCenterTable {
-  table-layout: auto !important;
-}
-
-/* ❗ สำคัญ: บังคับเหมือนกันทั้ง th และ td */
 #studyCenterTable th,
 #studyCenterTable td {
-  box-sizing: border-box;
+  padding: 6px;
+  border: 1px solid #f8bbd0;
   white-space: normal;
-  word-break: break-word;
 }
-
-/* 🔐 ความกว้างเดิม ห้ามเปลี่ยน */
-#studyCenterTable th:nth-child(1),
-#studyCenterTable td:nth-child(1) { width: 45%; }
-
-#studyCenterTable th:nth-child(2),
-#studyCenterTable td:nth-child(2) { width: 15%; text-align:center; }
-
-#studyCenterTable th:nth-child(3),
-#studyCenterTable td:nth-child(3) { width: 40%; }
-
    
    
   </style>
@@ -838,29 +792,21 @@
           tbody.appendChild(tr);
         });
 
-        // init/destroy DataTable for study center table (safe)
         if ($.fn.DataTable.isDataTable('#studyCenterTable')) {
-          $('#studyCenterTable').DataTable().clear().destroy();
-        }
+  $('#studyCenterTable').DataTable().clear().destroy();
+}
 
-  const studyTable = $('#studyCenterTable').DataTable({
+$('#studyCenterTable').DataTable({
   paging: false,
-  scrollX: false,
-  scrollY: false,
-  autoWidth: false,
+  scrollY: '300px',
+  scrollCollapse: true,
   searching: true,
   ordering: false,
   info: false,
-  columns: [
-    { width: "45%" },
-    { width: "15%" },
-    { width: "40%" }
-  ]
+  autoWidth: true
 });
 
-        // ปรับ column width หลัง render
-        setTimeout(() => { try { studyTable.columns.adjust().draw(false); } catch (e) { } }, 250);
-
+       
         // Event: เมื่อคลิกแถวศูนย์ศึกษา ให้กรอง provinceDataTable
         const $body = $('#studyCenterTable tbody');
         $body.off('click').on('click', 'tr', function () {
@@ -913,6 +859,7 @@
 
 
 </html>
+
 
 
 
