@@ -435,12 +435,7 @@
 
       <div class="card orange">
         การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)<div class="value" id="mediation">-</div>
-        พนักงานอัยการรับเรื่อง(ง1)<div class="value" id="prosecutor">-</div>
-        ศาลประทับรับฟ้อง(ง2)<div class="value" id="court-filed">-</div>
-        ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)<div class="value" id="court-judgement">-</div>
-        ศาลมีคำพิพากษาตามยอม(ง4)<div class="value" id="court-consent">-</div>
         ป.วิ แพ่ง มาตรา 20 ตรี(ง5)<div class="value" id="civil-law-20">-</div>
-        ดำเนินคดีอาญา(ง6)<div class="value" id="criminal-action">-</div>
 
       </div>
 
@@ -544,12 +539,9 @@
       recoveredTotal: "รับคืนรวม",
       debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
       mediation: "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)",
-      prosecutor: "พนักงานอัยการรับเรื่อง (ง1)",
-      courtFiled: "ศาลประทับรับฟ้อง (ง2)",
-      courtJudgement: "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้ (ง3)",
-      courtConsent: "ศาลมีคำพิพากษาตามยอม (ง4)",
+     
       civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
-      criminalAction: "ดำเนินคดีอาญา (ง6)",
+   
       legalAction: "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
       principalLegal: "เงินต้นตามที่ได้รับดำเนินคดี",
       overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
@@ -576,7 +568,7 @@
       "province", "totalProjects", "approvedAmount",
       "debtStart", "debtNow", "notDue", 
       "recoveredInterest", "recoveredFine", "recoveredPenaltyInterest", "recoveredOverpay", "recoveredTotal", "debtAsOf30968",
-      "mediation", "prosecutor", "courtFiled", "courtJudgement", "courtConsent", "civilLaw20", "criminalAction",
+      "mediation",  "civilLaw20", 
       "legalAction", "principalLegal", "overdueLegal", "overdue", "overduePercent",
       "contractEndDebt", "over5Percent", "statusPayment", "projectStatus",
       "debtRestructure",
@@ -626,12 +618,9 @@
        
         document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
         document.getElementById('mediation').textContent = formatNumber(overview.H2);
-        document.getElementById('prosecutor').textContent = formatNumber(overview.I2);
-        document.getElementById('court-filed').textContent = formatNumber(overview.J2);
-        document.getElementById('court-judgement').textContent = formatNumber(overview.K2);
-        document.getElementById('court-consent').textContent = formatNumber(overview.L2);
+       
         document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
-        document.getElementById('criminal-action').textContent = formatNumber(overview.N2);
+     
         document.getElementById('legal-card4').textContent = formatNumber(overview.O2);
         document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
         document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
@@ -852,5 +841,6 @@
 
 
 </html>
+
 
 
