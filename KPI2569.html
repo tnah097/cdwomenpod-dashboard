@@ -450,8 +450,7 @@
       <div class="card deep-pastel-pink">
         หนี้ที่เกินกำหนดชำระ (B)<div class="value" id="overdue-card5">-</div>
         ร้อยละหนี้เกินกำหนดชำระ<div class="value" id="percent-overdue-card5">-</div>
-        จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน<div class="value" id="contract-end-debt">-</div>
-        มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด<div class="value" id="over-5-percent">-</div>
+
 
       </div>
 
@@ -547,8 +546,7 @@
       overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
       overdue: "หนี้ที่เกินกำหนดชำระ (B)",
       overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)",
-      contractEndDebt: "จบสัญญามีหนี้ค้าง ติดตามเร่งด่วน (D)",
-      over5Percent: "มีหนี้เกินร้อยละ 5 ติดตามใกล้ชิด (E)",
+      
       statusPayment: "สถานะการชำระหนี้",
       projectStatus: "สถานะโครงการ",
       notes: "หมายเหตุ",
@@ -570,7 +568,7 @@
       "recoveredInterest", "recoveredFine", "recoveredPenaltyInterest", "recoveredOverpay", "recoveredTotal", "debtAsOf30968",
       "mediation",  "civilLaw20", 
       "legalAction", "principalLegal", "overdueLegal", "overdue", "overduePercent",
-      "contractEndDebt", "over5Percent", "statusPayment", "projectStatus",
+      "statusPayment", "projectStatus",
       "debtRestructure",
       "mediationAct2562",
       "civilBeforeCourt",
@@ -626,9 +624,8 @@
         document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
         document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
         document.getElementById('percent-overdue-card5').textContent = formatPercent(overview.S2);
-        document.getElementById('contract-end-debt').textContent = formatNumber(overview.T2);
-        document.getElementById('over-5-percent').textContent = Number(overview.U2)
-          .toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+    
 
         /* === Donut Chart === */
         if (donutChartInstance) donutChartInstance.destroy();
@@ -841,6 +838,7 @@
 
 
 </html>
+
 
 
 
