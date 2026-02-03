@@ -395,48 +395,57 @@
 }
 
 /* ✅ บังคับสีหัวตารางของคอลัมน์ที่ถูก Fixed (จังหวัด) */
-.DTFC_LeftWrapper thead th {
-  background-color: #f06292 !important;  /* สีเดียวกับ .summary-table th */
+.DTFC_LeftWrapper thead th,
+.DTFC_LeftHeadWrapper thead th,
+.DTFC_LeftHeadWrapper thead th.sorting,
+.DTFC_LeftHeadWrapper thead th.sorting_asc,
+.DTFC_LeftHeadWrapper thead th.sorting_desc {
+  background-color: #f06292 !important;
   color: black !important;
   border-right: 1px solid #f8bbd0;
-  text-align: center;
+  border-bottom: 1px solid #f8bbd0;
+}
+
+/* กันกรณี DataTables ใส่ style inline */
+.DTFC_LeftWrapper thead th.sorting,
+.DTFC_LeftWrapper thead th.sorting_asc,
+.DTFC_LeftWrapper thead th.sorting_desc {
+  background-color: #f06292 !important;
 }
 
 /* ✅ แก้เส้นตารางศูนย์ศึกษาไม่ตรง */
+/* ===== FIX ตารางศูนย์ศึกษา (ไม่ใช้ scrollX/scrollY) ===== */
 #studyCenterTable {
   table-layout: fixed !important;
   width: 100% !important;
 }
 
-#studyCenterTable thead th,
-#studyCenterTable tbody td {
+#studyCenterTable th,
+#studyCenterTable td {
   box-sizing: border-box;
 }
 
-/* กำหนดความกว้างคอลัมน์ให้ชัด */
-#studyCenterTable thead th:nth-child(1),
-#studyCenterTable tbody td:nth-child(1) {
-  width: 45% !important;   /* ศูนย์ศึกษา */
+/* คอลัมน์ 1: ศูนย์ศึกษา */
+#studyCenterTable th:nth-child(1),
+#studyCenterTable td:nth-child(1) {
+  width: 45%;
+  text-align: left;
 }
 
-#studyCenterTable thead th:nth-child(2),
-#studyCenterTable tbody td:nth-child(2) {
-  width: 15% !important;   /* จำนวนจังหวัด */
+/* คอลัมน์ 2: จำนวนจังหวัด */
+#studyCenterTable th:nth-child(2),
+#studyCenterTable td:nth-child(2) {
+  width: 15%;
   text-align: center;
 }
 
-#studyCenterTable thead th:nth-child(3),
-#studyCenterTable tbody td:nth-child(3) {
-  width: 40% !important;
-}
-
-/* การตัดบรรทัดข้อความ */
-#studyCenterTable tbody td:nth-child(3) {
+/* คอลัมน์ 3: จังหวัด */
+#studyCenterTable th:nth-child(3),
+#studyCenterTable td:nth-child(3) {
+  width: 40%;
   white-space: normal;
   word-break: break-word;
 }
-
-
 
    
   </style>
@@ -843,11 +852,11 @@
           $('#studyCenterTable').DataTable().clear().destroy();
         }
 
-       const studyTable = $('#studyCenterTable').DataTable({
+  const studyTable = $('#studyCenterTable').DataTable({
   paging: false,
-  scrollY: '300px',
-  scrollCollapse: true,
-  scrollX: false,        // ✅ ปิด scrollX ไม่จำเป็น
+  scrollY: false,          // ✅ ปิด scrollY
+  scrollCollapse: false,  // ✅ ปิดไปพร้อมกัน
+  scrollX: false,
   autoWidth: false,
   searching: true,
   info: false,
@@ -857,10 +866,7 @@
     { width: "45%" },
     { width: "15%" },
     { width: "40%" }
-  ],
-  initComplete: function () {
-    this.api().columns.adjust();
-  }
+  ]
 });
 
         // ปรับ column width หลัง render
@@ -918,6 +924,7 @@
 
 
 </html>
+
 
 
 
