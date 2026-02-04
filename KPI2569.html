@@ -408,13 +408,20 @@
   white-space: normal;
 }
    
+#provinceTable {
+  table-layout: fixed !important;
+}
+
+/* คอลัมน์จังหวัด: table จริง + fixed + cloned */
+#provinceTable th:first-child,
+#provinceTable td:first-child,
 .DTFC_LeftWrapper th,
 .DTFC_LeftWrapper td,
-#provinceTable th:first-child,
-#provinceTable td:first-child {
-  min-width: 180px;
-  width: 180px;
-  max-width: 180px;
+.DTFC_Cloned th,
+.DTFC_Cloned td {
+  width: 180px !important;
+  min-width: 180px !important;
+  max-width: 180px !important;
   white-space: nowrap;
 }
 
