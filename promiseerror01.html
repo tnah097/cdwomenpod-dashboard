@@ -1,234 +1,140 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>โครงการที่ติดลบ</title>
 
+<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Font -->
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 body {
   font-family: 'Sarabun', sans-serif;
-  margin: 0;
-  background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5);
 }
-
-.custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,.25); border-radius: 6px; }
-
-.sticky-shadow {
-  box-shadow: inset -2px 0 0 rgba(0,0,0,.15);
+.custom-scrollbar::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
 }
- 
-/* ✅ บังคับ sticky header ให้ทำงานแน่นอน */
-thead th {
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.25);
+  border-radius: 6px;
+}
+th {
   position: sticky;
   top: 0;
-  z-index: 100;
   background: #f8bbd0;
+  z-index: 10;
 }
 </style>
-
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "xlsx": "https://esm.sh/xlsx@0.18.5"
-  }
-}
-</script>
 </head>
 
-<body>
-<div id="root"></div>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen">
 
-<script type="text/babel" data-type="module">
-import React, { useEffect, useState, useMemo } from "react";
-import ReactDOM from "react-dom/client";
-import * as XLSX from "xlsx";
+<!-- LOGO -->
+<div class="fixed top-6 right-8 flex gap-4 z-50">
+  <img src="https://i.postimg.cc/507bjy9Z/cdd.png" class="h-14">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" class="h-14">
+</div>
 
+<div class="p-6 flex justify-center">
+  <div class="w-full max-w-[1700px] bg-white rounded-[30px] p-8 shadow-2xl">
 
+    <h1 class="text-center text-xl font-bold text-pink-700 mb-6">
+      โครงการที่ติดลบ
+    </h1>
 
+    <!-- TOOLBAR -->
+    <div class="flex flex-wrap gap-4 mb-4 bg-gray-50 p-4 rounded-2xl shadow">
+      <select id="provinceFilter" class="border rounded px-3 py-2">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+      </select>
 
-
-  
-const API_URL = "https://script.google.com/macros/s/AKfycby49bqSSp8P82hbdsSVj8-VAKaZ8OOmgsUod7m1sFhIiKwANYH2lSHXzzH2DEHsFHTiJw/exec";
-const LOGO_CDD = "https://i.postimg.cc/507bjy9Z/cdd.png";
-const LOGO_WOMEN = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s";
-const ICON_HOME = "https://cdn-icons-png.flaticon.com/512/25/25694.png";
-
-const HEADER_ROW = 0;
-const BODY_START = 1;
-
-
-
-// แปลง ISO → วันที่ dd/mm/yyyy
-const formatDate = (value) => {
-  if (!value) return "";
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("en-GB");
-};
-
-// แปลงเป็นตัวเลขทศนิยม 2 ตำแหน่ง
-const formatNumber = (value) => {
-  if (value === null || value === undefined || value === "") return "";
-  const n = Number(String(value).replace(/,/g, ""));
-  return isNaN(n)
-    ? value
-    : n.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-};
-
-
-
-  
-function App() {
-  const [data, setData] = useState([]);
-  const [colWidths, setColWidths] = useState([]);
-  const [province, setProvince] = useState("ทั้งหมด");
-
-  useEffect(() => {
-    fetch(API_URL)
-      .then(r => r.json())
-      .then(res => {
-        setData(res.data || []);
-        setColWidths(res.colWidths || []);
-      });
-  }, []);
-
-  const headers = data[HEADER_ROW] || [];
-  const body = data.slice(BODY_START);
-
-  const provinces = useMemo(() => {
-    const s = new Set(body.map(r => r[0]).filter(Boolean));
-    return ["ทั้งหมด", ...s];
-  }, [body]);
-
-  const filtered = province === "ทั้งหมด"
-    ? body
-    : body.filter(r => r[0] === province);
-
-  const exportExcel = () => {
-    const ws = XLSX.utils.aoa_to_sheet([headers, ...filtered]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "โครงการที่ติดลบ");
-    XLSX.writeFile(wb, "โครงการที่ติดลบ.xlsx");
-  };
-
-  return (
-    <div className="min-h-screen p-6 flex justify-center">
-      <div className="w-full max-w-[1700px] bg-white rounded-[35px] p-8 shadow-2xl relative">
-
-        {/* LOGO */}
-        <div className="absolute top-6 right-8 flex gap-4">
-          <img src={LOGO_CDD} className="h-14" />
-          <img src={LOGO_WOMEN} className="h-14" />
-        </div>
-
-        <h1 className="text-center text-xl font-bold text-pink-700 mb-6">
-          โครงการที่ติดลบ
-        </h1>
-
-        {/* ✅ TOOLBAR + ปุ่มกลับเมนู */}
-        <div className="flex flex-wrap items-center gap-4 mb-4 bg-gray-50/80 p-4 rounded-[25px] border shadow-sm">
-          <button
-            onClick={() => window.location.href='Menu.html'}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-bold border-2"
-            style={{ backgroundColor:'#f8bbd0', color:'#880e4f', borderColor:'#880e4f' }}
-          >
-            <img src={ICON_HOME} className="h-5" />
-            กลับสู่เมนูหลัก
-          </button>
-
-          <select
-            className="border rounded px-3 py-2"
-            value={province}
-            onChange={e => setProvince(e.target.value)}
-          >
-            {provinces.map(p => <option key={p}>{p}</option>)}
-          </select>
-
-          <button onClick={exportExcel} className="px-4 py-2 bg-green-500 text-white rounded">
-            Export Excel
-          </button>
-
-          <button onClick={() => window.print()} className="px-4 py-2 bg-red-500 text-white rounded">
-            Export PDF
-          </button>
-        </div>
-
-        {/* ✅ TABLE SCROLL CONTAINER */}
-        <div className="overflow-auto custom-scrollbar border rounded-2xl max-h-[70vh]">
-          <table className="border-collapse w-full">
-            <thead>
-              <tr>
-                {headers.map((h, c) => (
-                  <th
-  key={c}
-  style={{
-    minWidth: colWidths[c] || 140,
-    position: c === 0 ? "sticky" : "sticky",
-    top: 0,
-    left: c === 0 ? 0 : undefined,
-    zIndex: c === 0 ? 120 : 110,
-    background: "#f8bbd0"
-  }}
-  className={`border px-3 py-2 text-sm font-bold ${c===0?"sticky-shadow":""}`}
->
-  {h}
-</th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {filtered.map((row, r) => (
-                <tr key={r}>
-                  {row.map((cell, c) => (
-                   <td
-  key={c}
-  style={{
-    minWidth: colWidths[c] || 140,
-    position: c === 0 ? "sticky" : "relative",
-    left: c === 0 ? 0 : undefined,
-    background: c === 0 ? "#fff" : undefined,
-    zIndex: c === 0 ? 20 : 1
-  }}
-  className={`border px-3 py-2 text-sm ${c===0?"font-bold sticky-shadow":""}`}
->
-  {
-    // วันที่
-    (c === 8 || c === 9)
-      ? formatDate(cell)
-
-    // ตัวเลข 2 ตำแหน่ง
-    : ([6,7,10,11,12].includes(c))
-      ? formatNumber(cell)
-
-    // ค่าอื่นคงเดิม
-    : cell
-  }
-</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-      </div>
+      <button onclick="window.print()" class="px-4 py-2 bg-red-500 text-white rounded">
+        Export PDF
+      </button>
     </div>
-  );
+
+    <!-- TABLE -->
+    <div class="overflow-auto custom-scrollbar border rounded-2xl max-h-[70vh]">
+      <table id="dataTable" class="border-collapse w-full text-sm"></table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby49bqSSp8P82hbdsSVj8-VAKaZ8OOmgsUod7m1sFhIiKwANYH2lSHXzzH2DEHsFHTiJw/exec";
+
+let rawData = [];
+
+fetch(API_URL)
+  .then(r => r.json())
+  .then(res => {
+    rawData = res.data || [];
+    buildProvinceFilter();
+    renderTable(rawData);
+  })
+  .catch(err => {
+    document.body.innerHTML = "<h2 class='text-red-600 text-center mt-10'>โหลดข้อมูลไม่สำเร็จ</h2>";
+    console.error(err);
+  });
+
+function buildProvinceFilter() {
+  const select = document.getElementById("provinceFilter");
+  const provinces = new Set(rawData.slice(1).map(r => r[0]).filter(Boolean));
+  provinces.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p;
+    select.appendChild(opt);
+  });
+
+  select.onchange = () => {
+    const val = select.value;
+    const filtered = val === "ทั้งหมด"
+      ? rawData
+      : [rawData[0], ...rawData.slice(1).filter(r => r[0] === val)];
+    renderTable(filtered);
+  };
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function renderTable(data) {
+  const table = document.getElementById("dataTable");
+  table.innerHTML = "";
+
+  if (!data.length) return;
+
+  // HEADER
+  const thead = document.createElement("thead");
+  const htr = document.createElement("tr");
+  data[0].forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    th.className = "border px-3 py-2 font-bold";
+    htr.appendChild(th);
+  });
+  thead.appendChild(htr);
+  table.appendChild(thead);
+
+  // BODY
+  const tbody = document.createElement("tbody");
+  data.slice(1).forEach(row => {
+    const tr = document.createElement("tr");
+    row.forEach(cell => {
+      const td = document.createElement("td");
+      td.textContent = cell ?? "";
+      td.className = "border px-3 py-2";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
 </script>
+
 </body>
 </html>
