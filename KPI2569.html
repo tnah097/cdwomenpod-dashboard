@@ -19,7 +19,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
   
 
-  
+  <!-- FixedColumns CSS -->
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+
+<!-- FixedColumns JS -->
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+
+ 
   
   <style>
     body {
@@ -344,6 +351,15 @@
 
     }
 
+.dataTables_wrapper .DTFC_LeftWrapper table {
+  background-color: #fce4ec;
+}
+.DTFC_LeftWrapper {
+  border-right: 2px solid #f06292;
+}
+
+
+   
     .dataTables_scrollHeadInner {
       width: 100% !important;
     }
@@ -392,6 +408,18 @@
   white-space: normal;
 }
    
+.DTFC_LeftWrapper th,
+.DTFC_LeftWrapper td,
+#provinceTable th:first-child,
+#provinceTable td:first-child {
+  min-width: 180px;
+  width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+}
+
+
+
    
   </style>
   <script>
@@ -859,6 +887,7 @@ $('#studyCenterTable').DataTable({
 
 
 </html>
+
 
 
 
