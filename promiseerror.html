@@ -29,6 +29,15 @@ th {
   background: #f8bbd0;
   z-index: 10;
 }
+table {
+  width: max-content;
+  min-width: 100%;
+  table-layout: auto;
+}
+th, td {
+  white-space: nowrap;
+  vertical-align: top;
+}
 </style>
 </head>
 
@@ -60,7 +69,7 @@ th {
 
     <!-- TABLE -->
     <div class="overflow-auto custom-scrollbar border rounded-2xl max-h-[70vh]">
-      <table id="dataTable" class="border-collapse w-full text-sm"></table>
+      <table id="dataTable" class="border-collapse text-sm"></table>
     </div>
 
   </div>
@@ -70,6 +79,24 @@ th {
 const API_URL = "https://script.google.com/macros/s/AKfycby49bqSSp8P82hbdsSVj8-VAKaZ8OOmgsUod7m1sFhIiKwANYH2lSHXzzH2DEHsFHTiJw/exec";
 
 let rawData = [];
+
+/* ===== formatter ตามที่กำหนด ===== */
+function formatNumber(val) {
+  if (val === null || val === undefined || val === "") return "";
+  const n = Number(String(val).replace(/,/g, ""));
+  if (isNaN(n)) return val;
+  return n.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function formatDate(val) {
+  if (!val) return "";
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  return d.toLocaleDateString("en-GB"); // dd/mm/yyyy ค.ศ.
+}
 
 fetch(API_URL)
   .then(r => r.json())
@@ -105,7 +132,6 @@ function buildProvinceFilter() {
 function renderTable(data) {
   const table = document.getElementById("dataTable");
   table.innerHTML = "";
-
   if (!data.length) return;
 
   // HEADER
@@ -124,14 +150,33 @@ function renderTable(data) {
   const tbody = document.createElement("tbody");
   data.slice(1).forEach(row => {
     const tr = document.createElement("tr");
-    row.forEach(cell => {
+
+    row.forEach((cell, colIndex) => {
       const td = document.createElement("td");
-      td.textContent = cell ?? "";
+      let value = cell ?? "";
+
+      // ===== mapping ตามที่กำหนด =====
+      if ([6,7,10,11,12].includes(colIndex)) {
+        value = formatNumber(cell);
+      } else if ([8,9].includes(colIndex)) {
+        value = formatDate(cell);
+      }
+
+      td.textContent = value;
       td.className = "border px-3 py-2";
+
+      // หมายเหตุ (คอลัมน์สุดท้าย) ให้อ่านง่าย
+      if (colIndex === row.length - 1) {
+        td.style.whiteSpace = "normal";
+        td.style.minWidth = "400px";
+      }
+
       tr.appendChild(td);
     });
+
     tbody.appendChild(tr);
   });
+
   table.appendChild(tbody);
 }
 </script>
