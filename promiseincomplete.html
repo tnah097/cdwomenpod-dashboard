@@ -124,13 +124,20 @@ fetch(API_URL)
   .then(r => r.json())
   .then(res => {
     rawData = res.data || [];
-    if (!rawData.length) return;
+
+    if (!rawData.length) {
+      document.getElementById("dataTable").innerHTML =
+        "<tr><td style='padding:20px;text-align:center;'>ไม่พบข้อมูล</td></tr>";
+      return;
+    }
+
     buildProvinceFilter();
   })
   .catch(err => {
     document.body.innerHTML =
       "<h2 class='text-red-600 text-center mt-10'>โหลดข้อมูลไม่สำเร็จ</h2>";
   });
+
 
 /* ===========================
    🎛 Dropdown ตาม role
