@@ -81,20 +81,23 @@ const API_URL = "https://script.google.com/macros/s/AKfycby49bqSSp8P82hbdsSVj8-V
 let rawData = [];
 
 /* ===========================
-   🔐 ตรวจสอบ Login ก่อน
+   🔐 ใช้ session เดิมจาก KPI
 =========================== */
-function checkLogin() {
-  const role = sessionStorage.getItem("role");
-  const province = sessionStorage.getItem("province");
+const role = sessionStorage.getItem("role");
+const province = sessionStorage.getItem("province");
 
-  if (!role) {
-    window.location.href =
-      "https://tnah097.github.io/cdwomenpod-dashboard/Login.html";
-    return null;
-  }
-
-  return { role, province };
+if (!role) {
+  document.body.innerHTML =
+    "<h2 style='text-align:center;margin-top:50px;color:red;'>ไม่มีสิทธิ์เข้าถึงหน้านี้</h2>";
+  throw new Error("No session");
 }
+
+if (role === "province" && !province) {
+  document.body.innerHTML =
+    "<h2 style='text-align:center;margin-top:50px;color:red;'>ไม่พบข้อมูลจังหวัด</h2>";
+  throw new Error("No province");
+}
+
 
 /* ===== formatter ===== */
 function formatNumber(val) {
@@ -115,16 +118,13 @@ function formatDate(val) {
 }
 
 /* ===========================
-   🚀 เริ่มทำงาน
+   🚀 โหลดข้อมูล
 =========================== */
-const user = checkLogin();
-if (!user) throw new Error("Not logged in");
-
 fetch(API_URL)
   .then(r => r.json())
   .then(res => {
     rawData = res.data || [];
-    buildProvinceFilter(user);
+    buildProvinceFilter();
   })
   .catch(err => {
     document.body.innerHTML =
@@ -132,35 +132,36 @@ fetch(API_URL)
   });
 
 /* ===========================
-   🎛 สร้าง Dropdown ตามสิทธิ์
+   🎛 Dropdown ตาม role
 =========================== */
-function buildProvinceFilter(user) {
+function buildProvinceFilter() {
+
   const select = document.getElementById("provinceFilter");
-  select.innerHTML = ""; // 🔴 เคลียร์ option เดิมก่อน
+  select.innerHTML = "";
 
   const provinces = new Set(rawData.slice(1).map(r => r[0]).filter(Boolean));
 
-  // 🔐 ถ้าเป็นจังหวัด
-  if (user.role === "province") {
+  // 🔐 จังหวัด
+  if (role === "province") {
 
     const opt = document.createElement("option");
-    opt.value = user.province;
-    opt.textContent = user.province;
+    opt.value = province;
+    opt.textContent = province;
     select.appendChild(opt);
 
-    select.value = user.province;
+    select.value = province;
     select.disabled = true;
 
     const filtered = [
       rawData[0],
-      ...rawData.slice(1).filter(r => r[0] === user.province)
+      ...rawData.slice(1).filter(r => r[0] === province)
     ];
 
     renderTable(filtered);
     return;
   }
 
-  // 🔐 ถ้าเป็น admin
+  // 🔐 Admin
   const allOpt = document.createElement("option");
   allOpt.value = "ทั้งหมด";
   allOpt.textContent = "ทั้งหมด";
@@ -175,14 +176,17 @@ function buildProvinceFilter(user) {
 
   select.onchange = () => {
     const val = select.value;
+
     const filtered = val === "ทั้งหมด"
       ? rawData
       : [rawData[0], ...rawData.slice(1).filter(r => r[0] === val)];
+
     renderTable(filtered);
   };
 
   renderTable(rawData);
 }
+
 
 
 /* ===========================
