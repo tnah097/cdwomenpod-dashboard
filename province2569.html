@@ -27,6 +27,44 @@
     button { padding:6px 15px;border:none;border-radius:4px;color:white;font-weight:bold;cursor:pointer; }
     #btnResetFilter { background-color:#d9534f; } #btnDownload { background-color:#5cb85c; }
 
+
+
+.top-menu-bar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:1rem;
+}
+
+.top-buttons {
+  display:flex;
+  gap:10px;
+}
+
+.top-buttons a {
+  padding:6px 14px;
+  border-radius:6px;
+  font-weight:bold;
+  text-decoration:none;
+  color:white;
+  font-size:0.9rem;
+}
+
+.btn-menu { background:#6c757d; }
+.btn-negative { background:#9c27b0; }
+.btn-incomplete { background:#ff5722; }
+
+.top-buttons a:hover {
+  opacity:0.85;
+}
+
+
+
+
+    
+
+
+    
      /* header ยังอยู่กลาง */
 table.dataTable thead th {
   text-align: center;
@@ -69,9 +107,31 @@ table.dataTable td:nth-child(17) {
   </div>
 
 
-    <div style="text-align:right;font-weight:bold;color:navy;margin-top:1rem;font-size:1.2rem;">
-      <span id="update-date">ข้อมูล ณ วันที่ 20 มกราคม 2569</span>
-    </div>
+   <div class="top-menu-bar">
+
+  <div class="top-buttons">
+    <a href="https://tnah097.github.io/cdwomenpod-dashboard/Menu.html"
+       class="btn-menu">
+       ⬅ กลับสู่เมนูหลัก
+    </a>
+
+    <a href="https://tnah097.github.io/cdwomenpod-dashboard/promiseerror.html"
+       class="btn-negative">
+       📊 โครงการที่ติดลบ
+    </a>
+
+    <a href="https://tnah097.github.io/cdwomenpod-dashboard/promiseincomplete.html"
+       class="btn-incomplete">
+       ⚠ โครงการที่ข้อมูลไม่สมบูรณ์
+    </a>
+  </div>
+
+  <div style="font-weight:bold;color:navy;font-size:1.2rem;">
+    <span id="update-date">ข้อมูล ณ วันที่ 20 มกราคม 2569</span>
+  </div>
+
+</div>
+
 
     <!-- 🔹 Summary Cards -->
     <div class="cards">
