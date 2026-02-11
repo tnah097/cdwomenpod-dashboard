@@ -80,7 +80,26 @@ const API_URL = "https://script.google.com/macros/s/AKfycby49bqSSp8P82hbdsSVj8-V
 
 let rawData = [];
 
-/* ===== formatter ตามที่กำหนด ===== */
+/* ===========================
+   🔐 ใช้ session เดิมจาก KPI
+=========================== */
+const role = sessionStorage.getItem("role");
+const province = sessionStorage.getItem("province");
+
+if (!role) {
+  document.body.innerHTML =
+    "<h2 style='text-align:center;margin-top:50px;color:red;'>ไม่มีสิทธิ์เข้าถึงหน้านี้</h2>";
+  throw new Error("No session");
+}
+
+if (role === "province" && !province) {
+  document.body.innerHTML =
+    "<h2 style='text-align:center;margin-top:50px;color:red;'>ไม่พบข้อมูลจังหวัด</h2>";
+  throw new Error("No province");
+}
+
+
+/* ===== formatter ===== */
 function formatNumber(val) {
   if (val === null || val === undefined || val === "") return "";
   const n = Number(String(val).replace(/,/g, ""));
@@ -95,24 +114,59 @@ function formatDate(val) {
   if (!val) return "";
   const d = new Date(val);
   if (isNaN(d.getTime())) return val;
-  return d.toLocaleDateString("en-GB"); // dd/mm/yyyy ค.ศ.
+  return d.toLocaleDateString("en-GB");
 }
 
+/* ===========================
+   🚀 โหลดข้อมูล
+=========================== */
 fetch(API_URL)
   .then(r => r.json())
   .then(res => {
     rawData = res.data || [];
     buildProvinceFilter();
-    renderTable(rawData);
   })
   .catch(err => {
-    document.body.innerHTML = "<h2 class='text-red-600 text-center mt-10'>โหลดข้อมูลไม่สำเร็จ</h2>";
-    console.error(err);
+    document.body.innerHTML =
+      "<h2 class='text-red-600 text-center mt-10'>โหลดข้อมูลไม่สำเร็จ</h2>";
   });
 
+/* ===========================
+   🎛 Dropdown ตาม role
+=========================== */
 function buildProvinceFilter() {
+
   const select = document.getElementById("provinceFilter");
+  select.innerHTML = "";
+
   const provinces = new Set(rawData.slice(1).map(r => r[0]).filter(Boolean));
+
+  // 🔐 จังหวัด
+  if (role === "province") {
+
+    const opt = document.createElement("option");
+    opt.value = province;
+    opt.textContent = province;
+    select.appendChild(opt);
+
+    select.value = province;
+    select.disabled = true;
+
+    const filtered = [
+      rawData[0],
+      ...rawData.slice(1).filter(r => r[0] === province)
+    ];
+
+    renderTable(filtered);
+    return;
+  }
+
+  // 🔐 Admin
+  const allOpt = document.createElement("option");
+  allOpt.value = "ทั้งหมด";
+  allOpt.textContent = "ทั้งหมด";
+  select.appendChild(allOpt);
+
   provinces.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p;
@@ -122,32 +176,42 @@ function buildProvinceFilter() {
 
   select.onchange = () => {
     const val = select.value;
+
     const filtered = val === "ทั้งหมด"
       ? rawData
       : [rawData[0], ...rawData.slice(1).filter(r => r[0] === val)];
+
     renderTable(filtered);
   };
+
+  renderTable(rawData);
 }
 
+
+
+/* ===========================
+   🧾 แสดงตาราง
+=========================== */
 function renderTable(data) {
   const table = document.getElementById("dataTable");
   table.innerHTML = "";
   if (!data.length) return;
 
-  // HEADER
   const thead = document.createElement("thead");
   const htr = document.createElement("tr");
+
   data[0].forEach(h => {
     const th = document.createElement("th");
     th.textContent = h;
     th.className = "border px-3 py-2 font-bold";
     htr.appendChild(th);
   });
+
   thead.appendChild(htr);
   table.appendChild(thead);
 
-  // BODY
   const tbody = document.createElement("tbody");
+
   data.slice(1).forEach(row => {
     const tr = document.createElement("tr");
 
@@ -155,7 +219,6 @@ function renderTable(data) {
       const td = document.createElement("td");
       let value = cell ?? "";
 
-      // ===== mapping ตามที่กำหนด =====
       if ([6,7,10,11,12].includes(colIndex)) {
         value = formatNumber(cell);
       } else if ([8,9].includes(colIndex)) {
@@ -165,7 +228,6 @@ function renderTable(data) {
       td.textContent = value;
       td.className = "border px-3 py-2";
 
-      // หมายเหตุ (คอลัมน์สุดท้าย) ให้อ่านง่าย
       if (colIndex === row.length - 1) {
         td.style.whiteSpace = "normal";
         td.style.minWidth = "400px";
@@ -180,6 +242,7 @@ function renderTable(data) {
   table.appendChild(tbody);
 }
 </script>
+
 
 </body>
 </html>
