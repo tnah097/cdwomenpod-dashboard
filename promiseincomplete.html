@@ -124,6 +124,7 @@ fetch(API_URL)
   .then(r => r.json())
   .then(res => {
     rawData = res.data || [];
+    if (!rawData.length) return;
     buildProvinceFilter();
   })
   .catch(err => {
