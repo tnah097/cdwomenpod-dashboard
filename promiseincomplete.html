@@ -203,7 +203,21 @@ function buildProvinceFilter() {
 function renderTable(data) {
   const table = document.getElementById("dataTable");
   table.innerHTML = "";
-  if (!data.length) return;
+
+  // ✅ เช็คว่าไม่มีข้อมูล (มีแต่ header)
+  if (!data || data.length <= 1) {
+    table.innerHTML = `
+      <tr>
+        <td style="padding:20px;text-align:center;font-weight:bold;">
+          ไม่มีข้อมูล
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  // ทำงานปกติด้านล่าง
+
 
   const thead = document.createElement("thead");
   const htr = document.createElement("tr");
