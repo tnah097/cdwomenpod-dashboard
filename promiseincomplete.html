@@ -147,7 +147,9 @@ function buildProvinceFilter() {
   const select = document.getElementById("provinceFilter");
   select.innerHTML = "";
 
-  const provinces = new Set(rawData.slice(1).map(r => r[0]).filter(Boolean));
+  const provinces = [...new Set(
+  rawData.slice(1).map(r => r[0]).filter(Boolean)
+)].sort((a, b) => a.localeCompare(b, 'th'));
 
   // 🔐 จังหวัด
   if (role === "province") {
