@@ -274,6 +274,16 @@ function updateCardsFromFilteredData() {
   if (!dataTable) return;
 
   const filteredData = dataTable.rows({ search: 'applied' }).data().toArray();
+
+const headers = dataTable.settings()[0].aoColumns.map(col => col.sTitle);
+
+const mappedData = filteredData.map(rowArray => {
+  let obj = {};
+  headers.forEach((h, i) => {
+    obj[h] = rowArray[i];
+  });
+  return obj;
+});
  
 
   // 🔹 ถ้ายังไม่ได้กรองอะไรเลย
@@ -307,13 +317,13 @@ function updateCardsFromFilteredData() {
   let overdue = 0;
   let legal = 0;
 
-  filteredData.forEach(row => {
-    approvedMoney += parseFloat(row["เงินอนุมัติ"]) || 0;
-    debtStart += parseFloat(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"]) || 0;
-    debtNow += parseFloat(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"]) || 0;
-    overdue += parseFloat(row["หนี้ที่เกินกำหนดชำระ (B)"]) || 0;
-    legal += parseFloat(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"]) || 0;
-  });
+  mappedData.forEach(row => {
+  approvedMoney += parseFloat(row["เงินอนุมัติ"]) || 0;
+  debtStart += parseFloat(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"]) || 0;
+  debtNow += parseFloat(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"]) || 0;
+  overdue += parseFloat(row["หนี้ที่เกินกำหนดชำระ (B)"]) || 0;
+  legal += parseFloat(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"]) || 0;
+});
 
   let percentOverdue = debtNow > 0 ? (overdue / debtNow) * 100 : 0;
 
