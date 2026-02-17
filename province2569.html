@@ -203,6 +203,8 @@ table.dataTable td:nth-child(17) {
     const API_URL = "https://script.google.com/macros/s/AKfycbwwxjRdiPSd7SOuZAOO5OmWi5NHCBMOf3d1923ik9QBY7iiZ0gJl6ppcQQUHGrxuLRTAg/exec";
     let allData = [], dataTable;
 
+let provinceSummary = null;
+    
     const formatNumber = v => isNaN(parseFloat(v)) ? "-" : parseFloat(v).toLocaleString("th-TH", { minimumFractionDigits: 2 });
     const formatPercent = v => isNaN(parseFloat(v)) ? "-" : `${parseFloat(v).toFixed(2)}%`;
     const formatDate = v => (!v || v === "-") ? "-" : new Date(v).toLocaleDateString("th-TH");
@@ -246,27 +248,44 @@ $("#remarkFilter").on("change", function () {
       await fetchData(province);
     });
 
-    async function fetchData(province) {
-      try {
-        const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
-        const json = await res.json();
-        if (json.error) throw new Error(json.error);
+   async function fetchData(province) {
+  try {
+    const res = await fetch(`${API_URL}?province=${encodeURIComponent(province)}`);
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
 
-        allData = json.data || [];
-        
-        renderTable(allData);
-        setupFilters(allData);
-      } catch (err) {
-        alert("เกิดข้อผิดพลาด: " + err.message);
-      }
-    }
+    allData = json.data || [];
+    provinceSummary = json.summary;   // ✅ เพิ่มบรรทัดนี้
+
+    renderTable(allData);
+    setupFilters(allData);
+
+    if (provinceSummary) {
+  updateSummaryCards(provinceSummary);
+}
+
+  } catch (err) {
+    alert("เกิดข้อผิดพลาด: " + err.message);
+  }
+}
 
 function updateCardsFromFilteredData() {
 
   if (!dataTable) return;
 
   const filteredData = dataTable.rows({ search: 'applied' }).data().toArray();
+ 
 
+  // 🔹 ถ้ายังไม่ได้กรองอะไรเลย
+  if (!dataTable.search() && !hasColumnFilter()) {
+  updateSummaryCards(provinceSummary);
+  return;
+}
+
+
+  
+
+  // 🔹 ถ้ากรองแล้วแต่ไม่มีข้อมูล
   if (!filteredData.length) {
     updateSummaryCards({
       totalProjects: 0,
@@ -280,6 +299,7 @@ function updateCardsFromFilteredData() {
     return;
   }
 
+  // 🔹 คำนวณใหม่เมื่อมีการกรอง
   let totalProjects = filteredData.length;
   let approvedMoney = 0;
   let debtStart = 0;
@@ -306,6 +326,16 @@ function updateCardsFromFilteredData() {
     legal,
     percentOverdue
   });
+}
+
+function hasColumnFilter() {
+  let hasFilter = false;
+  dataTable.columns().every(function () {
+    if (this.search()) {
+      hasFilter = true;
+    }
+  });
+  return hasFilter;
 }
 
 
@@ -467,16 +497,18 @@ container.append(item);
 
 
     function updateSummaryCards(s) {
-      $("#num-projects").text(s.totalProjects.toLocaleString("th-TH"));
-      $("#approved-money").text(formatNumber(s.approvedMoney));
-      $("#debt-start").text(formatNumber(s.debtStart));
-      $("#debt-now").text(formatNumber(s.debtNow));
-      $("#overdue").text(formatNumber(s.overdue));
-      $("#legal").text(formatNumber(s.legal));
-      $("#percent-overdue").text(formatPercent(s.percentOverdue));
-     
-    
-    }
+
+  if (!s) return;
+
+  $("#num-projects").text((s.totalProjects || 0).toLocaleString("th-TH"));
+  $("#approved-money").text(formatNumber(s.approvedMoney || 0));
+  $("#debt-start").text(formatNumber(s.debtStart || 0));
+  $("#debt-now").text(formatNumber(s.debtNow || 0));
+  $("#overdue").text(formatNumber(s.overdue || 0));
+  $("#legal").text(formatNumber(s.legal || 0));
+  $("#percent-overdue").text(formatPercent(s.percentOverdue || 0));
+}
+
 
     function downloadData() {
       const wb = XLSX.utils.book_new();
