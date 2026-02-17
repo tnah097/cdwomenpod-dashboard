@@ -156,10 +156,17 @@ table.dataTable td:nth-child(17) {
   <div class="filter-item">
     <label for="remarkFilter">หมายเหตุ:</label>
     <select id="remarkFilter">
-      <option value="">-- ทั้งหมด --</option>
-      <option value="-">ไม่มีหมายเหตุ</option>
-      <option value="มี">มีหมายเหตุ</option>
-    </select>
+  <option value="">-- ทั้งหมด --</option>
+  <option value="ยังไม่จบสัญญาและผิดนัดชำระเกินร้อยละ 5">
+    ยังไม่จบสัญญาและผิดนัดชำระเกินร้อยละ 5
+  </option>
+  <option value="จบสัญญาแล้ว และไม่ชำระเงิน">
+    จบสัญญาแล้ว และไม่ชำระเงิน
+  </option>
+  <option value="ชำระปกติ">
+    ชำระปกติ
+  </option>
+</select>
   </div>
 
   <!-- 🔹 ดาวน์โหลด -->
@@ -212,7 +219,7 @@ table.dataTable td:nth-child(17) {
 
 $("#remarkFilter").on("change", function () {
 
-  if (!dataTable) return;   // 🔴 ป้องกัน error
+  if (!dataTable) return;
 
   const val = $(this).val();
 
@@ -225,12 +232,12 @@ $("#remarkFilter").on("change", function () {
 
   if (val === "") {
     dataTable.column(colIndex).search("").draw();
-  } else if (val === "-") {
-    dataTable.column(colIndex).search("^-$", true, false).draw();
   } else {
-    dataTable.column(colIndex).search("^(?!-).+", true, false).draw();
+    dataTable.column(colIndex).search("^" + val + "$", true, false).draw();
   }
+
 });
+
 
 
 
@@ -297,14 +304,9 @@ $("#remarkFilter").on("change", function () {
 
  function formatValue(v, columnName) {
 
-  // ================== TEXT-ONLY (3 ช่องนี้เท่านั้น) ==================
-  const dashIfZeroColumns = [
-    "หมายเหตุ",
-    "*หมายเหตุจากจว.*",
-    "มาตรการ"
-  ];
+  // ===== หมายเหตุ =====
+  if (columnName === "หมายเหตุ") {
 
-  if (dashIfZeroColumns.includes(columnName)) {
     if (
       v === null ||
       v === undefined ||
@@ -314,10 +316,12 @@ $("#remarkFilter").on("change", function () {
       v === "0.0" ||
       v === "0.00"
     ) {
-      return "-";
+      return "ชำระปกติ";
     }
+
     return String(v);
   }
+
 
   // ================== TEXT ปกติ ==================
   const normalTextColumns = [
