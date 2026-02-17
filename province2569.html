@@ -253,7 +253,7 @@ $("#remarkFilter").on("change", function () {
         if (json.error) throw new Error(json.error);
 
         allData = json.data || [];
-        updateSummaryCards(json.summary);
+        
         renderTable(allData);
         setupFilters(allData);
       } catch (err) {
@@ -261,6 +261,56 @@ $("#remarkFilter").on("change", function () {
       }
     }
 
+function updateCardsFromFilteredData() {
+
+  if (!dataTable) return;
+
+  const filteredData = dataTable.rows({ search: 'applied' }).data().toArray();
+
+  if (!filteredData.length) {
+    updateSummaryCards({
+      totalProjects: 0,
+      approvedMoney: 0,
+      debtStart: 0,
+      debtNow: 0,
+      overdue: 0,
+      legal: 0,
+      percentOverdue: 0
+    });
+    return;
+  }
+
+  let totalProjects = filteredData.length;
+  let approvedMoney = 0;
+  let debtStart = 0;
+  let debtNow = 0;
+  let overdue = 0;
+  let legal = 0;
+
+  filteredData.forEach(row => {
+    approvedMoney += parseFloat(row["เงินอนุมัติ"]) || 0;
+    debtStart += parseFloat(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"]) || 0;
+    debtNow += parseFloat(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"]) || 0;
+    overdue += parseFloat(row["หนี้ที่เกินกำหนดชำระ (B)"]) || 0;
+    legal += parseFloat(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"]) || 0;
+  });
+
+  let percentOverdue = debtNow > 0 ? (overdue / debtNow) * 100 : 0;
+
+  updateSummaryCards({
+    totalProjects,
+    approvedMoney,
+    debtStart,
+    debtNow,
+    overdue,
+    legal,
+    percentOverdue
+  });
+}
+
+
+
+    
    function renderTable(data) {
   const headers = Object.keys(data[0] || {});
   const thead = $("#detailsTable thead")
@@ -290,14 +340,23 @@ $("#remarkFilter").on("change", function () {
 }
 
   dataTable = $("#detailsTable").DataTable({
-    scrollX: true,
-    pageLength: 10,
-    fixedHeader: true,
-    language: {
-      search: "ค้นหา:",
-      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
-    }
-  });
+  scrollX: true,
+  pageLength: 10,
+  fixedHeader: true,
+  language: {
+    search: "ค้นหา:",
+    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
+  }
+});
+
+// ✅ ผูก event
+dataTable.on('draw', function () {
+  updateCardsFromFilteredData();
+});
+
+// ✅ เรียกครั้งแรก
+updateCardsFromFilteredData();
+
 
 }
 
