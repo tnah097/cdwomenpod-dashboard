@@ -150,18 +150,33 @@ table.dataTable td:nth-child(17) {
     <h3>ตัวกรองข้อมูล</h3>
     <div id="filter-section" class="filter-container"></div>
 
-    <div class="filter-container">
-      <div class="filter-item">
-        <label for="downloadType">ดาวน์โหลดข้อมูล:</label>
-        <select id="downloadType">
-          <option value="excel">Excel</option>
-        </select>
-      </div>
-      <div class="action-button-container">
-        <button id="btnDownload">ดาวน์โหลด</button>
-        <button id="btnResetFilter">ล้างตัวกรอง</button>
-      </div>
-    </div>
+   <div class="filter-container">
+
+  <!-- 🔹 Filter หมายเหตุ -->
+  <div class="filter-item">
+    <label for="remarkFilter">หมายเหตุ:</label>
+    <select id="remarkFilter">
+      <option value="">-- ทั้งหมด --</option>
+      <option value="-">ไม่มีหมายเหตุ</option>
+      <option value="มี">มีหมายเหตุ</option>
+    </select>
+  </div>
+
+  <!-- 🔹 ดาวน์โหลด -->
+  <div class="filter-item">
+    <label for="downloadType">ดาวน์โหลดข้อมูล:</label>
+    <select id="downloadType">
+      <option value="excel">Excel</option>
+    </select>
+  </div>
+
+  <div class="action-button-container">
+    <button id="btnDownload">ดาวน์โหลด</button>
+    <button id="btnResetFilter">ล้างตัวกรอง</button>
+  </div>
+
+</div>
+
 
     <h3>ตารางรายละเอียดข้อมูลโครงการรายอำเภอ</h3>
 <div style="width:100%; overflow-x:auto;">
@@ -189,8 +204,37 @@ table.dataTable td:nth-child(17) {
       const province = new URLSearchParams(window.location.search).get("province");
       $("#province-title").text(province || "-");
 
-      $("#btnResetFilter").on("click", () => { $("#filter-section select").val("").trigger("change"); });
+     $("#btnResetFilter").on("click", () => { 
+  $("#filter-section select").val("").trigger("change"); 
+  $("#remarkFilter").val("").trigger("change");
+});
       $("#btnDownload").on("click", downloadData);
+
+$("#remarkFilter").on("change", function () {
+
+  if (!dataTable) return;   // 🔴 ป้องกัน error
+
+  const val = $(this).val();
+
+  const colIndex = dataTable
+    .columns()
+    .indexes()
+    .filter(i => dataTable.settings()[0].aoColumns[i].sTitle === "หมายเหตุ")[0];
+
+  if (colIndex === undefined) return;
+
+  if (val === "") {
+    dataTable.column(colIndex).search("").draw();
+  } else if (val === "-") {
+    dataTable.column(colIndex).search("^-$", true, false).draw();
+  } else {
+    dataTable.column(colIndex).search("^(?!-).+", true, false).draw();
+  }
+});
+
+
+
+      
 
       await fetchData(province);
     });
@@ -346,8 +390,14 @@ container.append(item);
   });
 
   dataTable.draw();
-}
+
+
     
+}
+
+
+
+
     function updateSummaryCards(s) {
       $("#num-projects").text(s.totalProjects.toLocaleString("th-TH"));
       $("#approved-money").text(formatNumber(s.approvedMoney));
