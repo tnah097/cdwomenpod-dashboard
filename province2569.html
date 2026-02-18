@@ -274,6 +274,8 @@ function updateCardsFromFilteredData() {
   if (!dataTable) return;
 
   const filteredRows = dataTable.rows({ search: 'applied' }).data().toArray();
+
+
   const totalRows = dataTable.rows().data().length;
 
   // 🔹 ยังไม่กรองอะไรเลย → ใช้ summary จาก backend
@@ -302,29 +304,25 @@ function updateCardsFromFilteredData() {
   let overdue = 0;
   let legal = 0;
 
-  filteredRows.forEach(row => {
 
-    approvedMoney += parseFloat(
-  String(row["เงินอนุมัติ"] ?? "").replace(/,/g, "").trim()
-) || 0;
+const getNumber = (row, key) => {
+  const value = row[key];
+  if (value === undefined || value === null) return 0;
+  return parseFloat(String(value).replace(/,/g, "").trim()) || 0;
+};
 
-debtStart += parseFloat(
-  String(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"] ?? "").replace(/,/g, "").trim()
-) || 0;
 
-debtNow += parseFloat(
-  String(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"] ?? "").replace(/,/g, "").trim()
-) || 0;
 
-overdue += parseFloat(
-  String(row["หนี้ที่เกินกำหนดชำระ (B)"] ?? "").replace(/,/g, "").trim()
-) || 0;
 
-legal += parseFloat(
-  String(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"] ?? "").replace(/,/g, "").trim()
-) || 0;
+  
+ filteredRows.forEach(row => {
+  approvedMoney += getNumber(row, "เงินอนุมัติ");
+  debtStart     += getNumber(row, "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)");
+  debtNow       += getNumber(row, "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)");
+  overdue       += getNumber(row, "หนี้ที่เกินกำหนดชำระ (B)");
+  legal         += getNumber(row, "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)");
+});
 
-  });
 
   const percentOverdue = debtNow > 0 ? (overdue / debtNow) * 100 : 0;
 
