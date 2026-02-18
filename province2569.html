@@ -274,7 +274,15 @@ function updateCardsFromFilteredData() {
   if (!dataTable) return;
 
   const filteredRows = dataTable.rows({ search: 'applied' }).data().toArray();
+  const totalRows = dataTable.rows().data().length;
 
+  // 🔹 ยังไม่กรองอะไรเลย → ใช้ summary จาก backend
+  if (filteredRows.length === totalRows && provinceSummary) {
+    updateSummaryCards(provinceSummary);
+    return;
+  }
+
+  // 🔹 ไม่มีข้อมูลหลังกรอง
   if (!filteredRows.length) {
     updateSummaryCards({
       totalProjects: 0,
@@ -288,24 +296,33 @@ function updateCardsFromFilteredData() {
     return;
   }
 
-  const headers = dataTable.settings()[0].aoColumns.map(col => col.sTitle);
-
   let approvedMoney = 0;
   let debtStart = 0;
   let debtNow = 0;
   let overdue = 0;
   let legal = 0;
 
-  filteredRows.forEach(rowArray => {
+  filteredRows.forEach(row => {
 
-    let row = {};
-    headers.forEach((h, i) => row[h] = rowArray[i]);
+    approvedMoney += parseFloat(
+  String(row["เงินอนุมัติ"] ?? "").replace(/,/g, "").trim()
+) || 0;
 
-    approvedMoney += parseFloat(String(row["เงินอนุมัติ"]).replace(/,/g,"")) || 0;
-    debtStart += parseFloat(String(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"]).replace(/,/g,"")) || 0;
-    debtNow += parseFloat(String(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"]).replace(/,/g,"")) || 0;
-    overdue += parseFloat(String(row["หนี้ที่เกินกำหนดชำระ (B)"]).replace(/,/g,"")) || 0;
-    legal += parseFloat(String(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"]).replace(/,/g,"")) || 0;
+debtStart += parseFloat(
+  String(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"] ?? "").replace(/,/g, "").trim()
+) || 0;
+
+debtNow += parseFloat(
+  String(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"] ?? "").replace(/,/g, "").trim()
+) || 0;
+
+overdue += parseFloat(
+  String(row["หนี้ที่เกินกำหนดชำระ (B)"] ?? "").replace(/,/g, "").trim()
+) || 0;
+
+legal += parseFloat(
+  String(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"] ?? "").replace(/,/g, "").trim()
+) || 0;
 
   });
 
@@ -328,55 +345,43 @@ function updateCardsFromFilteredData() {
 
 
 
+
     
    function renderTable(data) {
-  const headers = Object.keys(data[0] || {});
-  const thead = $("#detailsTable thead")
-    .empty()
-    .append(`<tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>`);
-  const tbody = $("#detailsTable tbody").empty();
-
-  data.forEach((row, idx) => {
-    const tds = headers.map(h => {
-      let value = row[h];
-
-      // ✅ ให้คอลัมน์ "ลำดับ" รันเลขใหม่ 1,2,3,... ตามลำดับแถวที่แสดง
-      if (h === "ลำดับ") {
-        value = idx + 1;           // ไม่ใช้ค่าจาก Google Sheet แล้ว
-        return `<td>${value}</td>`; // แสดงเป็นเลขตรง ๆ ไม่ format ทศนิยม
-      }
-
-     return `<td>${formatValue(value, h)}</td>`;
-    }).join("");
-
-    tbody.append(`<tr>${tds}</tr>`);
-  });
 
   if ($.fn.DataTable.isDataTable("#detailsTable")) {
-  dataTable.clear().rows.add(data).draw();
-  return;
-}
+    dataTable.clear().rows.add(data).draw();
+    return;
+  }
+
+  const columns = Object.keys(data[0] || {}).map(key => ({
+    title: key,
+    data: key,
+    render: function (data, type, row) {
+      return formatValue(data, key);
+    }
+  }));
 
   dataTable = $("#detailsTable").DataTable({
-  scrollX: true,
-  pageLength: 10,
-  fixedHeader: true,
-  language: {
-    search: "ค้นหา:",
-    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
-  }
-});
+    data: data,
+    columns: columns,
+    scrollX: true,
+    pageLength: 10,
+    fixedHeader: true,
+    language: {
+      search: "ค้นหา:",
+      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
+    }
+  });
 
-// ✅ ผูก event
-dataTable.on('draw', function () {
+  dataTable.on('draw', function () {
+    updateCardsFromFilteredData();
+  });
+
   updateCardsFromFilteredData();
-});
-
-// ✅ เรียกครั้งแรก
-updateCardsFromFilteredData();
-
-
 }
+
+
 
 
  function formatValue(v, columnName) {
@@ -429,7 +434,8 @@ updateCardsFromFilteredData();
   if (String(v).includes("%")) return v;
 
   // ===== ตัวเลข =====
-  if (typeof v === "number" || !isNaN(v)) {
+ if (v !== "" && v !== null && !isNaN(v))
+ {
     return formatNumber(v);
   }
 
