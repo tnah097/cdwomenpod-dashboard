@@ -350,6 +350,10 @@ const getNumber = (row, key) => {
     
    function renderTable(data) {
 
+     data = data.filter(row =>
+  !String(row["ลำดับ"]).includes("ภาพรวม")
+);
+
   if ($.fn.DataTable.isDataTable("#detailsTable")) {
     dataTable.clear().rows.add(data).draw();
     return;
