@@ -314,12 +314,15 @@ const getNumber = (row, key) => {
 
 
 
+  console.log(Object.keys(filteredRows[0]));
+
+
   
  filteredRows.forEach(row => {
   approvedMoney += getNumber(row, "เงินอนุมัติ");
   debtStart     += getNumber(row, "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)");
   debtNow       += getNumber(row, "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)");
-  overdue       += getNumber(row, "หนี้ที่เกินกำหนดชำระ (B)");
+  overdue += getNumber(row, "จำนวนหนี้ที่เกินกำหนดชำระ (B)");
   legal         += getNumber(row, "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)");
 });
 
