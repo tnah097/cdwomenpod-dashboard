@@ -364,16 +364,27 @@ const getNumber = (row, key) => {
   }));
 
   dataTable = $("#detailsTable").DataTable({
-    data: data,
-    columns: columns,
-    scrollX: true,
-    pageLength: 10,
-    fixedHeader: true,
-    language: {
-      search: "ค้นหา:",
-      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
+  data: data,
+  columns: columns,
+  scrollX: true,
+  pageLength: 10,
+  fixedHeader: true,
+
+  order: [[0, "asc"]],   // เรียงตามคอลัมน์แรก
+
+  columnDefs: [
+    {
+      targets: 0,        // คอลัมน์ลำดับ
+      type: "num"
     }
-  });
+  ],
+
+  language: {
+    search: "ค้นหา:",
+    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
+  }
+});
+
 
   dataTable.on('draw', function () {
     updateCardsFromFilteredData();
@@ -433,6 +444,10 @@ const getNumber = (row, key) => {
 
   // ===== เปอร์เซ็นต์ =====
   if (String(v).includes("%")) return v;
+
+   if (columnName === "ลำดับ") {
+  return v == null || v === "" ? "-" : parseInt(v, 10);
+}
 
   // ===== ตัวเลข =====
  if (v !== "" && v !== null && !isNaN(v))
