@@ -274,28 +274,15 @@ function updateCardsFromFilteredData() {
   if (!dataTable) return;
 
   const filteredData = dataTable.rows({ search: 'applied' }).data().toArray();
+  const totalDataCount = dataTable.rows().data().length;
 
-const headers = dataTable.settings()[0].aoColumns.map(col => col.sTitle);
+  // ยังไม่กรอง
+  if (filteredData.length === totalDataCount) {
+    updateSummaryCards(provinceSummary);
+    return;
+  }
 
-const mappedData = filteredData.map(rowArray => {
-  let obj = {};
-  headers.forEach((h, i) => {
-    obj[h] = rowArray[i];
-  });
-  return obj;
-});
- 
-
-  // 🔹 ถ้ายังไม่ได้กรองอะไรเลย
-  if (!dataTable.search() && !hasColumnFilter()) {
-  updateSummaryCards(provinceSummary);
-  return;
-}
-
-
-  
-
-  // 🔹 ถ้ากรองแล้วแต่ไม่มีข้อมูล
+  // กรองแล้วไม่มีข้อมูล
   if (!filteredData.length) {
     updateSummaryCards({
       totalProjects: 0,
@@ -309,26 +296,30 @@ const mappedData = filteredData.map(rowArray => {
     return;
   }
 
-  // 🔹 คำนวณใหม่เมื่อมีการกรอง
-  let totalProjects = filteredData.length;
+  const headers = dataTable.settings()[0].aoColumns.map(col => col.sTitle);
+
   let approvedMoney = 0;
   let debtStart = 0;
   let debtNow = 0;
   let overdue = 0;
   let legal = 0;
 
-  mappedData.forEach(row => {
-  approvedMoney += parseFloat(row["เงินอนุมัติ"]) || 0;
-  debtStart += parseFloat(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"]) || 0;
-  debtNow += parseFloat(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"]) || 0;
-  overdue += parseFloat(row["หนี้ที่เกินกำหนดชำระ (B)"]) || 0;
-  legal += parseFloat(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"]) || 0;
-});
+  filteredData.forEach(rowArray => {
 
-  let percentOverdue = debtNow > 0 ? (overdue / debtNow) * 100 : 0;
+    let row = {};
+    headers.forEach((h, i) => row[h] = rowArray[i]);
+
+    approvedMoney += parseFloat(String(row["เงินอนุมัติ"]).replace(/,/g, "")) || 0;
+    debtStart += parseFloat(String(row["ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568 (A)"]).replace(/,/g, "")) || 0;
+    debtNow += parseFloat(String(row["ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)"]).replace(/,/g, "")) || 0;
+    overdue += parseFloat(String(row["หนี้ที่เกินกำหนดชำระ (B)"]).replace(/,/g, "")) || 0;
+    legal += parseFloat(String(row["ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)"]).replace(/,/g, "")) || 0;
+  });
+
+  const percentOverdue = debtNow > 0 ? (overdue / debtNow) * 100 : 0;
 
   updateSummaryCards({
-    totalProjects,
+    totalProjects: filteredData.length,
     approvedMoney,
     debtStart,
     debtNow,
@@ -338,15 +329,7 @@ const mappedData = filteredData.map(rowArray => {
   });
 }
 
-function hasColumnFilter() {
-  let hasFilter = false;
-  dataTable.columns().every(function () {
-    if (this.search()) {
-      hasFilter = true;
-    }
-  });
-  return hasFilter;
-}
+
 
 
 
