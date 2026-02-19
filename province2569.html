@@ -209,7 +209,15 @@ let provinceSummary = null;
     const formatPercent = v => isNaN(parseFloat(v)) ? "-" : `${parseFloat(v).toFixed(2)}%`;
     const formatDate = v => (!v || v === "-") ? "-" : new Date(v).toLocaleDateString("th-TH");
 
-    $(document).ready(async function () {
+    
+    
+    
+    
+    
+    
+    $(document).ready(async function () 
+                    
+                      {
       const province = new URLSearchParams(window.location.search).get("province");
       $("#province-title").text(province || "-");
 
@@ -259,6 +267,43 @@ $("#remarkFilter").on("change", function () {
 
     renderTable(allData);
     setupFilters(allData);
+
+
+$(document)
+  .off("change", 'select[data-key="อำเภอ/เขต"]')
+  .on("change", 'select[data-key="อำเภอ/เขต"]', function () {
+
+  const selectedDistrict = $(this).val();
+  const subdistrictSelect = $('select[data-key="ตำบล"]');
+
+  // ถ้าไม่เลือกอำเภอ → แสดงตำบลทั้งหมด
+  if (!selectedDistrict) {
+
+    const allSubdistricts = [
+      ...new Set(allData.map(r => r["ตำบล"]).filter(Boolean))
+    ].sort();
+
+    rebuildDropdown(subdistrictSelect, allSubdistricts);
+
+    return;
+  }
+
+  // กรองข้อมูลเฉพาะอำเภอที่เลือก
+  const filteredData = allData.filter(r =>
+    r["อำเภอ/เขต"] === selectedDistrict
+  );
+
+  const subdistricts = [
+    ...new Set(filteredData.map(r => r["ตำบล"]).filter(Boolean))
+  ].sort();
+
+  rebuildDropdown(subdistrictSelect, subdistricts);
+
+});
+
+
+
+    
 
     if (provinceSummary) {
   updateSummaryCards(provinceSummary);
@@ -530,6 +575,28 @@ container.append(item);
       XLSX.utils.book_append_sheet(wb, ws, "Province");
       XLSX.writeFile(wb, `${$("#province-title").text()}_KPI69.xlsx`);
     }
+
+
+function rebuildDropdown(selectElement, values) {
+
+  const options = [
+    '<option value="">-- ทั้งหมด --</option>',
+    ...values.map(v => `<option value="${v}">${v}</option>`)
+  ];
+
+  selectElement.html(options.join(""));
+
+  // รีเซ็ตค่าที่เลือก
+  selectElement.val("");
+
+  // ✅ บังคับให้ applyFilters ทำงานใหม่
+  selectElement.trigger("change");
+}
+
+
+
+
+    
   </script>
 </body>
 </html>
