@@ -372,7 +372,9 @@ const getNumber = (row, key) => {
 });
 
 
-  const percentOverdue = debtNow > 0 ? (overdue / debtNow) * 100 : 0;
+ const percentOverdue = debtStart > 0
+  ? (overdue / debtStart) * 100
+  : 0;
 
   updateSummaryCards({
     totalProjects: filteredRows.length,
