@@ -169,6 +169,15 @@ table.dataTable td:nth-child(17) {
 </select>
   </div>
 
+
+<div class="filter-item">
+  <label for="measureFilter">มาตรการ:</label>
+  <select id="measureFilter">
+    <option value="">-- ทั้งหมด --</option>
+  </select>
+</div>
+     
+
   <!-- 🔹 ดาวน์โหลด -->
   <div class="filter-item">
     <label for="downloadType">ดาวน์โหลดข้อมูล:</label>
@@ -254,6 +263,30 @@ $("#remarkFilter").on("change", function () {
       
 
       await fetchData(province);
+
+
+$("#measureFilter").on("change", function () {
+
+  if (!dataTable) return;
+
+  const val = $(this).val();
+
+  const colIndex = dataTable
+    .columns()
+    .indexes()
+    .filter(i => dataTable.settings()[0].aoColumns[i].sTitle === "มาตรการ")[0];
+
+  if (colIndex === undefined) return;
+
+  if (val === "") {
+    dataTable.column(colIndex).search("").draw();
+  } else {
+    dataTable.column(colIndex).search("^" + val + "$", true, false).draw();
+  }
+
+});
+
+                        
     });
 
    async function fetchData(province) {
@@ -268,6 +301,20 @@ $("#remarkFilter").on("change", function () {
     renderTable(allData);
     setupFilters(allData);
 
+
+    const measures = [
+  ...new Set(allData.map(r => r["มาตรการ"]).filter(Boolean))
+].sort();
+
+const measureSelect = $("#measureFilter");
+
+measureSelect.empty().append('<option value="">-- ทั้งหมด --</option>');
+
+measureSelect.append(
+  measures.map(v => `<option value="${v}">${v}</option>`)
+);
+
+    
 
 $(document)
   .off("change", 'select[data-key="อำเภอ/เขต"]')
