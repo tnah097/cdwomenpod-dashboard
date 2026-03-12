@@ -12,11 +12,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CDDWomenfund Dashboard</title>
+
+ 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
+ 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+<link rel="stylesheet"
+href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
   
 
   
@@ -24,6 +32,10 @@
   <style>
     body {
 
+
+
+
+     
       font-family: 'Sarabun', sans-serif;
       margin: 0;
       background: linear-gradient(to bottom right, #ffe6f0, #f3e5f5, #e1bee7);
@@ -401,6 +413,21 @@
 
 <body>
 
+
+ <header style="text-align:center;
+background:#fff3cd;
+padding:10px;
+font-weight:bold;
+color:#000;">
+ระบบภายในกองทุนพัฒนาบทบาทสตรี  
+Internal Dashboard – CDD Women Fund
+</header>
+<div style="text-align:center;font-size:13px;color:#555;margin-bottom:10px;">
+สำหรับเจ้าหน้าที่กองทุนพัฒนาบทบาทสตรีเท่านั้น  
+This system does not collect personal or financial information.
+</div>
+
+
   <div class="dashboard-container scale-control">
     <div class="header">
       <div class="header-text">
@@ -704,7 +731,7 @@
             const raw = p[k];
             if (k === "province") {
               const display = (raw === null || raw === undefined || raw === "") ? "-" : raw;
-              const url = `https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(p.province)}`;
+              const url = `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(p.province)}`;
 
               return `
                 <td class="align-left">
@@ -844,21 +871,17 @@ $('#studyCenterTable').DataTable({
 
     fetchData(); fetchStudyCenterData();
 
-    function goLogin(province) {
-      sessionStorage.clear();
-      window.top.location.href =
-        `https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(province)}`;
-    }
-
 
 
   </script>
 
 
+ 
 </body>
 
 
 </html>
+
 
 
 
