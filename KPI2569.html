@@ -407,6 +407,9 @@ href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.
    
   </style>
   <script>
+
+
+   
     const IS_IFRAME = window.self !== window.top;
   </script>
 </head>
@@ -563,7 +566,11 @@ This system does not collect personal or financial information.
   </script>
 
   <script>
-
+if(sessionStorage.getItem("loggedIn") !== "true"){
+    const province = new URLSearchParams(window.location.search).get("province");
+    window.location.href =
+    "https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=" + province;
+}
 
     const API_URL = "https://script.google.com/macros/s/AKfycby-WMXu4yHrGqdETd37jqoYVpQK3lktS2lY-UMaze1Dz29jp1vUBNqeQz5DQmfBYddM/exec";
     let donutChartInstance = null;
@@ -881,6 +888,7 @@ $('#studyCenterTable').DataTable({
 
 
 </html>
+
 
 
 
