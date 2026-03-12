@@ -213,6 +213,12 @@ table.dataTable td:nth-child(17) {
     let allData = [], dataTable;
 
 let provinceSummary = null;
+
+
+
+
+
+
     
     const formatNumber = v => {
   const num = parseFloat(String(v).replace(/,/g,""));
@@ -303,8 +309,10 @@ $("#measureFilter").on("change", function () {
     allData = json.data || [];
     provinceSummary = json.summary;   // ✅ เพิ่มบรรทัดนี้
 
-    renderTable(allData);
-    setupFilters(allData);
+    if (allData.length) {
+  renderTable(allData);
+  setupFilters(allData);
+}
 
 
     const measures = [
@@ -444,14 +452,16 @@ const getNumber = (row, key) => {
 
 
 
+function renderTable(data) {
 
+  if (!data || !data.length) {
+    console.warn("No data from API");
+    return;
+  }
 
-    
-   function renderTable(data) {
-
-     data = data.filter(row =>
-  !String(row["ลำดับ"]).includes("ภาพรวม")
-);
+  data = data.filter(row =>
+    !String(row["ลำดับ"]).includes("ภาพรวม")
+  );
 
   if ($.fn.DataTable.isDataTable("#detailsTable")) {
     dataTable.clear().rows.add(data).draw();
@@ -472,22 +482,16 @@ const getNumber = (row, key) => {
   scrollX: true,
   pageLength: 10,
   fixedHeader: true,
-
-  order: [[0, "asc"]],   // เรียงตามคอลัมน์แรก
-
-  columnDefs: [
-    {
-      targets: 0,        // คอลัมน์ลำดับ
-      type: "num"
+  deferRender: true,
+  order: [[0, "asc"]],
+    columnDefs: [
+      { targets: 0, type: "num" }
+    ],
+    language: {
+      search: "ค้นหา:",
+      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
     }
-  ],
-
-  language: {
-    search: "ค้นหา:",
-    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
-  }
-});
-
+  });
 
   dataTable.on('draw', function () {
     updateCardsFromFilteredData();
@@ -501,6 +505,29 @@ const getNumber = (row, key) => {
 
  function formatValue(v, columnName) {
 
+
+const dateColumns = [
+    "วันที่เริ่มต้นสัญญา",
+    "วันที่สิ้นสุดสัญญา",
+    "วันที่รับชำระล่าสุด",
+    "กำหนดชำระงวดสุดท้าย"
+  ];
+
+  if (dateColumns.includes(columnName)) {
+
+  if (!v || v === "NULL") return "-";
+
+  const d = new Date(v);
+
+  if (isNaN(d)) return "-";
+
+  return d.toLocaleDateString("th-TH");
+
+}
+
+
+
+   
   // ===== หมายเหตุ =====
   if (columnName === "หมายเหตุ") {
     if (!v || v === 0 || v === "0" || v === "0.00") {
@@ -555,7 +582,7 @@ const getNumber = (row, key) => {
   // ===== ตัวเลข =====
  const num = parseFloat(String(v).replace(/,/g,""));
 
-if (!isNaN(num)) {
+if (!isNaN(num) && !dateColumns.includes(columnName)) {
    return formatNumber(num);
 }
 
@@ -585,7 +612,10 @@ container.append(item);
       
     }
 
-  function applyFilters() {
+ function applyFilters() {
+
+  if (!dataTable) return;
+
   dataTable.columns().search("");
 
   $("#filter-section select").each(function () {
@@ -627,11 +657,19 @@ container.append(item);
 
 
     function downloadData() {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(allData);
-      XLSX.utils.book_append_sheet(wb, ws, "Province");
-      XLSX.writeFile(wb, `${$("#province-title").text()}_KPI69.xlsx`);
-    }
+
+  const rows = dataTable
+    ? dataTable.rows({ search: 'applied' }).data().toArray()
+    : allData;
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Province");
+
+  XLSX.writeFile(wb, `${$("#province-title").text()}_KPI69.xlsx`);
+
+}
 
 
 function rebuildDropdown(selectElement, values) {
