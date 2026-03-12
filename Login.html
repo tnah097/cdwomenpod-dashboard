@@ -127,6 +127,16 @@ This system does not collect personal or financial information.
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycby-hXuokpXdI9HnrNw1-6dye45st2IfRsEsXJOdMNOgt_w4yRNVK6kX1w-EIq00JyQ/exec"; 
 
+const params = new URLSearchParams(window.location.search);
+
+const province = params.get("province") || "";
+const token = params.get("token") || crypto.randomUUID();
+
+sessionStorage.setItem("province", province);
+sessionStorage.setItem("token", token);
+
+
+  
 async function login() {
   const user = document.getElementById("username").value.trim();
   const pass = document.getElementById("password").value.trim();
@@ -157,12 +167,17 @@ async function login() {
 // 🏷 province → เข้า province ตรง
 if (data.role === "province") {
 
-  sessionStorage.setItem("loggedIn","true");   // ⭐ เพิ่มบรรทัดนี้
+  if (province && province !== data.province) {
+    msg.textContent = "❌ จังหวัดไม่ตรงกับบัญชีผู้ใช้";
+    return;
+  }
+
+  sessionStorage.setItem("loggedIn","true");
   sessionStorage.setItem("role", "province");
   sessionStorage.setItem("province", data.province);
 
   window.location.href =
-    `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(data.province)}`;
+  `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?province=${encodeURIComponent(data.province)}&token=${token}`;
 
   return;
 }
