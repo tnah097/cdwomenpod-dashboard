@@ -217,17 +217,14 @@ const params = new URLSearchParams(window.location.search);
 const provinceURL = params.get("province");
 const tokenURL = params.get("token");
 
-const provinceSession = sessionStorage.getItem("province");
 const tokenSession = sessionStorage.getItem("token");
 const loggedIn = sessionStorage.getItem("loggedIn");
 
-// ถ้าไม่ได้ login หรือ token ไม่ตรง → กลับ Login
-if (!loggedIn || provinceURL !== provinceSession || tokenURL !== tokenSession) {
-
-  const redirectProvince = provinceURL || "";
+// ตรวจ login
+if (!loggedIn || tokenURL !== tokenSession) {
 
   window.location.href =
-  `https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(redirectProvince)}`;
+  "https://tnah097.github.io/cdwomenpod-dashboard/Login.html";
 
 }
 
