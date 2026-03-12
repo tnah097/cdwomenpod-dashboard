@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -8,24 +11,23 @@
 
 <style>
   body {
-    margin: 0;
-    font-family: 'Sarabun', sans-serif;
-    background: linear-gradient(to bottom right, #ffe6f0, #f8bbd0, #f3e5f5);
-    height: 100vh;
-    display: flex; 
-    justify-content: center;
-    align-items: center;
-  }
+  margin: 0;
+  font-family: 'Sarabun', sans-serif;
+  background: linear-gradient(to bottom right, #ffe6f0, #f8bbd0, #f3e5f5);
+  min-height: 100vh;
+}
 
   .login-box {
-    width: 360px;
-    padding: 30px;
-    background: white;
-    border-radius: 18px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    animation: fadeIn 0.6s ease-in-out;
-  }
+  width: 360px;
+  padding: 30px;
+  background: white;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: fadeIn 0.6s ease-in-out;
+
+  margin: 80px auto;
+}
 
   .logo-box img {
     width: 90px;
@@ -87,6 +89,17 @@
 
 <body>
 
+<header style="text-align:center;
+background:#fff3cd;
+padding:10px;
+font-weight:bold;
+color:#000;">
+ระบบภายในกองทุนพัฒนาบทบาทสตรี  
+Internal Dashboard – CDD Women Fund
+</header>
+
+  
+
 <div class="login-box">
   
   <div class="logo-box">
@@ -96,10 +109,16 @@
 
   <h2>เข้าสู่ระบบจังหวัด</h2>
 
-  <input type="text" id="username" placeholder="รหัสจังหวัด (Username)" />
-  <input type="password" id="password" placeholder="รหัสผ่าน (Password)" />
+  <p style="font-size:14px;color:#555;">
+ระบบสำหรับเจ้าหน้าที่กองทุนพัฒนาบทบาทสตรีเท่านั้น  
+This system does not collect personal or financial information.
+</p>
 
-  <button onclick="login()">เข้าสู่ระบบ</button>
+  <input type="text" id="username" autocomplete="username" placeholder="รหัสจังหวัด (Username)" />
+
+<input type="password" id="password" autocomplete="current-password" placeholder="รหัสผ่าน (Password)" />
+
+  <button type="button" onclick="login()">เข้าสู่ระบบ</button>
 
   <div id="error" class="error"></div>
 
@@ -151,5 +170,11 @@ if (data.role === "province") {
 }
 </script>
 
+<footer style="text-align:center;font-size:12px;color:#666;margin:40px 0;">
+© 2026 Community Development Department (CDD)<br>
+Women Fund Internal Dashboard
+</footer>
+
+  
 </body>
 </html>
