@@ -548,14 +548,17 @@ const getNumber = (row, key) => {
 }
 
   // ===== ตัวเลข =====
- if (v !== "" && v !== null && !isNaN(v))
- {
-    return formatNumber(v);
-  }
+ const num = parseFloat(String(v).replace(/,/g,""));
+
+if (!isNaN(num)) {
+   return formatNumber(num);
+}
 
   // ================== ค่าอื่น ==================
   return v ?? "-";
 }
+
+
 
 
 
