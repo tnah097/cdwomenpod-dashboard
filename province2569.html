@@ -210,6 +210,29 @@ table.dataTable td:nth-child(17) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwwxjRdiPSd7SOuZAOO5OmWi5NHCBMOf3d1923ik9QBY7iiZ0gJl6ppcQQUHGrxuLRTAg/exec";
+
+// ===== ตรวจ Login และ Token =====
+const params = new URLSearchParams(window.location.search);
+
+const provinceURL = params.get("province");
+const tokenURL = params.get("token");
+
+const provinceSession = sessionStorage.getItem("province");
+const tokenSession = sessionStorage.getItem("token");
+const loggedIn = sessionStorage.getItem("loggedIn");
+
+// ถ้าไม่ได้ login หรือ token ไม่ตรง → กลับ Login
+if (!loggedIn || provinceURL !== provinceSession || tokenURL !== tokenSession) {
+
+  const redirectProvince = provinceURL || "";
+
+  window.location.href =
+  `https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(redirectProvince)}`;
+
+}
+
+
+    
     let allData = [], dataTable;
 
 let provinceSummary = null;
@@ -238,7 +261,7 @@ let provinceSummary = null;
     $(document).ready(async function () 
                     
                       {
-      const province = new URLSearchParams(window.location.search).get("province");
+     const province = provinceURL;
       $("#province-title").text(province || "-");
 
      $("#btnResetFilter").on("click", () => { 
