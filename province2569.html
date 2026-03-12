@@ -214,7 +214,12 @@ table.dataTable td:nth-child(17) {
 
 let provinceSummary = null;
     
-    const formatNumber = v => isNaN(parseFloat(v)) ? "-" : parseFloat(v).toLocaleString("th-TH", { minimumFractionDigits: 2 });
+    const formatNumber = v => {
+  const num = parseFloat(String(v).replace(/,/g,""));
+  return isNaN(num)
+    ? "-"
+    : num.toLocaleString("th-TH",{minimumFractionDigits:2});
+};
     const formatPercent = v => isNaN(parseFloat(v)) ? "-" : `${parseFloat(v).toFixed(2)}%`;
     const formatDate = v => (!v || v === "-") ? "-" : new Date(v).toLocaleDateString("th-TH");
 
@@ -406,7 +411,7 @@ const getNumber = (row, key) => {
 
 
 
-  console.log(Object.keys(filteredRows[0]));
+
 
 
   
