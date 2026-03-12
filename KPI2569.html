@@ -566,11 +566,7 @@ This system does not collect personal or financial information.
   </script>
 
   <script>
-if(sessionStorage.getItem("loggedIn") !== "true"){
-    const province = new URLSearchParams(window.location.search).get("province");
-    window.location.href =
-    "https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=" + province;
-}
+
 
     const API_URL = "https://script.google.com/macros/s/AKfycby-WMXu4yHrGqdETd37jqoYVpQK3lktS2lY-UMaze1Dz29jp1vUBNqeQz5DQmfBYddM/exec";
     let donutChartInstance = null;
@@ -738,7 +734,10 @@ if(sessionStorage.getItem("loggedIn") !== "true"){
             const raw = p[k];
             if (k === "province") {
               const display = (raw === null || raw === undefined || raw === "") ? "-" : raw;
-             const url = `https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(p.province)}`;
+             const token = Math.random().toString(36).substring(2,10);
+
+const url =
+`https://tnah097.github.io/cdwomenpod-dashboard/Login.html?province=${encodeURIComponent(p.province)}&token=${token}`;
 
               return `
                 <td class="align-left">
@@ -888,6 +887,7 @@ $('#studyCenterTable').DataTable({
 
 
 </html>
+
 
 
 
