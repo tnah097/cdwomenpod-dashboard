@@ -164,10 +164,13 @@ function openProvince() {
     return;
   }
 
-  window.open(
-    `province2569.html?province=${encodeURIComponent(province)}`,
-    "_blank"
-  );
+  const token = sessionStorage.getItem("token");
+
+window.open(
+  `province2569.html?province=${encodeURIComponent(province)}&token=${token}`,
+  "_blank"
+);
+  
 }
   
 </script>
