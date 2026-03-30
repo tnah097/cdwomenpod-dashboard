@@ -404,7 +404,45 @@ href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.
   white-space: normal;
 }
    
-   
+   .dataTables_scrollBody {
+  overflow-y: scroll !important;
+}
+
+#provinceTable thead th,
+table.dataTable thead th {
+  background-color: #f06292 !important;
+  color: black !important;
+}
+
+.dtfc-fixed-left thead th,
+.dtfc-fixed-start thead th,
+div.dtfc-fixed-left thead th,
+div.dtfc-fixed-start thead th {
+  background-color: #f06292 !important;
+  color: black !important;
+  border: 1px solid #f8bbd0 !important;
+}
+
+.dtfc-fixed-left tbody td,
+.dtfc-fixed-start tbody td,
+div.dtfc-fixed-left tbody td,
+div.dtfc-fixed-start tbody td {
+  background-color: inherit !important;
+}
+
+div.dtfc-fixed-start table.dataTable thead th,
+div.dtfc-fixed-left table.dataTable thead th,
+table.dataTable.dtfc-has-start thead th.dtfc-fixed-start,
+table.dataTable.dtfc-has-left thead th.dtfc-fixed-left {
+  background-color: #f06292 !important;
+  color: black !important;
+  border: 1px solid #f8bbd0 !important;
+}
+
+
+
+
+    
   </style>
   <script>
 
@@ -834,7 +872,7 @@ const url =
   pageLength: 10,
   scrollX: true,
   scrollY: "420px",
-  scrollCollapse: true,
+  scrollCollapse: false,
   autoWidth: false,
   ordering: true,
 
