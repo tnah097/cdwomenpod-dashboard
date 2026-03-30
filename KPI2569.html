@@ -568,78 +568,139 @@ This system does not collect personal or financial information.
   <script>
 
 
-    const API_URL = "https://script.google.com/macros/s/AKfycby-WMXu4yHrGqdETd37jqoYVpQK3lktS2lY-UMaze1Dz29jp1vUBNqeQz5DQmfBYddM/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzb3hVTg5Rlic1bQ96uQQRsp8TK_poYP1RZgy-TWDy67cRSGpaMHUPA5qa-c1YnEW_M/exec";
     let donutChartInstance = null;
     let provinceDataTable = null;
 
     /* === Mapping คีย์ → ชื่อภาษาไทย === */
 
     const columnMap = {
-      province: "จังหวัด",
-      totalProjects: "จำนวนโครงการ",
-      approvedAmount: "เงินที่อนุมัติ",
-      debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
-      debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
-      notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
-   
-      recoveredInterest: "รับคืนดอกเบี้ย",
-      recoveredFine: "รับคืนเบี้ยปรับ",
-      recoveredPenaltyInterest: "รับคืนดอกเบี้ยผิดนัด",
-      recoveredOverpay: "รับเงินเกิน",
-      recoveredTotal: "รับคืนรวม",
-      debtAsOf30968: "เงินต้นคงเหลือ ณ 30 ก.ย. 2568",
-      mediation: "การไกล่เกลี่ยที่สามารถใช้บังคับคดีได้ (ค)",
-     
-      civilLaw20: "ป.วิ แพ่ง ม.20 ตรี (ง5)",
-   
-      legalAction: "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
-      principalLegal: "เงินต้นตามที่ได้รับดำเนินคดี",
-      overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
-      overdue: "หนี้ที่เกินกำหนดชำระ (B)",
-      overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)",
-      
-      statusPayment: "สถานะการชำระหนี้",
-      projectStatus: "สถานะโครงการ",
-      notes: "หมายเหตุ",
-      debtRestructure: "มาตรการปรับโครงสร้างหนี้",
-      mediationAct2562: "มาตรการการไกล่เกลี่ยข้อพิพาท พ.ศ. 2562",
-      civilBeforeCourt: "มาตรการไกล่เกลี่ยก่อนฟ้อง ตาม ป.วิ.พ. มาตรา 20 ตรี",
-      defaultSettlement: "มาตรการไกล่เกลี่ยและประนีประนอมอมความกรณีลูกหนี้ผิดนัด",
-      reducePenalty: "มาตรการพิจารณาลดหรืองดเบี้ยปรับ/ดอกเบี้ยผิดนัด",
-      reduceInterest2566: "มาตรการลดอัตราดอกเบี้ยเงินกู้และดอกเบี้ยผิดนัด พ.ศ. 2566"
+  province: "จังหวัด",
+  totalProjects: "จำนวนโครงการ",
+  approvedAmount: "เงินที่อนุมัติ",
+  debtStart: "ลูกหนี้คงเหลือ ณ 1 ต.ค. 2568",
+  debtNow: "ลูกหนี้คงเหลือ ณ ปัจจุบัน (ก)",
+  notDue: "หนี้ยังไม่ถึงกำหนดชำระ (ข)",
+  recoveredPrincipal: "รับคืนเงินต้น",
 
-    };
+  prosecutorAccepted: "พนักงานอัยการรับเรื่อง(ง1)",
+  courtAccepted: "ศาลประทับรับฟ้อง(ง2)",
+  courtJudgment: "ศาลได้มีคำพิพากษาให้ลูกหนี้ชำระหนี้(ง3)",
+  consentJudgment: "ศาลมีคำพิพากษาตามยอม(ง4)",
+  criminalCase: "คดีอาญา",
+
+  legalAction: "ลูกหนี้ที่ได้ดำเนินการตามกฎหมาย (ง)",
+  principalLegal: "เงินต้นตามที่ได้รับดำเนินคดี",
+  overdueLegal: "จำนวนหนี้ที่เกินกำหนดชำระเข้ามาตรการ",
+  overdue: "หนี้ที่เกินกำหนดชำระ (B)",
+  overduePercent: "ร้อยละหนี้เกินกำหนดชำระ (C)",
+
+  kpiMeasure: "มาตรการใน KPI",
+  lmMeasure: "มาตรการในระบบ LM",
+
+  restructureProject: "ปรับโครงสร้างหนี้ (จำนวนโครงการ)",
+  restructureAmount: "ปรับโครงสร้างหนี้ (จำนวนเงิน)",
+
+  mediation2562Project: "มาตรการการไกล่เกลี่ยข้อพิพาท พ.ศ. 2562 (จำนวนโครงการ)",
+  mediation2562Amount: "มาตรการการไกล่เกลี่ยข้อพิพาท พ.ศ. 2562 (จำนวนเงิน)",
+
+  civil20Project: "มาตรการไกล่เกลี่ยก่อนฟ้อง ตามประมวลกฎหมายวิธีพิจารณาความแพ่ง มาตรา 20 ตรี (จำนวนโครงการ)",
+  civil20Amount: "มาตรการไกล่เกลี่ยก่อนฟ้อง ตามประมวลกฎหมายวิธีพิจารณาความแพ่ง มาตรา 20 ตรี (จำนวนเงิน)",
+
+  defaultProject: "มาตรการไกล่เกลี่ยและประนีประนอมอมความความกรณีลูกหนี้ผิดนัด (จำนวนโครงการ)",
+  defaultAmount: "มาตรการไกล่เกลี่ยและประนีประนอมอมความความกรณีลูกหนี้ผิดนัด (จำนวนเงิน)",
+
+  reducePenaltyProject: "มาตราการพิจารณาลดหรืองดเบี้ยปรับ/ดอกเบี้ยผิดนัด (จำนวนโครงการ)",
+  reducePenaltyAmount: "มาตราการพิจารณาลดหรืองดเบี้ยปรับ/ดอกเบี้ยผิดนัด (จำนวนเงิน)",
+
+  suspendProject: "พักชำระหนี้ (จำนวนโครงการ)",
+  suspendAmount: "พักชำระหนี้ (จำนวนเงิน)",
+
+  expireAllProject: "วันที่อายุความทั้งหมด (จำนวนโครงการ)",
+  noExpireDateProject: "ไม่มีวันที่อายุความ (จำนวนโครงการ)",
+  expiredProject: "หมดอายุความแล้ว (จำนวนโครงการ)",
+  notExpiredProject: "ยังไม่หมดอายุความ (จำนวนโครงการ)"
+};
 
 
     /* === ลำดับคอลัมน์ที่ต้องการ === */
     const orderedColumns = [
+  "province",
+  "totalProjects",
+  "approvedAmount",
+  "debtStart",
+  "debtNow",
+  "notDue",
+  "recoveredPrincipal",
 
-      "province", "totalProjects", "approvedAmount",
-      "debtStart", "debtNow", "notDue", 
-      "recoveredInterest", "recoveredFine", "recoveredPenaltyInterest", "recoveredOverpay", "recoveredTotal", "debtAsOf30968",
-      "mediation",  "civilLaw20", 
-      "legalAction", "principalLegal", "overdueLegal", "overdue", "overduePercent",
-      "statusPayment", "projectStatus",
-      "debtRestructure",
-      "mediationAct2562",
-      "civilBeforeCourt",
-      "defaultSettlement",
-      "reducePenalty",
-      "reduceInterest2566",
-      "notes",
+  "prosecutorAccepted",
+  "courtAccepted",
+  "courtJudgment",
+  "consentJudgment",
+  "criminalCase",
 
+  "legalAction",
+  "principalLegal",
+  "overdueLegal",
+  "overdue",
+  "overduePercent",
 
-    ];
+  "kpiMeasure",
+  "lmMeasure",
+
+  "restructureProject",
+  "restructureAmount",
+
+  "mediation2562Project",
+  "mediation2562Amount",
+
+  "civil20Project",
+  "civil20Amount",
+
+  "defaultProject",
+  "defaultAmount",
+
+  "reducePenaltyProject",
+  "reducePenaltyAmount",
+
+  "suspendProject",
+  "suspendAmount",
+
+  "expireAllProject",
+  "noExpireDateProject",
+  "expiredProject",
+  "notExpiredProject"
+];
 
     /* === ฟังก์ชัน format ตัวเลขและเปอร์เซ็นต์ === */
 
-    function formatNumber(num) {
-      if (num === null || num === undefined || String(num).trim() === "") return "-";
-      const n = Number(String(num).replace(/[^0-9.-]/g, ''));
-      if (!isFinite(n)) return String(num);
-      return n.toLocaleString("th-TH");
+    const integerColumns = new Set([
+  "totalProjects",
+  "kpiMeasure",
+  "lmMeasure",
+  "restructureProject",
+  "mediation2562Project",
+  "civil20Project",
+  "defaultProject",
+  "reducePenaltyProject",
+  "suspendProject",
+  "expireAllProject",
+  "noExpireDateProject",
+  "expiredProject",
+  "notExpiredProject"
+]);
 
-    }
+function formatNumber(num, decimals = 2) {
+  if (num === null || num === undefined || String(num).trim() === "") return "-";
+
+  const n = Number(String(num).replace(/[^0-9.-]/g, ""));
+  if (!isFinite(n)) return String(num);
+
+  return n.toLocaleString("th-TH", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
 
     function formatPercent(val) {
       const num = parseFloat(String(val).replace(/[^0-9.-]/g, ''));
@@ -660,20 +721,17 @@ This system does not collect personal or financial information.
         const provinces = data.provinces || [];
 
         /* === Update Cards === */
-        document.getElementById('num-projects').textContent = formatNumber(overview.B2);
-        document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2);
-        document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2);
-        document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2);
-       
-        document.getElementById('not-due-card2').textContent = formatNumber(overview.F2);
-        document.getElementById('mediation').textContent = formatNumber(overview.H2);
-       
-        document.getElementById('civil-law-20').textContent = formatNumber(overview.M2);
-     
-        document.getElementById('legal-card4').textContent = formatNumber(overview.O2);
-        document.getElementById('principal-legal').textContent = formatNumber(overview.P2);
-        document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2);
-        document.getElementById('overdue-card5').textContent = formatNumber(overview.R2);
+        document.getElementById('num-projects').textContent = formatNumber(overview.B2, 0);
+        document.getElementById('approved-money-card1').textContent = formatNumber(overview.C2, 2);
+      document.getElementById('debt-start-card1').textContent = formatNumber(overview.D2, 2);
+document.getElementById('debt-now-card2').textContent = formatNumber(overview.E2, 2);
+document.getElementById('not-due-card2').textContent = formatNumber(overview.F2, 2);
+document.getElementById('mediation').textContent = formatNumber(overview.H2, 2);
+document.getElementById('civil-law-20').textContent = formatNumber(overview.M2, 2);
+document.getElementById('legal-card4').textContent = formatNumber(overview.O2, 2);
+document.getElementById('principal-legal').textContent = formatNumber(overview.P2, 2);
+document.getElementById('overdue-legal').textContent = formatNumber(overview.Q2, 2);
+document.getElementById('overdue-card5').textContent = formatNumber(overview.R2, 2);
         document.getElementById('percent-overdue-card5').textContent = formatPercent(overview.S2);
         
     
@@ -756,11 +814,13 @@ const url =
             }
             if (raw === null || raw === undefined || raw === "") return `<td class="align-right">-</td>`;
             const numericCandidate = Number(String(raw).replace(/[^0-9.-]/g, ''));
+            
             if (isFinite(numericCandidate)) {
-              return `<td class="align-right">${formatNumber(numericCandidate)}</td>`;
-            } else {
-              return `<td class="align-right">${String(raw)}</td>`;
-            }
+  const decimals = integerColumns.has(k) ? 0 : 2;
+  return `<td class="align-right">${formatNumber(numericCandidate, decimals)}</td>`;
+} else {
+  return `<td class="align-right">${String(raw)}</td>`;
+}
 
           }).join("");
 
@@ -777,7 +837,7 @@ const url =
   scrollCollapse: true,
   autoWidth: false,
   ordering: true,
-  fixedHeader: true,
+
 
   /* ✅ ล็อกคอลัมน์จังหวัด */
   fixedColumns: {
@@ -849,10 +909,14 @@ $('#studyCenterTable').DataTable({
           if (!isSelected) {
             $(this).addClass('selected-row');
             const provinces = $(this).data('provinces') || "";
-            // provinces เป็น pipe-separated (a|b|c), ใช้ regex match แบบเต็มคำ
-            const regex = `(${provinces})`;
-            // คอลัมน์จังหวัดใน provinceDataTable ของคุณคือ column index 0 — ใช้ search กับ regex
-            provinceDataTable.column(0).search(regex, true, false).draw();
+const escaped = provinces
+  .split('|')
+  .map(p => p.trim())
+  .filter(Boolean)
+  .map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+const regex = `^(${escaped.join('|')})$`;
+provinceDataTable.column(0).search(regex, true, false).draw();
           } else {
             // ถ้าคลิกซ้ำ ให้ล้าง filter
             provinceDataTable.column(0).search('').draw();
