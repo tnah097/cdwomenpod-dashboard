@@ -573,7 +573,15 @@ const dateColumns = [
     if (!v || v === 0 || v === "0" || v === "0.00") {
       return "-";
     }
-    return String(v); // บังคับเป็น TEXT
+    return String(v);
+  }
+
+  // ===== สถานะโครงการ =====
+  if (columnName === "สถานะโครงการ") {
+    if (!v || v === 0 || v === "0" || v === "0.00") {
+      return "-";
+    }
+    return String(v).replace(/\s+/g, " ").trim();
   }
 
   // ===== TEXT ปกติ =====
