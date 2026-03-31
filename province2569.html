@@ -473,47 +473,47 @@ const getNumber = (row, key) => {
 
 
 function renderTable(data) {
-
   if (!data || !data.length) {
     console.warn("No data from API");
     return;
   }
 
-  data = data.filter(row =>
-    !String(row["ลำดับ"]).includes("ภาพรวม")
-  );
+  data = data.filter(row => !String(row["ลำดับ"]).includes("ภาพรวม"));
+
+  if (!data.length) return;
+
+  const allKeys = [...new Set(data.flatMap(row => Object.keys(row)))];
 
   if ($.fn.DataTable.isDataTable("#detailsTable")) {
-    dataTable.clear().rows.add(data).draw();
-    return;
+    dataTable.destroy();
+    $("#detailsTable").empty();
   }
 
-  const columns = Object.keys(data[0] || {}).map(key => ({
+  const columns = allKeys.map(key => ({
     title: key,
     data: key,
+    defaultContent: "",
     render: function (data, type, row) {
-      return formatValue(data, key);
+      return formatValue(row[key], key);
     }
   }));
 
   dataTable = $("#detailsTable").DataTable({
-  data: data,
-  columns: columns,
-  scrollX: true,
-  pageLength: 10,
-  fixedHeader: true,
-  deferRender: true,
-  order: [[0, "asc"]],
-    columnDefs: [
-      { targets: 0, type: "num" }
-    ],
+    data: data,
+    columns: columns,
+    scrollX: true,
+    pageLength: 10,
+    fixedHeader: true,
+    deferRender: true,
+    order: [[0, "asc"]],
+    columnDefs: [{ targets: 0, type: "num" }],
     language: {
       search: "ค้นหา:",
       info: "แสดง _START_ ถึง _END_ จาก _TOTAL_"
     }
   });
 
-  dataTable.on('draw', function () {
+  dataTable.on("draw", function () {
     updateCardsFromFilteredData();
   });
 
@@ -614,49 +614,60 @@ if (!isNaN(num) && !dateColumns.includes(columnName)) {
 
 
 
-    function setupFilters(data) {
-      const keys = ["อำเภอ/เขต", "ตำบล", "ปีงบประมาณ", "สถานะโครงการ"];
-      const container = $("#filter-section").empty();
-      keys.forEach(k => {
-        const values = [...new Set(data.map(r => r[k]).filter(Boolean))].sort();
-        const select = $(`<select data-key="${k}"><option value="">-- ทั้งหมด --</option>${values.map(v => `<option>${v}</option>`).join("")}</select>`);
-   const item = $(`
-  <div class="filter-item">
-    <label>${k}</label>
-    ${select.prop('outerHTML')}
-  </div>
-`);
-container.append(item);
-      });
+   function setupFilters(data) {
+  const keys = ["อำเภอ/เขต", "ตำบล", "ปีงบประมาณ", "สถานะโครงการ"];
+  const container = $("#filter-section").empty();
+
+  keys.forEach(k => {
+    const values = [...new Set(
+      data.map(r => (r[k] ?? "").toString().trim()).filter(v => v !== "")
+    )].sort();
+
+    const select = $(`
+      <select data-key="${k}">
+        <option value="">-- ทั้งหมด --</option>
+        ${values.map(v => `<option value="${v}">${v}</option>`).join("")}
+      </select>
+    `);
+
+    const item = $(`
+      <div class="filter-item">
+        <label>${k}</label>
+      </div>
+    `);
+
+    item.append(select);
+    container.append(item);
+  });
+
   $("#filter-section select").on("change", applyFilters);
-      
-    }
+}
 
- function applyFilters() {
+ function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
+function applyFilters() {
   if (!dataTable) return;
 
   dataTable.columns().search("");
 
   $("#filter-section select").each(function () {
     const key = $(this).data("key");
-    const val = $(this).val();
+    const val = ($(this).val() || "").toString().trim();
     if (!val) return;
 
     const colIndex = dataTable
       .columns()
       .indexes()
-      .filter(i => dataTable.settings()[0].aoColumns[i].sTitle === key)[0];
+      .filter(i => dataTable.settings()[0].aoColumns[i].sTitle.trim() === key.trim())[0];
 
     if (colIndex !== undefined) {
-      dataTable.column(colIndex).search(`^${val}$`, true, false);
+      dataTable.column(colIndex).search(`^${escapeRegex(val)}$`, true, false);
     }
   });
 
   dataTable.draw();
-
-
-    
 }
 
 
