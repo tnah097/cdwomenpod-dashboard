@@ -328,6 +328,9 @@ $("#measureFilter").on("change", function () {
 
     allData = json.data || [];
     provinceSummary = json.summary;   // ✅ เพิ่มบรรทัดนี้
+    console.log(
+  allData.map(r => r["กำหนดวันชำระเงินงวดสุดท้ายที่ไม่มีการรับชำระ"]).slice(0, 20)
+);
 
     if (allData.length) {
   const filteredData = allData.filter(row =>
@@ -531,22 +534,33 @@ function renderTable(data) {
 
 
 const dateColumns = [
-    "วันที่เริ่มต้นสัญญา",
-    "วันที่สิ้นสุดสัญญา",
-    "วันที่รับชำระล่าสุด",
-    "กำหนดชำระงวดสุดท้าย"
-  ];
+  "วันที่เริ่มต้นสัญญา",
+  "วันที่สิ้นสุดสัญญา",
+  "วันที่รับชำระล่าสุด",
+  "กำหนดวันชำระเงินงวดสุดท้ายที่ไม่มีการรับชำระ"
+];
 
-  if (dateColumns.includes(columnName)) {
-
+if (dateColumns.includes(columnName)) {
   if (!v || v === "NULL") return "-";
 
-  const d = new Date(v);
+  const text = String(v).trim();
 
-  if (isNaN(d)) return "-";
+  // ถ้าเป็นรูปแบบวันที่อยู่แล้ว
+  if (text.includes("/") || text.includes("-")) {
+    const d = new Date(text);
+    if (!isNaN(d)) return d.toLocaleDateString("th-TH");
+    return text;
+  }
 
-  return d.toLocaleDateString("th-TH");
+  // ถ้าเป็นตัวเลขล้วน เช่น 29, 30 ให้แสดงตามค่าจริง ไม่แปลงเป็น Date
+  if (/^\d+(\.\d+)?$/.test(text)) {
+    return text;
+  }
 
+  const d = new Date(text);
+  if (!isNaN(d)) return d.toLocaleDateString("th-TH");
+
+  return text;
 }
 
 
