@@ -620,7 +620,9 @@ if (!isNaN(num) && !dateColumns.includes(columnName)) {
 
   keys.forEach(k => {
     const values = [...new Set(
-      data.map(r => (r[k] ?? "").toString().trim()).filter(v => v !== "")
+      data
+        .map(r => (r[k] ?? "").toString().replace(/\s+/g, " ").trim())
+        .filter(v => v !== "")
     )].sort();
 
     const select = $(`
@@ -640,8 +642,9 @@ if (!isNaN(num) && !dateColumns.includes(columnName)) {
     container.append(item);
   });
 
-  $("#filter-section select").on("change", applyFilters);
+  $("#filter-section select").off("change").on("change", applyFilters);
 }
+    
 
  function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -653,17 +656,21 @@ function applyFilters() {
   dataTable.columns().search("");
 
   $("#filter-section select").each(function () {
-    const key = $(this).data("key");
-    const val = ($(this).val() || "").toString().trim();
+    const key = ($(this).data("key") || "").toString().trim();
+    const val = ($(this).val() || "").toString().replace(/\s+/g, " ").trim();
     if (!val) return;
 
     const colIndex = dataTable
       .columns()
       .indexes()
-      .filter(i => dataTable.settings()[0].aoColumns[i].sTitle.trim() === key.trim())[0];
+      .filter(i => dataTable.settings()[0].aoColumns[i].sTitle.trim() === key)[0];
 
     if (colIndex !== undefined) {
-      dataTable.column(colIndex).search(`^${escapeRegex(val)}$`, true, false);
+      if (key === "สถานะโครงการ") {
+        dataTable.column(colIndex).search(`^\\s*${escapeRegex(val)}\\s*$`, true, false);
+      } else {
+        dataTable.column(colIndex).search(`^${escapeRegex(val)}$`, true, false);
+      }
     }
   });
 
