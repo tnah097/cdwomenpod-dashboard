@@ -330,8 +330,12 @@ $("#measureFilter").on("change", function () {
     provinceSummary = json.summary;   // ✅ เพิ่มบรรทัดนี้
 
     if (allData.length) {
-  renderTable(allData);
-  setupFilters(allData);
+  const filteredData = allData.filter(row =>
+    !String(row["ลำดับ"]).includes("ภาพรวม")
+  );
+
+  renderTable(filteredData);
+  setupFilters(filteredData);
 }
 
 
@@ -619,11 +623,15 @@ if (!isNaN(num) && !dateColumns.includes(columnName)) {
   const container = $("#filter-section").empty();
 
   keys.forEach(k => {
-    const values = [...new Set(
-      data
-        .map(r => (r[k] ?? "").toString().replace(/\s+/g, " ").trim())
-        .filter(v => v !== "")
-    )].sort();
+   const values = [...new Set(
+  data
+    .map(r => (r[k] ?? "").toString().replace(/\s+/g, " ").trim())
+    .filter(v => {
+      if (v === "") return false;
+      if (k === "สถานะโครงการ" && v === "0") return false;
+      return true;
+    })
+)].sort();
 
     const select = $(`
       <select data-key="${k}">
