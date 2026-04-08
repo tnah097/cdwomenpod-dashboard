@@ -159,7 +159,7 @@ tr.summary-row td {
 <div class="container">
   <div class="header">
     <h1>สรุปผลการดำเนินงานตามตัวชี้วัดของกองทุนพัฒนาบทบาทสตรี</h1>
-    <p>กรมการพัฒนาชุมชน ประจำปีบัญชี 2568 จำนวน 6 ด้าน 15 ตัวชี้วัด ข้อมูล ณ วันที่ 15 กันยายน 2568</p>
+    <p>กรมการพัฒนาชุมชน ประจำปีบัญชี 2568 จำนวน 6 ด้าน 15 ตัวชี้วัด ข้อมูล ณ วันที่ 30 กันยายน 2568</p>
   </div>
   <div class="logos">
     <img src="https://i.postimg.cc/507bjy9Z/cdd.png" alt="CDD Logo">
@@ -174,7 +174,6 @@ tr.summary-row td {
         <th>เป้าหมาย</th>
         <th>ผลงาน</th>
         <th>คะแนน</th>
-        <th>คาดการณ์ กันยายน</th>
       </tr>
     </thead>
     <tbody>
@@ -295,7 +294,6 @@ async function loadAndDisplayData() {
         <td>${row['เป้าหมาย'] || ''}</td>
         <td>${row['ผลงาน'] || ''}</td>
         <td>${row['คะแนน'] || ''}</td>
-        <td>${row['คาดการณ์ กันยายน'] || ''}</td>
       `;
       tbody.appendChild(tr);
 
@@ -313,7 +311,6 @@ async function loadAndDisplayData() {
       tr.innerHTML = `
         <td colspan="4" style="padding-right: 20px;">${summary.label}</td>
         <td colspan="2">${summary.value}</td>
-        <td>${summary.forecast}</td>
       `;
       tbody.appendChild(tr);
     }
