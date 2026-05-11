@@ -6,7 +6,7 @@
 <head> 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CDD Women Fund Login</title>
+<title>CDD Women Fund Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet" />
 
 <style>
@@ -103,11 +103,11 @@ Internal Dashboard – CDD Women Fund
 <div class="login-box">
   
   <div class="logo-box">
-    <img src="https://i.postimg.cc/507bjy9Z/cdd.png" />
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s" />
+    <img src="./img/cdd.png" />
+<img src="./img/logo.png" />
   </div>
 
-  <h2>เข้าสู่ระบบจังหวัด</h2>
+  <h2>ตรวจสอบสิทธิ์จังหวัด</h2>
 
   <p style="font-size:14px;color:#555;">
 ระบบสำหรับเจ้าหน้าที่กองทุนพัฒนาบทบาทสตรีเท่านั้น  
@@ -118,7 +118,7 @@ This system does not collect personal or financial information.
 
 <input type="password" id="password" autocomplete="current-password" placeholder="รหัสผ่าน (Password)" />
 
-  <button type="button" onclick="login()">เข้าสู่ระบบ</button>
+  <button type="button" onclick="login()">เข้าสู่ dashboard</button>
 
   <div id="error" class="error"></div>
 
@@ -129,11 +129,11 @@ const API_URL = "https://script.google.com/macros/s/AKfycby-hXuokpXdI9HnrNw1-6dy
 
 const params = new URLSearchParams(window.location.search);
 
-const province = params.get("province") || "";
-const token = params.get("token") || crypto.randomUUID();
+const province = params.get("p") || "";
+const id = params.get("id") || crypto.randomUUID();
 
 sessionStorage.setItem("province", province);
-sessionStorage.setItem("token", token);
+sessionStorage.setItem("id", id);
 
 
   
@@ -177,7 +177,7 @@ if (data.role === "province") {
   sessionStorage.setItem("province", data.province);
 
   window.location.href =
-  `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?p=${encodeURIComponent(data.province)}&id=${token}`;
+  `https://tnah097.github.io/cdwomenpod-dashboard/province2569.html?p=${encodeURIComponent(data.province)}&id=${id}`;
 
   return;
 }
