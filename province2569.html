@@ -214,10 +214,10 @@ table.dataTable td:nth-child(17) {
 // ===== ตรวจ Login และ Token =====
 const params = new URLSearchParams(window.location.search);
 
-const provinceURL = params.get("province");
-const tokenURL = params.get("token");
+const provinceURL = params.get("p");
+const tokenURL = params.get("id");
 
-const tokenSession = sessionStorage.getItem("token");
+const tokenSession = sessionStorage.getItem("id");
 const loggedIn = sessionStorage.getItem("loggedIn");
 
 // ตรวจ login
