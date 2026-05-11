@@ -81,8 +81,8 @@ color:#666;
 <div class="box">
 
 <div class="logo-box">
-<img src="https://i.postimg.cc/507bjy9Z/cdd.png">
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtkPBp_xmIFgEEmX2cyScE1QzabzZbtNdbQ&s">
+<img src="./img/cdd.png">
+<img src="./img/logo.png">
 </div>
 
 <h2>เลือกจังหวัด (ส่วนกลาง)</h2>
@@ -108,7 +108,7 @@ const role=sessionStorage.getItem("role");
 
 if(role!=="admin"){
 alert("ไม่มีสิทธิ์เข้าใช้งานหน้านี้");
-window.location.href="Login.html";
+window.location.href="portal.html";
 }
 
 // โหลดจังหวัด
@@ -141,16 +141,16 @@ alert("กรุณาเลือกจังหวัด");
 return;
 }
 
-let token=sessionStorage.getItem("token");
+let id = sessionStorage.getItem("id");
 
-if(!token){
-token=crypto.randomUUID();
-sessionStorage.setItem("token",token);
+if (!id) {
+  id = crypto.randomUUID();
+  sessionStorage.setItem("id", id);
 }
 
 window.open(
-`province2569.html?province=${encodeURIComponent(province)}&token=${token}`,
-"_blank"
+  `province2569.html?p=${encodeURIComponent(province)}&id=${id}`,
+  "_blank"
 );
 
 }
